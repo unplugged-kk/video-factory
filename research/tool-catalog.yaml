@@ -1,0 +1,37 @@
+# Verified fields only (gh api / local inspection on 2026-10-03). null = not verified, never guessed.
+# decision: KEEP existing | INSTALLED | WRAP | EXTERNAL (call, never copy) | REFERENCE | OPTIONAL | DEFER | REJECT
+tools:
+  - {name: hyperframes, url: https://github.com/heygen-com/hyperframes, license: Apache-2.0, stars: 56086, pushed: 2026-10-03, decision: INSTALLED_VIA_NPX, priority: P0, target: mac,
+     verified: "v0.8.114; render/lint/tts/transcribe/doctor all run on M5; 24s 1080x1920 render in 9.8s; offline GSAP vendored",
+     note: "core renderer. Bundles Kokoro TTS + whisper.cpp transcribe, so no separate STT/TTS stack needed for the core path. Old cloud features (HeyGen) not used."}
+  - {name: youtube-agent-skill, url: https://github.com/Jakeschincariol/youtube-agent-skill, license: MIT, stars: 381, pushed: 2026-09-16, decision: INSTALLED, priority: P0, target: mac,
+     verified: "11 skills copied to ~/.claude/skills; hookscore.py and title.py run on stdlib python",
+     note: "writes, never publishes. hookscore is a heuristic, not a predictor (its own README says so)."}
+  - {name: kokoro-onnx (via hyperframes tts), license: Apache-2.0, decision: INSTALLED, priority: P0, target: mac,
+     verified: "~3.6s per short line warm; cold first call 34s incl. model download", note: "installed in ~/.contentos/venv"}
+  - {name: whisper-cpp, decision: INSTALLED, priority: P0, target: mac, verified: "brew install ok, whisper-cli on PATH; NOT benchmarked yet"}
+  - {name: ffmpeg 9.0.2 (arm64 brew), decision: INSTALLED, priority: P0, target: mac,
+     verified: "old /usr/local/bin/ffmpeg is x86_64 and fails 'bad CPU type' (no Rosetta); /opt/homebrew/bin first in contentos.sh"}
+  - {name: yt-dlp (brew), decision: INSTALLED, priority: P1, target: either, note: "public metadata/transcripts only; keep rights gate in front"}
+  - {name: OpenMontage, url: https://github.com/calesthio/OpenMontage, license: AGPL-3.0, stars: 62555, pushed: 2026-09-06, decision: EXTERNAL_REFERENCE, priority: P2, target: mac,
+     verified: "read README + tree: instruction-driven agent pipelines (pipeline_defs/, skills/, schemas/), uses Piper TTS, Remotion, and `npx hyperframes`",
+     note: "AGPL-3.0: do not copy code into this repo. Mine the architecture (stage contracts, checkpoints). Run it as a separate process if needed. NOT installed or run here."}
+  - {name: MoneyPrinterTurbo, url: https://github.com/harry0703/MoneyPrinterTurbo, license: MIT, stars: 128162, pushed: 2026-10-03, decision: OPTIONAL_BACKEND, priority: P2, target: either,
+     verified: "local clone at ~/git/MoneyPrinterTurbo; voice.py TTS = edge_tts/azure/siliconflow/gemini/mimo (all cloud); faster-whisper for subtitles; footage from stock APIs",
+     note: "fails local-first for voice (cloud TTS). Useful only as stock-footage topic->short backend. NOT run on M5 yet."}
+  - {name: Remotion, url: https://github.com/remotion-dev/remotion, license: "custom (company license for >3 employees)", decision: DEFER, priority: P2,
+     note: "hyperframes covers HTML->MP4. Add Remotion only if React components are needed. Check license terms first."}
+  - {name: youtube-niche-finder, url: https://github.com/pandich93/youtube-niche-finder, license: MIT, stars: 5, pushed: 2026-09-29, decision: DEFER, priority: P1,
+     note: "right idea (outliers, velocity, MCP) but 5 stars and needs Postgres. Evaluate in a sandbox before trusting. ContentForge already has research providers."}
+  - {name: youtube-mcp-server (pauling-ai), url: https://github.com/pauling-ai/youtube-mcp-server, license: MIT, stars: 24, pushed: 2026-09-04, decision: DEFER, priority: P1,
+     note: "Data+Analytics+Reporting API. Needs OAuth. Candidate analytics source once credentials exist."}
+  - {name: chatterbox, url: https://github.com/resemble-ai/chatterbox, license: MIT, stars: 26657, pushed: 2026-07-21, decision: OPTIONAL, priority: P2,
+     note: "old factory used mlx-community/chatterbox-turbo-fp16 for voice clone; venv and reference clip are gone. Rebuild only if cloning your voice matters."}
+  - {name: whisperX, url: https://github.com/m-bain/whisperX, license: BSD-2-Clause, stars: 24344, decision: REJECT_FOR_NOW, note: "diarization/alignment extras not needed; whisper.cpp via hyperframes is enough on Mac"}
+  - {name: ElevenLabs, decision: OPTIONAL_FALLBACK, priority: P3, note: "paid; blocked by policy unless allow_paid or --allow-paid"}
+  - {name: Ollama, decision: NOT_INSTALLED, note: "no local LLM yet. Install when an offline script/classify task needs it; ContentForge gateway is the existing LLM path."}
+  - {name: n8n / postiz-app / OpenCut / openshorts / clipbrain, decision: KEEP_EXISTING, note: "already in ~/git. Do not duplicate: openshorts = long->Shorts, postiz = multi-platform posting, n8n = scheduler layer."}
+  - {name: last30days-skill, url: https://github.com/mvanhorn/last30days-skill, license: MIT, stars: 63414, pushed: 2026-10-01, decision: INSTALLED, priority: P1, verified: "keyless Reddit+HN works, 9s quick run; results can be off-topic"}
+  - {name: Agent-Reach, url: https://github.com/Panniantong/Agent-Reach, license: MIT, stars: 89334, pushed: 2026-09-15, decision: INSTALLED, priority: P2, verified: "uv tool; channels youtube(info,transcript)+rss work; README describes more channels than the installed version offers"}
+unverified_from_pasted_research: [AutoClip, Clipcillo, TubeAssistant, picture-it, ThumbGen, youtube-uploader, youtube-comments-scraper, youtube-to-agent-skill, coyaSONG/youtube-mcp-server, ZeroPointRepo/youtube-skills]
+unverified_note: "Not inspected. The pasted text also cited 'yunfei-DONNli/openmontage' for OpenMontage; the real repo is calesthio/OpenMontage."

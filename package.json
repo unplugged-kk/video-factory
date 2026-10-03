@@ -1,0 +1,8 @@
+{
+  "name": "video-factory",
+  "private": true,
+  "description": "Toolchain pins for contentos. `npx --no-install hyperframes` resolves this local copy, so upstream releases cannot break renders. Upgrade on purpose: npm install hyperframes@<version>, then run the tests and one render.",
+  "dependencies": {
+    "hyperframes": "0.8.114"
+  }
+}

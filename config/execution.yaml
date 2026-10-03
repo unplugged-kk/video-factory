@@ -1,0 +1,26 @@
+target_selection:
+  prefer: mac
+  use_vps_when:
+    - long_running
+    - scheduled
+    - needs_public_endpoint
+    - needs_24x7
+    - parallel_batch
+    - laptop_should_stay_idle
+    - benefits_from_linux
+# default placement per stage (override per job)
+stage_target:
+  research: either
+  nightly_research: vps
+  analytics_sync: vps
+  voice: mac
+  render: mac
+  batch_render: vps
+  publish: either
+vps:
+  host: ""            # set to enable; empty = VPS disabled, everything runs on mac
+approval_gates:         # publish is DISABLED unless youtube.yaml publish.enabled=true
+  - RESEARCH_APPROVED
+  - SCRIPT_APPROVED
+  - PRODUCTION_APPROVED
+  - PUBLISH_APPROVED

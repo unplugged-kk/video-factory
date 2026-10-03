@@ -1,0 +1,23 @@
+workspace/
+vendor/
+building/
+queue/
+work/
+done/
+failed/
+output/
+state/
+thumbs/
+reference/stale-july-2025-artifacts/
+.DS_Store
+.commandcode/
+.pytest_cache/
+.code-review-graph/
+.env
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

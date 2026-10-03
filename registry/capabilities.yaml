@@ -1,0 +1,59 @@
+# Capability graph + skill registry. Agents query this BEFORE building anything.
+# status: live = verified working on this Mac | wired = config+adapter exists, untested e2e
+#         planned = designed, nothing runs yet | external = another repo owns it (adapter only)
+# `provider` names refer to config/providers.yaml; `skill` names are installed Agent Skills.
+capabilities:
+  youtube_research:   {status: live,     skill: yt-viral,     provider: [ytdlp, youtube_data_api], note: "yt-viral reads public listings; swipe.py ranks by multiple over channel median"}
+  niche_research:     {status: planned,  provider: [youtube-niche-finder], note: "pandich93/youtube-niche-finder (MIT, 5 stars, self-hosted MCP). Not installed. Needs Postgres."}
+  competitor_research: {status: live, skill: yt-viral, provider: [ytdlp], note: "contentos competitor <url...>: views, like rate, title formula, opening-35-words hook score. Checked on one music video only (lyrics, so its hook score means nothing)"}
+  trend_detection:    {status: live, skill: last30days, note: "contentos research <topic>; keyless Reddit+HN verified 2026-10-03; X/YouTube/web need keys or cookies. ContentForge also has a last30days provider (LAST30DAYS_ENABLED=1)"}
+  web_social_reach:   {status: live, skill: agent-reach, provider: [ytdlp], note: "agent-reach 0.x via uv tool. Only channels in this version: youtube (info, transcript) and rss, both via yt-dlp/feedparser, verified live 2026-10-03. No system installs needed. Usage: agent-reach get youtube.transcript <url> | agent-reach get rss <feed>"}
+  keyword_research:   {status: planned}
+  channel_analysis:   {status: live,     skill: yt-audit}
+  video_analysis:     {status: wired,    provider: [ytdlp]}
+  transcript:         {status: live,     provider: [ytdlp, hyperframes_transcribe], note: "public video captions: agent-reach get youtube.transcript <url>"}
+  comment_mining:     {status: live,     skill: yt-comment}
+  audience_analysis:  {status: planned}
+  research_evidence:  {status: external, owner: ContentForge, note: "researchEvidence table, sha256-deduped excerpts"}
+  fact_checking:      {status: planned}
+  topic_clustering:   {status: planned}
+  content_gap_detection: {status: planned}
+  script_generation:  {status: live,     skill: yt-script,    provider: [llm]}
+  hook_generation:    {status: live,     skill: yt-script,    tool: hookscore.py}
+  title_generation:   {status: live,     skill: yt-package,   tool: title.py}
+  description_generation: {status: live, skill: yt-seo}
+  tts:                {status: live,     provider: [kokoro_local, chatterbox_mlx, elevenlabs]}
+  voice_clone:        {status: planned,  provider: [chatterbox_mlx], note: "legacy venv + reference clip missing"}
+  audio_cleanup:      {status: live,     provider: [ffmpeg],  note: "loudnorm to -14 LUFS in voice stage"}
+  asset_retrieval:    {status: wired,    provider: [mpt], note: "render: mpt sources Pexels/Pixabay/Coverr clips and writes assets-rights.json (license + terms + MPT material list). Verified with source: local only; stock path needs a key. Per-clip asset ids not yet recorded."}
+  image_generation:   {status: planned}
+  thumbnail_generation: {status: planned}
+  thumbnail_analysis: {status: live,     skill: yt-package}
+  storyboard:         {status: live,     note: "script lines carry headline/tag; compose stage turns them into timed scenes"}
+  video_generation:   {status: live,     provider: [hyperframes, mpt]}
+  video_editing:      {status: live,     skill: yt-edit,      provider: [ffmpeg]}
+  subtitle_generation: {status: wired,   provider: [hyperframes_transcribe]}
+  shorts_generation:  {status: live,     skill: yt-shorts}
+  longform_generation: {status: planned}
+  rendering:          {status: live,     provider: [hyperframes, ffmpeg]}
+  upload:             {status: planned,  provider: [youtube_data_api_oauth], note: "gated; adapter not written; needs OAuth"}
+  scheduling:         {status: planned}
+  playlist_management: {status: planned}
+  analytics:          {status: planned,  provider: [youtube_data_api], skill: yt-retention, note: "yt-retention reads a Studio CSV export today"}
+  retention_analysis: {status: live,     skill: yt-retention}
+  experimentation:    {status: external, owner: ContentForge, note: "experiments/variants/assignments tables exist"}
+  multi_platform_distribution: {status: external, owner: ContentForge, note: "postiz-app in ~/git; ContentForge publications"}
+  content_calendar:   {status: live,     skill: yt-plan}
+  performance_feedback: {status: external, owner: ContentForge, note: "performance_signals, learning/*"}
+  content_memory:     {status: planned}
+  brand_memory:       {status: live,     note: "~/.claude/youtube/voice.md read by every yt-* skill"}
+  decision:           {status: external, owner: ContentForge/Jev, provider: [jev_contentforge]}
+skills_installed:
+  path: ~/.claude/skills
+  names: [yt-audit, yt-chapters, yt-comment, yt-edit, yt-package, yt-plan, yt-retention, yt-script, yt-seo, yt-shorts, yt-viral]
+  source: github.com/Jakeschincariol/youtube-agent-skill (MIT, 381 stars, pushed 2026-09-16)
+  side_effects: none (skills write text; they never publish)
+fallbacks:
+  tts: [kokoro_local, chatterbox_mlx, elevenlabs]
+  render: [hyperframes, ffmpeg]
+  stt: [hyperframes_transcribe, whisper_cpp]

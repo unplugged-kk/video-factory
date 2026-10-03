@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Video Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --panel2: #1e222b; --line: #2a2f3a;
+    --txt: #e7e9ee; --dim: #9aa2b1; --accent: #6c8cff;
+    --building: #9b8cff; --queued: #6b7280; --voicing: #d9a441; --rendering: #4a9eff; --done: #37c980; --failed: #f0576b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--txt); font-family: "Outfit", system-ui, sans-serif; }
+  header {
+    position: sticky; top: 0; z-index: 5; background: rgba(15,17,21,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line); padding: 16px 24px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+  }
+  h1 { font-size: 20px; font-weight: 800; margin: 0; letter-spacing: -.3px; }
+  h1 span { color: var(--accent); }
+  .stats { display: flex; gap: 18px; flex-wrap: wrap; margin-left: auto; }
+  .stat { display: flex; flex-direction: column; align-items: center; min-width: 54px; }
+  .stat b { font-size: 20px; font-weight: 700; line-height: 1; }
+  .stat small { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .5px; margin-top: 4px; }
+  .eta { color: var(--dim); font-size: 13px; }
+  .eta b { color: var(--txt); font-weight: 600; }
+  .active-num { color: var(--accent) !important; font-size: 16px; font-weight: 800; }
+  button {
+    font-family: inherit; font-weight: 600; font-size: 13px; border: 1px solid var(--line);
+    background: var(--panel2); color: var(--txt); padding: 8px 16px; border-radius: 9px; cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button.pause.on { background: var(--voicing); color: #201700; border-color: var(--voicing); }
+  main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+  .col-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--dim); margin: 22px 0 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--queued); border-radius: 12px; padding: 14px; }
+  .card.building { border-left-color: var(--building); }
+  .card.voicing { border-left-color: var(--voicing); }
+  .card.rendering { border-left-color: var(--rendering); }
+  .card.done { border-left-color: var(--done); }
+  .card.failed { border-left-color: var(--failed); }
+  .card .top { display: flex; align-items: center; gap: 10px; }
+  .title { font-weight: 600; font-size: 15px; line-height: 1.3; }
+  .brief { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12.5px; line-height: 1.55; color: var(--dim); white-space: pre-wrap; max-height: 92px; overflow: hidden; -webkit-mask-image: linear-gradient(#000 60%, transparent); mask-image: linear-gradient(#000 60%, transparent); }
+  .brief.open { max-height: none; -webkit-mask-image: none; mask-image: none; }
+  .brief b { color: var(--txt); font-weight: 600; }
+  .more { margin-top: 4px; background: none; border: none; color: var(--accent); font-size: 12px; font-weight: 600; padding: 2px 0; cursor: pointer; }
+  .more:hover { text-decoration: underline; border-color: transparent; }
+  .fmt { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 28px; flex: 0 0 auto; }
+  .fmt > i { border: 2px solid var(--accent); border-radius: 2px; display: block; }
+  .age { color: var(--dim); font-size: 12px; }
+  .pos { color: var(--accent); font-size: 12px; font-weight: 600; opacity: .8; }
+  .badge { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; padding: 3px 8px; border-radius: 20px; margin-left: auto; white-space: nowrap; }
+  .badge.building { background: rgba(155,140,255,.15); color: var(--building); }
+  .badge.queued { background: #2a2f3a; color: var(--queued); }
+  .badge.voicing { background: rgba(217,164,65,.15); color: var(--voicing); }
+  .badge.rendering { background: rgba(74,158,255,.15); color: var(--rendering); }
+  .badge.done { background: rgba(55,201,128,.15); color: var(--done); }
+  .badge.failed { background: rgba(240,87,107,.15); color: var(--failed); }
+  .meta { color: var(--dim); font-size: 12px; margin-top: 8px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,.2); border-top-color: currentColor; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .err { margin-top: 10px; background: #241318; border: 1px solid #3a1f26; color: #f3a9b3; font-size: 11px; font-family: ui-monospace, monospace; padding: 8px; border-radius: 7px; white-space: pre-wrap; max-height: 120px; overflow: auto; }
+  .actions { margin-top: 10px; display: flex; gap: 8px; }
+  .actions button { padding: 5px 12px; font-size: 12px; }
+  .actions .danger:hover { border-color: var(--failed); }
+  video { width: 100%; border-radius: 8px; margin-top: 10px; background: #000; max-height: 340px; }
+  .empty { color: var(--dim); text-align: center; padding: 60px 20px; font-size: 15px; }
+  .empty code { background: var(--panel2); padding: 3px 8px; border-radius: 6px; color: var(--accent); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--done); display: inline-block; }
+  .offline .dot { background: var(--failed); }
+  .banner { display: none; position: sticky; top: 0; z-index: 10; background: #3a1f26; color: #f3a9b3; border-bottom: 1px solid var(--failed); padding: 12px 24px; font-size: 14px; font-weight: 600; text-align: center; }
+  .banner.show { display: block; }
+  .banner b { color: #fff; background: #5a2530; padding: 2px 8px; border-radius: 5px; }
+  .pausedbanner { background: #2a2410; color: #e8c766; border-bottom-color: var(--voicing); }
+  .pausedbanner b { background: #4a3f14; }
+  .idle { color: var(--dim); font-style: italic; }
+</style>
+</head>
+<body>
+<div id="offline" class="banner">⚠ Can't reach the runner. Double-click <b>start.command</b> in the video-factory folder — this page reconnects on its own.</div>
+<div id="paused" class="banner pausedbanner">⏸ PAUSED — nothing is being generated right now. Press <b>Resume</b> (top-right) to start processing.</div>
+<header>
+  <h1>Video <span>Factory</span></h1>
+  <div class="stats" id="stats"></div>
+  <div class="eta" id="eta"></div>
+  <button class="pause" id="pauseBtn" onclick="togglePause()">Pause</button>
+  <span id="conn" title="connection"><span class="dot"></span></span>
+</header>
+<main id="main">
+  <div class="empty">Connecting to runner…</div>
+</main>
+
+<script>
+let paused = false;
+let lastManifest = null;
+let lastSig = "";
+const expanded = new Set();
+const order = ["building", "rendering", "voicing", "queued", "failed", "done"];
+const labels = { building: "Building", rendering: "Rendering", voicing: "Voicing", queued: "Queued", failed: "Failed", done: "Done" };
+
+function fmt(s) { s = Math.max(0, Math.round(s)); const m = Math.floor(s / 60); return m ? `${m}m ${s % 60}s` : `${s}s`; }
+
+function setOffline(off) {
+  document.getElementById("offline").classList.toggle("show", off);
+  document.getElementById("conn").className = off ? "offline" : "";
+}
+
+async function poll() {
+  let m;
+  try { m = await (await fetch("/manifest.json", { cache: "no-store" })).json(); }
+  catch { setOffline(true); return; }
+  setOffline(false);
+  render(m);
+}
+
+function render(m) {
+  lastManifest = m;
+  // ONE change-signature covering everything visible. If nothing changed, touch NOTHING —
+  // no header rewrite, no grid rebuild — so the page never flashes and videos keep playing.
+  const sig = m.paused + "||" + m.jobs.map(j => j.id + ":" + j.status).join("|") + "||" + [...expanded].sort().join(",");
+  if (sig === lastSig) return;
+  lastSig = sig;
+
+  paused = m.paused;
+  const c = m.counts;
+  document.getElementById("stats").innerHTML = order.map(s =>
+    `<div class="stat"><b style="color:var(--${s})">${c[s] || 0}</b><small>${labels[s]}</small></div>`
+  ).join("");
+  document.getElementById("paused").classList.toggle("show", m.paused);
+
+  const buildingJobs = m.jobs.filter(j => j.status === "building");
+  const authoring = buildingJobs.filter(j => j.active).length;
+  const notStarted = buildingJobs.length - authoring;
+  const pipeline = (c.queued || 0) + (c.voicing || 0) + (c.voiced || 0) + (c.rendering || 0);
+  const runningNow = (c.voicing || 0) + (c.rendering || 0) + authoring;
+  const totalLeft = notStarted + authoring + pipeline;
+  const PER = 45; // measured per-video cost (voice ~30s serial + render share)
+  const eta = document.getElementById("eta");
+  if (m.paused) eta.innerHTML = `<b class="active-num" style="color:var(--voicing)!important">⏸ Paused</b> · ${totalLeft} waiting`;
+  else if (runningNow > 0) eta.innerHTML = `<b class="active-num">▶ ${runningNow} running now</b> · ${notStarted} not started · ~<b>${fmt(totalLeft * PER)}</b> left`;
+  else if (totalLeft > 0) eta.innerHTML = `<span class="idle">idle — ${totalLeft} waiting, nothing running</span>`;
+  else eta.innerHTML = "all clear ✓";
+
+  // Pause button only matters when there's work; hide it when idle so it isn't confusing.
+  const btn = document.getElementById("pauseBtn");
+  btn.textContent = paused ? "Resume" : "Pause";
+  btn.classList.toggle("on", paused);
+  btn.style.display = (paused || runningNow > 0 || pipeline > 0) ? "" : "none";
+
+  // Global processing order → per-video position + ETA (voice is serial, so it's one line).
+  const rank = { rendering: 0, voicing: 1, voiced: 2, queued: 3 };
+  const line = m.jobs
+    .filter(j => rank[j.status] !== undefined || j.status === "building")
+    .sort((a, b) => (rank[a.status] ?? (a.active ? 4 : 5)) - (rank[b.status] ?? (b.active ? 4 : 5)) || (a.createdAt || 0) - (b.createdAt || 0));
+  line.forEach((j, i) => { j._pos = i + 1; j._eta = (i + 1) * PER; });
+
+  if (!m.jobs.length) {
+    document.getElementById("main").innerHTML =
+      `<div class="empty">No jobs yet.<br><br>Tell Claude a video idea — it'll appear here as <b>Building</b> instantly.</div>`;
+    return;
+  }
+
+  const byStatus = {};
+  for (const j of m.jobs) (byStatus[j.status] = byStatus[j.status] || []).push(j);
+  const now = m.updatedAt;
+  let html = "";
+  for (const s of order) {
+    const list = byStatus[s];
+    if (!list || !list.length) continue;
+    html += `<div class="col-title">${labels[s]} · ${list.length}</div><div class="grid">`;
+    html += list.map(j => card(j, now)).join("");
+    html += `</div>`;
+  }
+  document.getElementById("main").innerHTML = html;
+}
+
+function card(j, now) {
+  const s = j.status;
+  let meta = "", body = "";
+  // right-side tag: position in line for not-yet-started videos — NO fake age timer.
+  const tag = (s === "building" || s === "queued") && j._pos ? `<span class="pos">#${j._pos} in line</span>` : "";
+  if (s === "building") meta = paused
+    ? `<span class="idle">⏸ paused — not started</span>`
+    : j.active
+      ? `<span class="spinner"></span> authoring now`
+      : `<span class="idle">◦ waiting to start — not begun</span>`;
+  if (s === "voicing") meta = `<span class="spinner"></span> generating voice`;
+  if (s === "rendering") meta = `<span class="spinner"></span> <span class="rtime" data-start="${j.renderStartedAt || now}">rendering · ${fmt((now - (j.renderStartedAt || now)) / 1000)}</span>`;
+  if (s === "queued") meta = `waiting${j.needsVoice ? " · needs voice" : ""}`;
+  if (s === "done") {
+    meta = `✓ rendered in ${j.renderSeconds != null ? fmt(j.renderSeconds) : "—"} · → ready-to-post`;
+    body = `<video controls preload="none" poster="/thumbs/${j.id}.jpg" src="/output/${j.id}.mp4"></video>
+      <div class="fname" title="in ~/Desktop/ready-to-post/ — click to copy" onclick="copyName('${j.id}.mp4')">📄 ${j.id}.mp4</div>`;
+  }
+  if (s === "failed") body = `<div class="err">${escapeHtml(j.error || "unknown error")}</div>`;
+
+  // description with read-more
+  let briefBlock = "";
+  if (j.brief) {
+    const open = expanded.has(j.id);
+    briefBlock = `<div class="brief${open ? " open" : ""}">${briefHtml(j.brief)}</div>
+      <button class="more" onclick="toggleBrief('${j.id}')">${open ? "Show less ▲" : "Read more ▼"}</button>`;
+  }
+  // cancel while in progress; retry when failed
+  let actions = "";
+  if (s === "failed") actions = `<button onclick="act('retry','${j.id}',this)">Retry</button>`;
+  else if (["building", "queued", "voicing", "rendering"].includes(s)) actions = `<button class="danger" onclick="act('cancel','${j.id}',this)">Cancel</button>`;
+
+  return `<div class="card ${s}">
+    <div class="top">${fmtIcon(j.format)}<span class="title">${escapeHtml(cleanTitle(j.title))}</span><span class="badge ${s}">${s}</span></div>
+    <div class="meta"><span>${meta}</span>${tag}</div>
+    ${briefBlock}
+    ${body}
+    ${actions ? `<div class="actions">${actions}</div>` : ""}
+  </div>`;
+}
+
+// aspect-ratio shape before the title: wide box = 16:9, tall box = 9:16
+function fmtIcon(f) {
+  if (!f) return "";
+  const wide = f === "16:9";
+  const w = wide ? 24 : 15, h = wide ? 15 : 24;
+  return `<span class="fmt" title="${f}"><i style="width:${w}px;height:${h}px"></i></span>`;
+}
+function cleanTitle(t) { return String(t).replace(/\s*[\(（]?(?:16:9|9:16)[^)）]*[\)）]?\s*$/i, "").trim() || t; }
+function toggleBrief(id) { expanded.has(id) ? expanded.delete(id) : expanded.add(id); if (lastManifest) render(lastManifest); }
+function copyName(name) { navigator.clipboard?.writeText(name); const el = event.target; const t = el.textContent; el.textContent = "📄 copied!"; setTimeout(() => el.textContent = t, 1000); }
+
+// Tick elapsed timers in place — never rebuilds the DOM, so a playing video survives.
+function updateTimers() {
+  const now = Date.now();
+  document.querySelectorAll(".age").forEach(el => {
+    const c = +el.dataset.created; if (!c) return;
+    const end = el.dataset.end ? +el.dataset.end : now;
+    el.textContent = "⏱ " + fmt((end - c) / 1000);
+  });
+  document.querySelectorAll(".rtime").forEach(el => {
+    const st = +el.dataset.start; if (st) el.textContent = "rendering · " + fmt((now - st) / 1000);
+  });
+}
+setInterval(updateTimers, 1000);
+
+function escapeHtml(x) { return String(x).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+// Light markdown → readable text: bold **x**, drop heading #, bullets to •.
+function briefHtml(md) {
+  return escapeHtml(md.trim())
+    .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/^\s*[-*]\s+/gm, "• ");
+}
+
+async function act(kind, id, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = "…"; }
+  try { await fetch(`/${kind}?job=${encodeURIComponent(id)}`, { method: "POST" }); }
+  catch { setOffline(true); if (btn) { btn.disabled = false; btn.textContent = kind === "retry" ? "Retry" : "Cancel"; } return; }
+  poll();
+}
+async function togglePause() {
+  try { await fetch(paused ? "/resume" : "/pause", { method: "POST" }); }
+  catch { setOffline(true); return; }
+  poll();
+}
+
+poll();
+setInterval(poll, 2000);
+</script>
+</body>
+</html>

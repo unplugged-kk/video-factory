@@ -1,0 +1,12 @@
+credentials_dir: ~/.contentos/secrets     # outside the repo, never committed
+publish:
+  enabled: false                          # hard off by default
+  default_privacy: private                # private | unlisted | public
+  allow_public: false                     # public additionally needs this true AND PUBLISH_APPROVED
+scopes:                                    # least privilege, separate tokens per purpose
+  research: [youtube.readonly]
+  analytics: [yt-analytics.readonly]
+  publish: [youtube.upload]
+quota:
+  daily_units: 10000
+  upload_cost_units: 1600

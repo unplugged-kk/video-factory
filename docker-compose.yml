@@ -1,0 +1,11 @@
+# Container side of the stack: `docker compose up -d`  (stop: `docker compose down`).
+# contentos itself runs natively on the Mac (Kokoro, whisper.cpp, hyperframes). ContentForge keeps its own
+# compose in ~/git/ContentForge; contentos reaches it on localhost:3000 (a container cannot call back into the host).
+name: video-factory
+include:
+  - path:
+      - vendor/MoneyPrinterTurbo/docker-compose.yml
+      - vendor/MoneyPrinterTurbo/docker-compose.override.yml
+    project_directory: vendor/MoneyPrinterTurbo
+  - path: vendor/OpenMontage/docker-compose.dory.yml
+    project_directory: vendor/OpenMontage

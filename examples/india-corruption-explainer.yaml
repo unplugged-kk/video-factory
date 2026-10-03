@@ -1,0 +1,39 @@
+content_id: india-corruption-what-works
+title: "What Actually Reduces Corruption In India?"
+thumb_text: "WHAT WORKS"
+description: "Evidence on reducing corruption in India. Sources: Transparency International India page (CPI 2025 score 39, rank 91 of 182; Global Corruption Barometer Asia 2020: 39% of public service users paid a bribe); Muralidharan, Niehaus & Sukhtankar, American Economic Review 2016, Building State Capacity: Evidence from Biometric Smartcards in India."
+tags: [india, corruption, governance, explained]
+format: "9:16"
+voice: af_heart
+sources:
+  - {claim: "CPI 2025: India 39/100, rank 91/182; GCB Asia 2020: 39% of public service users paid a bribe in previous 12 months", url: "https://www.transparency.org/en/countries/india"}
+  - {claim: "Randomized trial, Andhra Pradesh, 157 subdistricts, 19 million people: smartcard payments faster, more predictable, less corrupt for NREGS, without hurting access; significant reduction in leakage in NREGS and SSP. Case studies cite leakage as high as 70 to 85 percent.", url: "https://econweb.ucsd.edu/~pniehaus/papers/statecapacity.pdf"}
+  - {claim: "RTI Act in force since 2005", url: "https://thewire.in/government/rti-right-to-information-act-2005-vacancies"}
+script:
+  - say: "Did you pay a bribe for a public service? In 2020, 39 percent of Indians who used one did, so why does nobody talk about what worked?"
+    headline: "39% paid a bribe"
+    tag: HOOK
+  - say: "On the latest Transparency International index, India scores 39 out of 100 and ranks 91 out of 182 countries."
+    headline: "Score: 39 out of 100"
+    tag: THE PROBLEM
+  - say: "No single fix ends corruption. But one idea has real evidence: remove the middleman, and officials get fewer chances to take a cut."
+    headline: "Remove the middleman"
+    tag: THE IDEA
+  - say: "In Andhra Pradesh, researchers tested biometric payment cards across 157 sub districts and 19 million people."
+    headline: "A huge real-world test"
+    tag: THE EVIDENCE
+  - say: "Payments came faster, were more predictable, and less money leaked on the way, without cutting off people who needed it."
+    headline: "Faster, and less leakage"
+    tag: THE RESULT
+  - say: "Information helps too. The Right to Information Act, in force since 2005, lets any citizen ask for official records."
+    headline: "RTI: ask for records"
+    tag: TRANSPARENCY
+  - say: "None of this is magic. Systems can fail, and the evidence is strongest for payments, not for every kind of corruption."
+    headline: "Not magic"
+    tag: THE CAVEAT
+  - say: "What you can do: use official online routes, keep written evidence, and file an RTI when a service is stuck."
+    headline: "What you can do"
+    tag: ACTION
+  - say: "Follow for more sourced explainers, and tell me which topic to research next."
+    headline: "Pick the next topic"
+    tag: CTA

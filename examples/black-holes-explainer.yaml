@@ -1,0 +1,36 @@
+content_id: why-black-holes
+title: "Why Are Black Holes Called Black Holes?"
+thumb_text: "A PRISON?"
+description: "The name black hole began with a prison, and the credit is shared. Sources: Herdeiro & Lemos, arXiv:1811.06587; APS News on John Michell (1783)."
+tags: [black holes, space explained, physics history]
+format: "9:16"
+voice: af_heart
+sources:
+  - {claim: "Michell 1783 dark star", url: "https://www.aps.org/apsnews/2009/11/1783-john-michell-black-holes"}
+  - {claim: "Schwarzschild 1916; Dicke ~1960 Black Hole of Calcutta analogy; Ewing 1964; Wheeler 1968 general-audience article", url: "https://arxiv.org/pdf/1811.06587"}
+script:
+  - say: "Nobody tells you why black holes are called that, but the name took 200 years, and it began with a prison."
+    headline: "Why 'black hole'?"
+    tag: HOOK
+  - say: "In 1783, John Michell imagined a star so heavy that light could not escape. He called it a dark star."
+    headline: "1783: the dark star"
+    tag: MICHELL
+  - say: "In 1916, Karl Schwarzschild found the math inside Einstein's equations. Still, nobody had a name for it."
+    headline: "1916: the math appears"
+    tag: SCHWARZSCHILD
+  - say: "Around 1960, physicist Robert Dicke compared collapsed stars to the Black Hole of Calcutta, a notorious prison you could not leave."
+    tts: "Around 1960, physicist Robert Dickey compared collapsed stars to the Black Hole of Calcutta, a notorious prison you could not leave."
+    headline: "1960: a prison comparison"
+    tag: DICKE
+  - say: "In 1964, writer Ann Ewing used the words black holes in print, in a report about space."
+    headline: "1964: first in print"
+    tag: EWING
+  - say: "In 1968, John Wheeler used it in an article for the general public, and the name stuck."
+    headline: "1968: the name sticks"
+    tag: WHEELER
+  - say: "So black means no light comes back, and hole means a trap you cannot leave, not a gap in space."
+    headline: "Black = no light back"
+    tag: THE ANSWER
+  - say: "Follow for more space stories, and tell me which name you would have picked."
+    headline: "Your name pick?"
+    tag: CTA

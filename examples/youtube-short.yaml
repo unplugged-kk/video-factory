@@ -1,0 +1,23 @@
+content_id: smoke-ai-video-stack
+title: "I Replaced My Video Editor With 3 Local Tools"
+thumb_text: "NO EDITOR"
+description: "Local-first video stack: HTML to MP4, offline voice, zero subscriptions."
+tags: [ai video, hyperframes, local ai]
+format: "9:16"
+voice: af_heart
+script:
+  - say: "You are wasting 3,000 dollars a year on editing, but nobody tells you why three free tools beat it in 31 seconds."
+    headline: "Stop paying for editing"
+    tag: HOOK
+  - say: "First, the script. A hook is scored before I record a single take."
+    headline: "Score the hook first"
+    tag: STEP 1
+  - say: "Second, the voice. A local model reads it offline, no subscription."
+    headline: "Voice runs offline"
+    tag: STEP 2
+  - say: "Third, the render. Plain HTML becomes a finished vertical video on my laptop."
+    headline: "HTML becomes video"
+    tag: STEP 3
+  - say: "Everything stays private until I approve it. Want the stack? Follow for part two."
+    headline: "Nothing ships unapproved"
+    tag: CTA

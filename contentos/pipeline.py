@@ -1,0 +1,247 @@
+"""Artifact-first pipeline. Every stage writes a durable file under workspace/projects/<content_id>/
+and one ledger row. Re-running skips stages whose artifact already exists (resume)."""
+import html
+import json
+import os
+import shutil
+import subprocess
+import time
+from pathlib import Path
+
+import yaml
+
+from . import ledger, mpt, providers
+from .qa import probe_video, run_qa
+
+ROOT = Path(__file__).resolve().parent.parent
+SKILLS = [ROOT / "vendor/youtube-agent-skill/skills", Path("~/.claude/skills").expanduser()]
+ENV = {**os.environ, "HYPERFRAMES_PYTHON": str(providers.VENV_PY)}
+STAGES = ["brief", "script", "voice", "compose", "render", "qa", "package", "publish"]
+
+
+class Blocked(Exception):
+    """A gate or missing prerequisite stopped the run. Not a crash."""
+
+
+def skill_tool(skill, script):
+    for base in SKILLS:
+        p = base / skill / script
+        if p.exists():
+            return p
+    raise Blocked(f"skill tool {skill}/{script} not installed")
+
+
+def sh(cmd, cwd=None):
+    r = subprocess.run(cmd, cwd=cwd, env=ENV, capture_output=True, text=True)
+    if r.returncode:
+        raise RuntimeError(f"{' '.join(map(str, cmd))[:120]} -> {r.stderr.strip()[-400:] or r.stdout.strip()[-400:]}")
+    return r.stdout
+
+
+def dur(path):
+    return float(probe_video(path)["format"]["duration"])
+
+
+# ---- stages: each returns (provider, [artifacts]) ------------------------------------------
+
+def s_brief(ctx):
+    p = ctx["dir"] / "content.json"
+    p.write_text(json.dumps({**ctx["spec"], "content_id": ctx["id"], "status": "briefed"}, indent=2))
+    return "local", [p]
+
+
+def s_script(ctx):
+    lines = ctx["spec"]["script"]
+    md = ctx["dir"] / "script.md"
+    md.write_text(f"# {ctx['spec']['title']}\n\n" + "\n\n".join(f"## Line {i+1}\n{ln['say']}" for i, ln in enumerate(lines)))
+    lint = ctx["dir"] / "script-lint.json"
+    out = sh(["python3", str(skill_tool("yt-script", "hookscore.py")), "--hook", lines[0]["say"], "--json"])
+    lint.write_text(out)
+    return "yt-script/hookscore", [md, lint]
+
+
+def s_voice(ctx):
+    prim, _ = providers.select("tts", ctx["allow_paid"])
+    if not prim:
+        raise Blocked("no healthy TTS provider (run: contentos doctor)")
+    if prim["id"] != "kokoro_local":
+        raise Blocked(f"TTS provider {prim['id']} selected but has no adapter yet")
+    vd = ctx["dir"] / "audio"
+    vd.mkdir(exist_ok=True)
+    voice = ctx["spec"].get("voice", "af_heart")
+    outs = []
+    for i, ln in enumerate(ctx["spec"]["script"], 1):
+        wav = vd / f"{i:02d}.wav"
+        if not wav.exists():
+            raw = vd / f"{i:02d}.raw.wav"
+            sh(["npx", "--no-install", "hyperframes", "tts", ln.get("tts", ln["say"]), "-v", voice, "-o", str(raw)])
+            sh(["ffmpeg", "-y", "-i", str(raw), "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", "24000", str(wav)])
+            raw.unlink()
+        outs.append(wav)
+    return prim["id"], outs
+
+
+def words_for(wav, workdir):
+    """Word timings from whisper.cpp (via hyperframes). Falls back to even spacing if ASR is unavailable."""
+    workdir.mkdir(exist_ok=True)
+    try:
+        sh(["npx", "--no-install", "hyperframes", "transcribe", str(wav), "--json", "-d", str(workdir)])
+        return [(w["text"], w["start"], w["end"]) for w in json.loads((workdir / "transcript.json").read_text())]
+    except Exception:
+        return None
+
+
+def _mpt(fn, ctx):
+    try:
+        return "mpt", fn(ctx)
+    except mpt.Unavailable as e:
+        raise Blocked(str(e))
+
+
+def s_compose(ctx):
+    if ctx["spec"].get("render") == "mpt":
+        return _mpt(mpt.compose, ctx)
+    spec, W, H = ctx["spec"], *map(int, ctx["res"])
+    proj = ctx["dir"] / "project"
+    (proj / "assets/voice").mkdir(parents=True, exist_ok=True)
+    shutil.copy(ROOT / "contentos/templates/gsap.min.js", proj / "gsap.min.js")
+    t, scenes, audios, anim = 0.0, [], [], []
+    for i, ln in enumerate(spec["script"], 1):
+        wav = ctx["dir"] / "audio" / f"{i:02d}.wav"
+        shutil.copy(wav, proj / f"assets/voice/{i:02d}.wav")
+        d = round(dur(wav) + 0.35, 2)
+        asr = words_for(wav, ctx["dir"] / "audio" / f"tx{i:02d}")
+        toks = ln["say"].split()                      # captions show the SCRIPT words; ASR supplies timing only
+        if asr and len(asr) > 0:
+            n = len(asr)
+            wl = [(w, asr[min(int(k * n / len(toks)), n - 1)][1], asr[min(int((k + 1) * n / len(toks)), n) - 1][2]) for k, w in enumerate(toks)]
+        else:
+            step = (d - 0.35) / len(toks)
+            wl = [(w, k * step, (k + 1) * step) for k, w in enumerate(toks)]
+        cap = "".join(f'<span id="w{i}_{k}">{html.escape(w)}</span> ' for k, (w, _, _) in enumerate(wl))
+        for k, (_, ws, we) in enumerate(wl):
+            anim.append(f'tl.set("#w{i}_{k}",{{color:"#fbbf24"}},{t+ws:.2f});tl.set("#w{i}_{k}",{{color:"#fff"}},{t+we:.2f});')
+        scenes.append(f'<div class="scene clip" id="s{i}" data-start="{t:.2f}" data-duration="{d}">'
+                      f'<div class="tag">{html.escape(ln.get("tag", f"{i}/{len(spec['script'])}"))}</div>'
+                      f'<h1 id="h{i}">{html.escape(ln["headline"])}</h1><p class="cap">{cap}</p></div>')
+        audios.append(f'<audio id="a{i}" src="./assets/voice/{i:02d}.wav" data-start="{t:.2f}" data-duration="{d}" class="clip"></audio>')
+        anim.append(f'tl.fromTo("#s{i}",{{opacity:0}},{{opacity:1,duration:.3}},{t:.2f});'
+                    f'tl.fromTo("#h{i}",{{y:60,opacity:0}},{{y:0,opacity:1,duration:.5,ease:"power3.out"}},{t+.1:.2f});'
+                    f'tl.to("#s{i}",{{opacity:0,duration:.25}},{t+d-.25:.2f});')
+        t += d
+    total = round(t, 2)
+    (proj / "hyperframes.json").write_text(json.dumps({"width": W, "height": H, "fps": 30, "duration": total}))
+    (proj / "index.html").write_text(f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><title>{html.escape(spec['title'])}</title>
+<script src="./gsap.min.js"></script>
+<style>*{{margin:0;box-sizing:border-box}}body{{width:{W}px;height:{H}px;overflow:hidden;background:#090a0f;font-family:-apple-system,"Helvetica Neue",sans-serif;color:#fff}}
+#root{{position:relative;width:{W}px;height:{H}px;background:radial-gradient(circle at 50% 20%,#1a1e36,#08090e)}}
+.scene{{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 80px;text-align:center;opacity:0}}
+.tag{{font:700 34px ui-monospace,Menlo,monospace;letter-spacing:3px;color:#a5b4fc;margin-bottom:36px}}
+h1{{font-size:{int(W*0.085)}px;font-weight:900;line-height:1.1;letter-spacing:-1px}}
+.cap{{position:absolute;left:70px;right:70px;bottom:{int(H*0.16)}px;font-size:{int(W*0.058)}px;font-weight:800;line-height:1.25;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.7)}}.cap span{{display:inline-block;color:#fff}}</style></head>
+<body><div id="root" data-composition-id="root" data-width="{W}" data-height="{H}" data-duration="{total}">
+{''.join(scenes)}{''.join(audios)}</div>
+<script>const tl=gsap.timeline({{paused:true}});{''.join(anim)}
+window.__timelines=window.__timelines||{{}};window.__timelines["root"]=tl;</script></body></html>""")
+    sh(["npx", "--no-install", "hyperframes", "lint"], cwd=proj)
+    return "hyperframes", [proj / "index.html", proj / "hyperframes.json"]
+
+
+def s_render(ctx):
+    if ctx["spec"].get("render") == "mpt":
+        return _mpt(mpt.render, ctx)
+    mp4 = ctx["dir"] / "video.mp4"
+    cmd = ["npx", "--no-install", "hyperframes", "render", "-o", str(mp4)]
+    hf_q = ctx["spec"].get("_v1_hyperframes_quality")
+    if isinstance(hf_q, str) and hf_q.strip():
+        cmd.extend(["-q", hf_q.strip()])
+    sh(cmd, cwd=ctx["dir"] / "project")
+    return "hyperframes", [mp4]
+
+
+def s_qa(ctx):
+    res = run_qa(ctx["dir"] / "video.mp4", ctx["spec"].get("format", "9:16"))
+    p = ctx["dir"] / "qa.json"
+    p.write_text(json.dumps([{"check": c, "status": s, "detail": d} for c, s, d in res], indent=2))
+    fails = [c for c, s, _ in res if s == "FAIL"]
+    if fails:
+        raise RuntimeError(f"QA failed: {fails}")
+    return "ffmpeg", [p]
+
+
+def s_package(ctx):
+    spec = ctx["spec"]
+    lint = sh(["python3", str(skill_tool("yt-package", "title.py")), "--title", spec["title"], "--thumb", spec.get("thumb_text", ""), "--json"])
+    meta = ctx["dir"] / "metadata.yaml"
+    meta.write_text(yaml.safe_dump({"title": spec["title"], "description": spec.get("description", ""), "tags": spec.get("tags", []),
+                                    "privacy": "private", "title_lint": json.loads(lint)}, sort_keys=False))
+    return "yt-package/title", [meta]
+
+
+def s_publish(ctx):
+    cfg = providers.load("youtube.yaml")["publish"]
+    res = ctx["dir"] / "publish-result.json"
+    if not cfg["enabled"]:
+        res.write_text(json.dumps({"status": "DRY_RUN", "reason": "youtube.yaml publish.enabled=false", "would_upload": str(ctx["dir"] / "video.mp4"), "privacy": "private"}, indent=2))
+        return "dry-run", [res]
+    if not ledger.approved(ctx["id"], "PUBLISH_APPROVED"):
+        raise Blocked("PUBLISH_APPROVED gate not granted: contentos approve <id> PUBLISH_APPROVED")
+    prim, _ = providers.select("publish_youtube")
+    if not prim:
+        raise Blocked("no YouTube OAuth credentials at ~/.contentos/secrets/youtube-oauth.json")
+    raise Blocked("YouTube upload adapter not implemented yet (see docs/youtube.md)")
+
+
+FN = {"brief": s_brief, "script": s_script, "voice": s_voice, "compose": s_compose, "render": s_render,
+      "qa": s_qa, "package": s_package, "publish": s_publish}
+ARTIFACT = {"brief": "content.json", "script": "script-lint.json", "voice": "audio/%02d.wav", "compose": "project/index.html",
+            "render": "video.mp4", "qa": "qa.json", "package": "metadata.yaml", "publish": "publish-result.json"}
+RENDER_LANES = ("hyperframes", "mpt")
+
+
+def artifact(st, spec):
+    """Resume sentinel for a stage. The mpt lane has no index.html; its reviewable compose output is the request."""
+    return "project/mpt-request.json" if st == "compose" and spec.get("render") == "mpt" else ARTIFACT[st]
+
+
+def run(spec_path, allow_paid=False, force=False, only=None, approve_private=False):
+    spec = yaml.safe_load(Path(spec_path).read_text())
+    if spec.get("render", "hyperframes") not in RENDER_LANES:
+        raise ValueError(f"render: {spec['render']!r} is not one of {RENDER_LANES}")
+    cid = spec["content_id"]
+    d = ROOT / "workspace/projects" / cid
+    d.mkdir(parents=True, exist_ok=True)
+    W, H = {"9:16": (1080, 1920), "16:9": (1920, 1080)}[spec.get("format", "9:16")]
+    ctx = {"id": cid, "dir": d, "spec": spec, "allow_paid": allow_paid, "res": (W, H)}
+    if approve_private:  # explicit test shortcut; private/dry-run only
+        for g in ("RESEARCH_APPROVED", "SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
+            ledger.approve(cid, g, by="cli --approve-private")
+    rid = ledger.new_run_id()
+    report = []
+    for st in STAGES:
+        if only and st != only:
+            continue
+        art = d / artifact(st, spec).replace("%02d", "01")
+        if art.exists() and not force and st != "publish":
+            report.append((st, "SKIP(resume)", 0.0))
+            continue
+        gate = {"voice": "SCRIPT_APPROVED", "render": "PRODUCTION_APPROVED"}.get(st)
+        t0 = time.time()
+        ledger.record(rid, cid, st, "-", "RUNNING", t0)   # in-flight marker for the dashboard
+        try:
+            if gate and not ledger.approved(cid, gate):
+                raise Blocked(f"gate {gate} not granted: contentos approve {cid} {gate}")
+            prov, arts = FN[st](ctx)
+            ledger.record(rid, cid, st, prov, "OK", t0, arts)
+            report.append((st, "OK", time.time() - t0))
+        except Blocked as e:
+            art.unlink(missing_ok=True)
+            ledger.record(rid, cid, st, "-", "BLOCKED", t0, error=str(e))
+            report.append((st, f"BLOCKED: {e}", time.time() - t0))
+            break
+        except Exception as e:
+            art.unlink(missing_ok=True)  # never leave a half-built artifact that resume would trust
+            ledger.record(rid, cid, st, "-", "FAIL", t0, error=str(e))
+            report.append((st, f"FAIL: {e}", time.time() - t0))
+            break
+    return rid, report

@@ -1,0 +1,81 @@
+# Provider catalog. Order inside a capability is irrelevant: selection follows
+# config/local-first-policy.yaml (cost tier rank), then health, then `quality`.
+# probe kinds: cmd (exit 0), py_import (module in HYPERFRAMES_PYTHON/venv), env (var set), http (GET 2xx), always
+capabilities:
+  tts:
+    kokoro_local:
+      tier: local_oss
+      quality: 3
+      probe: {py_import: kokoro_onnx}
+      note: "via `hyperframes tts` (Kokoro-82M ONNX). 12 voices, offline after first model download."
+    chatterbox_mlx:
+      tier: local_oss
+      quality: 4
+      probe: {path: ~/.voice-clone-venv/bin/python}
+      note: "voice clone (needs ~/Desktop/voice-sample.wav). Legacy venv from old factory - currently missing."
+    elevenlabs:
+      tier: paid_api
+      quality: 5
+      probe: {env: ELEVENLABS_API_KEY}
+      note: "OPTIONAL fallback only. Never default."
+  stt:
+    hyperframes_transcribe:
+      tier: local_oss
+      quality: 3
+      probe: {cmd: [whisper-cli, --help]}
+      note: "`hyperframes transcribe` shells to whisper.cpp"
+    whisper_cpp:
+      tier: local_oss
+      quality: 3
+      probe: {cmd: [whisper-cli, --help]}
+  render:
+    hyperframes:
+      tier: local_oss
+      quality: 4
+      probe: {cmd: [npx, --no-install, hyperframes, --version]}
+      note: "HTML+GSAP -> MP4 via headless Chrome + ffmpeg"
+    ffmpeg:
+      tier: local_oss
+      quality: 2
+      probe: {cmd: [ffmpeg, -version]}
+    mpt:
+      tier: local_oss
+      quality: 3
+      probe: {http: "http://127.0.0.1:8081/docs"}
+      note: "MoneyPrinterTurbo in Dory (`docker compose up -d`). Opt in per spec with `render: mpt`. Stock b-roll + subtitles around OUR script and voice. Free sources only (pexels/pixabay/coverr/local)."
+  llm:
+    ollama_local:
+      tier: local_oss
+      quality: 2
+      probe: {cmd: [ollama, --version]}
+    contentforge_gateway:
+      tier: vps_selfhosted
+      quality: 4
+      probe: {env: AI_BASE_URL}
+      note: "ContentForge aiCallRouted gateway (OpenAI-compatible)"
+    claude_api:
+      tier: paid_api
+      quality: 5
+      probe: {env: ANTHROPIC_API_KEY}
+  youtube_read:
+    ytdlp:
+      tier: local_oss
+      quality: 3
+      probe: {cmd: [yt-dlp, --version]}
+      note: "metadata/transcripts of public videos only. No DRM bypass."
+    youtube_data_api:
+      tier: free_api
+      quality: 5
+      probe: {env: YOUTUBE_API_KEY}
+  publish_youtube:
+    youtube_data_api_oauth:
+      tier: free_api
+      quality: 5
+      probe: {path: ~/.contentos/secrets/youtube-oauth.json}
+      note: "videos.insert. Unverified API projects force private visibility until audited."
+  decision:
+    jev_contentforge:
+      tier: vps_selfhosted
+      quality: 5
+      probe: {env: CONTENTFORGE_URL}
+      note: "Jev decision engine in ContentForge (server/decision). Adapter only, never reimplemented here."

@@ -1,0 +1,12 @@
+# Cost-tier preference, lowest rank wins. A paid tier is only chosen when
+# no cheaper provider is healthy AND policy.allow_paid is true (or the task
+# explicitly opts in via --allow-paid).
+tier_rank:
+  existing_local: 0
+  local_oss: 1
+  vps_selfhosted: 2
+  free_api: 3
+  low_cost_api: 4
+  paid_api: 5
+allow_paid: false
+exceptions: []        # e.g. {capability: tts, provider: elevenlabs, reason: "client voice-over"}
