@@ -1,0 +1,72 @@
+=== vsi06 thin-slice E2E happy path 2026-10-03T17:43:07Z ===
+VIDEO_FACTORY_ROOT=/private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy
+
+$ date -u
+Sat Oct  3 17:43:07 UTC 2026
+
+$ wc -c /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy/queue/cfvg-9060003/CONTRACT.json
+     434 /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy/queue/cfvg-9060003/CONTRACT.json
+
+$ (cd /Users/kishore/git/video-factory && time env VIDEO_FACTORY_ROOT=/private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy VIDEO_FACTORY_DASHBOARD_PORT=0 node contentos/adapters/v1/factory_worker.mjs --once --port 0)
+(cd /Users/kishore/git/video-factory && time env VIDEO_FACTORY_ROOT=/private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy VIDEO_FACTORY_DASHBOARD_PORT=0 node contentos/adapters/v1/factory_worker.mjs --once --port 0)
+[factory-worker 2026-10-03T17:43:08.019Z] rendering: cfvg-9060003 authorizedBy=factory-mode:production-job quality=draft
+[factory-worker 2026-10-03T17:43:27.071Z] done: cfvg-9060003 -> /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy/output/cfvg-9060003.mp4
+[factory-worker 2026-10-03T17:43:27.071Z] manifest http://127.0.0.1:4300/manifest.json (root=/private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy)
+env VIDEO_FACTORY_ROOT="$ROOT" VIDEO_FACTORY_DASHBOARD_PORT=0 node  --once  0  18.22s user 3.51s system 113% cpu 19.096 total
+exit=0
+
+$ ls -la /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy/output/
+.rw-r--r--@ 839k kishore  3 Oct 23:13 cfvg-9060003.mp4
+
+$ ls -la /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy/done/cfvg-9060003/
+.rw-r--r--@ 516 kishore  3 Oct 23:13 contentos-spec.yaml
+.rw-r--r--@ 434 kishore  3 Oct 23:13 CONTRACT.json
+.rw-r--r--@  71 kishore  3 Oct 23:13 hyperframes.json
+
+$ jq -c '{status,authorizedBy,advisoryDurationMs,permanentFailureCode,error}' /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy/state/cfvg-9060003.json
+{"status":"done","authorizedBy":"factory-mode:production-job","advisoryDurationMs":45000,"permanentFailureCode":null,"error":null}
+
+$ jq '{width,height,duration}' /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy/done/cfvg-9060003/hyperframes.json
+{
+  "width": 1080,
+  "height": 1920,
+  "duration": 7.66
+}
+
+$ ffprobe -v error -show_entries format=duration,size -of default=noprint_wrappers=1 /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-happy/output/cfvg-9060003.mp4
+duration=7.666667
+size=838713
+
+=== vsi06 kill mid-job drill 2026-10-03T17:43:36Z ===
+VIDEO_FACTORY_ROOT=/private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-kill
+worker pid=511
+$ kill -9 511
+after kill work dirs: cfvg-9060004 
+after kill state: {"status":"rendering","error":null}
+
+$ resume: factory_worker --once
+[factory-worker 2026-10-03T17:43:41.636Z] resume in work/: cfvg-9060004
+[factory-worker 2026-10-03T17:43:41.638Z] rendering: cfvg-9060004 authorizedBy=factory-mode:production-job quality=draft
+[factory-worker 2026-10-03T17:43:50.229Z] done: cfvg-9060004 -> /private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-kill/output/cfvg-9060004.mp4
+[factory-worker 2026-10-03T17:43:50.230Z] manifest http://127.0.0.1:4300/manifest.json (root=/private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-kill)
+env VIDEO_FACTORY_ROOT="$ROOT" VIDEO_FACTORY_DASHBOARD_PORT=0 node  --once  0  6.23s user 1.77s system 92% cpu 8.631 total
+resume exit=0
+{"status":"done","error":null,"outputPath":"/private/var/folders/8d/sh64m7052kvf047_wv3xsl4m0000gn/T/opencode/vsi-06/vsi06-e2e-kill/output/cfvg-9060004.mp4"}
+duration=5.066667
+
+=== vsi06 rejection drills (automated tests) 2026-10-03T17:44:01Z ===
+$ cd /Users/kishore/git/video-factory && node --test contentos/adapters/v1/factory_worker.test.mjs
+✔ factory worker permanently rejects 1:1 format with state and failed folder (38.437834ms)
+✔ factory worker permanently rejects unknown voice id with state and failed folder (36.186709ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 108.9435
+
+=== slow-render vs ContentForge 5s poll (factory timing only) ===
+Measured happy-path wall ~19s (see E2E section); exceeds visual.run 5s poll slice.
+Research 03: pg-boss retries ~7min window — 19s render should import on a later attempt without factory changes.

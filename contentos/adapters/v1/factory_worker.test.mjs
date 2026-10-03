@@ -55,3 +55,45 @@ test("factory worker permanently rejects 1:1 format with state and failed folder
 
   fs.rmSync(root, { recursive: true, force: true });
 });
+
+test("factory worker permanently rejects unknown voice id with state and failed folder", () => {
+  const root = mkTempRoot();
+  const id = "cfvg-9000998";
+  const jobDir = path.join(root, "queue", id);
+  fs.mkdirSync(jobDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(jobDir, "CONTRACT.json"),
+    `${JSON.stringify(
+      {
+        contractVersion: "video-factory.contract.v1",
+        jobId: id,
+        title: "Unknown voice probe",
+        format: "9:16",
+        brief: "This should be rejected before render.",
+        script: null,
+        storyboard: null,
+        voice: { enabled: true, id: "not_a_real_voice_id" },
+        render: { quality: "draft" },
+        durationMs: 5000,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const r = spawnSync("node", [worker, "--once", "--port", "0"], {
+    cwd: repoRoot,
+    env: { ...process.env, VIDEO_FACTORY_ROOT: root, VIDEO_FACTORY_DASHBOARD_PORT: "0" },
+    encoding: "utf8",
+  });
+  assert.equal(r.status, 0, r.stderr || r.stdout);
+
+  const state = JSON.parse(fs.readFileSync(path.join(root, "state", `${id}.json`), "utf8"));
+  assert.equal(state.status, "failed");
+  assert.equal(state.permanentFailureCode, "unknown_voice_id");
+  assert.match(state.error, /not_a_real_voice_id/);
+  assert.ok(fs.existsSync(path.join(root, "failed", id)));
+  assert.ok(!fs.existsSync(path.join(root, "output", `${id}.mp4`)));
+
+  fs.rmSync(root, { recursive: true, force: true });
+});
