@@ -14,6 +14,10 @@ function mkTempRoot() {
   return fs.mkdtempSync(path.join(os.tmpdir(), "vsi06-factory-"));
 }
 
+// A throwaway workspace: these tests must never touch the real heartbeat, lock or derived specs.
+const sharedWs = mkTempRoot();
+test.after(() => fs.rmSync(sharedWs, { recursive: true, force: true }));
+
 test("factory worker permanently rejects 1:1 format with state and failed folder", () => {
   const root = mkTempRoot();
   const id = "cfvg-9000999";
@@ -41,7 +45,7 @@ test("factory worker permanently rejects 1:1 format with state and failed folder
 
   const r = spawnSync("node", [worker, "--once", "--port", "0"], {
     cwd: repoRoot,
-    env: { ...process.env, VIDEO_FACTORY_ROOT: root, VIDEO_FACTORY_DASHBOARD_PORT: "0" },
+    env: { ...process.env, VIDEO_FACTORY_ROOT: root, VIDEO_FACTORY_WORKSPACE: sharedWs, VIDEO_FACTORY_DASHBOARD_PORT: "0" },
     encoding: "utf8",
   });
   assert.equal(r.status, 0, r.stderr || r.stdout);
@@ -83,7 +87,7 @@ test("factory worker permanently rejects unknown voice id with state and failed 
 
   const r = spawnSync("node", [worker, "--once", "--port", "0"], {
     cwd: repoRoot,
-    env: { ...process.env, VIDEO_FACTORY_ROOT: root, VIDEO_FACTORY_DASHBOARD_PORT: "0" },
+    env: { ...process.env, VIDEO_FACTORY_ROOT: root, VIDEO_FACTORY_WORKSPACE: sharedWs, VIDEO_FACTORY_DASHBOARD_PORT: "0" },
     encoding: "utf8",
   });
   assert.equal(r.status, 0, r.stderr || r.stdout);
@@ -103,7 +107,7 @@ test("factory worker permanently rejects unknown voice id with state and failed 
 function runWorker(root, args = [], env = {}) {
   return spawnSync("node", [worker, "--once", "--port", "0", ...args], {
     cwd: repoRoot,
-    env: { ...process.env, VIDEO_FACTORY_ROOT: root, ...env },
+    env: { ...process.env, VIDEO_FACTORY_ROOT: root, VIDEO_FACTORY_WORKSPACE: sharedWs, ...env },
     encoding: "utf8",
   });
 }
@@ -150,7 +154,7 @@ test("a contract whose jobId differs from its folder is rejected before any rend
   const r = runWorker(root);
   assert.equal(r.status, 0, r.stderr);
   assert.equal(readState(root, "cfvg-9000997").permanentFailureCode, "job_id_mismatch");
-  assert.ok(!fs.existsSync(path.join(repoRoot, "workspace/factory-specs/cfvg-9000997.yaml")), "no spec was written");
+  assert.ok(!fs.existsSync(path.join(sharedWs, "factory-specs/cfvg-9000997.yaml")), "no spec was written");
   cleanup(root);
 });
 

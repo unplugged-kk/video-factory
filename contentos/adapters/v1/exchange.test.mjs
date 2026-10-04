@@ -8,8 +8,10 @@ import test from "node:test";
 import {
   assertExchangeRoot,
   assertReadinessHost,
+  assertWorkspaceOutsideRoot,
   listenWithRetry,
   loadStateFile,
+  makeRedactor,
   parsePort,
   publicJob,
   safeName,
@@ -23,6 +25,14 @@ test("exchange root must not be, or sit above, the factory repo", () => {
   assert.doesNotThrow(() => assertExchangeRoot(path.join(os.tmpdir(), "vsi-exchange-test", "exchange"), repo));
   // a sibling that merely shares the repo's name as a prefix is not the repo
   assert.doesNotThrow(() => assertExchangeRoot(`${repo}-data`, repo));
+});
+
+test("the workspace may not sit inside the exchange root", () => {
+  const root = path.join(os.tmpdir(), "vsi-exchange-test", "exchange");
+  assert.throws(() => assertWorkspaceOutsideRoot(root, root), /inside the exchange root/);
+  assert.throws(() => assertWorkspaceOutsideRoot(root, path.join(root, "ws")), /inside the exchange root/);
+  assert.doesNotThrow(() => assertWorkspaceOutsideRoot(root, path.join(os.tmpdir(), "vsi-exchange-test", "ws")));
+  assert.doesNotThrow(() => assertWorkspaceOutsideRoot(root, `${root}-ws`), "a sibling that shares the prefix is outside");
 });
 
 test("readiness never listens on every interface", () => {
@@ -122,4 +132,21 @@ test("listenWithRetry survives an address this machine does not have", async () 
   assert.equal(server.listening, false);
   assert.ok(logs.some((l) => /cannot listen on 192\.0\.2\.1/.test(l) && /EADDRNOTAVAIL/.test(l)), logs.join("|"));
   handle.stop();
+});
+
+test("host paths in free text become labels, longest path first", () => {
+  const redact = makeRedactor([["/Users/x", "~"], ["/Users/x/git/factory", "<factory>"], ["/tmp/ex", "<exchange>"]]);
+  assert.equal(
+    redact("tool -o /Users/x/git/factory/workspace/p/video.mp4 -> /tmp/ex/queue/a and /Users/x/.cache"),
+    "tool -o <factory>/workspace/p/video.mp4 -> <exchange>/queue/a and ~/.cache",
+  );
+  assert.equal(redact(undefined), "");
+  assert.equal(makeRedactor([["/", "root"], ["", "none"]])("a/b"), "a/b", "a bare slash is never a path to hide");
+});
+
+test("the public view redacts the error and drops host fields", () => {
+  const redact = makeRedactor([["/Users/x/git/factory", "<factory>"]]);
+  const j = publicJob({ id: "cfvg-1", status: "failed", error: "boom in /Users/x/git/factory/x", dir: "/d", outputPath: "/o" }, redact);
+  assert.deepEqual(j, { id: "cfvg-1", status: "failed", error: "boom in <factory>/x" });
+  assert.deepEqual(publicJob({ id: "cfvg-2", status: "done", error: null }, redact), { id: "cfvg-2", status: "done", error: null });
 });

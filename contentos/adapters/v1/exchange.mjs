@@ -32,6 +32,14 @@ export function assertExchangeRoot(root, repoRoot) {
   }
 }
 
+/** The workspace holds the heartbeat, the derived specs and the render projects; the producer can write into the exchange root, so none of it may live there. */
+export function assertWorkspaceOutsideRoot(root, workspace) {
+  const rel = path.relative(real(root), real(workspace));
+  if (rel === "" || (!rel.startsWith("..") && !path.isAbsolute(rel))) {
+    throw new Error(`workspace ${workspace} is inside the exchange root ${root}, where the producer can write; use a folder outside it`);
+  }
+}
+
 const WILDCARD_HOSTS = new Set(["", "0.0.0.0", "::", "[::]", "*"]);
 
 /** Never every interface (ratified Round 4, Q18a): the Tailscale address, or loopback. */
@@ -51,9 +59,24 @@ export function parsePort(value, fallback) {
   return n;
 }
 
-/** What the control plane may read: no host paths, no run-time scratch. */
-export function publicJob({ _stderr, dir, outputPath, ...job }) {
-  return job;
+/** What the control plane may read: no host paths, no run-time scratch. `redact` scrubs paths out of the error text. */
+export function publicJob({ _stderr, dir, outputPath, ...job }, redact = (s) => s) {
+  return typeof job.error === "string" ? { ...job, error: redact(job.error) } : job;
+}
+
+/**
+ * Replace each known host path with a label, longest first, so an error message from a tool cannot hand the control
+ * plane the layout of this Mac. Both the given and the resolved spelling of a path are covered (macOS /var vs /private/var).
+ */
+export function makeRedactor(entries) {
+  const pairs = [];
+  for (const [p, label] of entries) {
+    if (!p || p.length < 2) continue;
+    pairs.push([p, label]);
+    if (real(p) !== p) pairs.push([real(p), label]);
+  }
+  pairs.sort((a, b) => b[0].length - a[0].length);
+  return (text) => pairs.reduce((t, [p, label]) => t.split(p).join(label), String(text ?? ""));
 }
 
 /** A name that is safe as a single path component, for folders that failed the id check. */
@@ -100,9 +123,13 @@ export function listenWithRetry(server, { port, host, log = () => {}, delays = [
     log(`readiness listening on ${typeof a === "string" ? a : `${a.address}:${a.port}`}`);
   });
   server.on("error", (err) => {
-    if (stopped) return;
+    const why = err.code ?? err.message;
+    if (stopped) {
+      log(`readiness cannot listen on ${host}:${port} (${why})`); // a bind that failed as we stopped is still worth saying
+      return;
+    }
     const wait = delays[Math.min(failures++, delays.length - 1)];
-    log(`readiness cannot listen on ${host}:${port} (${err.code ?? err.message}); retrying in ${wait} ms`);
+    log(`readiness cannot listen on ${host}:${port} (${why}); retrying in ${wait} ms`);
     timer = setTimeout(bind, wait);
     if (unref) timer.unref();
   });
