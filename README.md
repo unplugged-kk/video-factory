@@ -50,6 +50,22 @@ folder and file names, symlinks are ignored, the derived spec is written to `wor
 The readiness `manifest.json` is served on `VIDEO_FACTORY_DASHBOARD_HOST:4300` (`--host`, `--port`; default `127.0.0.1`; `0.0.0.0` is refused). If the
 address is not up yet (Tailscale down) the worker keeps rendering and retries the bind; ContentForge reads "not ready" meanwhile. Tests: `node --test contentos/adapters/v1/*.test.mjs`.
 
+**What a healthy worker is, and what happens when it is not.** Each job runs as a child process group (`contentos production run`), so the worker keeps
+answering readiness while a render runs. It writes a heartbeat every 10 s to `workspace/.factory_worker.heartbeat` (outside the exchange root, since the
+producer can write there); `manifest.json` carries a `worker` block (pid, heartbeatAt, queueDepth, activeJob). Healthy means the process is alive and the
+heartbeat is under 60 s old.
+
+- One worker per workspace: a second start refuses (exit 3) while a live worker's heartbeat is in the file. Stop the worker before running `verify-slice`.
+- After a crash or `kill -9`, the next start stops the pipeline the dead worker left running, then resumes what is in `work/`; finished stages are skipped
+  and artifacts the ledger never recorded as OK are redone. Each takeover counts (`reclaimCount` in the state file); after 3 the job is failed (`reclaim_limit`).
+- A claim in `work/` that nobody works on for 600 s goes back to `queue/`.
+- SIGTERM or Ctrl-C stops the pipeline and leaves the job in `work/` for the next start; the heartbeat file is removed.
+- The core retries a failed voice, compose or render stage twice (after 15 s and 45 s, inside a 360 s cap); QA failures and blocked gates are not retried.
+  ContentForge sees `rendering` until that is over. A hung tool is killed after 600 s (render 1800 s), a hung job after 45 minutes.
+
+Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTORY_CONTENTOS`, `VIDEO_FACTORY_POLL_MS`, `VIDEO_FACTORY_HEARTBEAT_MS`,
+`VIDEO_FACTORY_STALE_MS`, `VIDEO_FACTORY_JOB_TIMEOUT_MS`.
+
 ## Status (measured 2026-10-03, M5 Pro, 24 GB)
 
 | Piece | State |
