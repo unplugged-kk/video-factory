@@ -4,6 +4,7 @@ import html
 import json
 import os
 import shutil
+import signal
 import subprocess
 import time
 from pathlib import Path
@@ -31,11 +32,41 @@ def skill_tool(skill, script):
     raise Blocked(f"skill tool {skill}/{script} not installed")
 
 
-def sh(cmd, cwd=None):
-    r = subprocess.run(cmd, cwd=cwd, env=ENV, capture_output=True, text=True)
-    if r.returncode:
-        raise RuntimeError(f"{' '.join(map(str, cmd))[:120]} -> {r.stderr.strip()[-400:] or r.stdout.strip()[-400:]}")
-    return r.stdout
+SH_TIMEOUT = float(os.environ.get("CONTENTOS_SH_TIMEOUT", 600))        # a hung tool must not hold the lane forever
+RENDER_TIMEOUT = float(os.environ.get("CONTENTOS_RENDER_TIMEOUT", 1800))
+
+
+def _kill_tree(pid):
+    """SIGKILL a process and everything under it (npx -> node -> Chrome); killing only the direct child leaves the rest running."""
+    out = subprocess.run(["ps", "-A", "-o", "pid=,ppid="], capture_output=True, text=True).stdout
+    kids = {}
+    for line in out.splitlines():
+        child, parent = map(int, line.split())
+        kids.setdefault(parent, []).append(child)
+    order, stack = [], [pid]
+    while stack:
+        p = stack.pop()
+        order.append(p)
+        stack.extend(kids.get(p, []))
+    for p in reversed(order):
+        try:
+            os.kill(p, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+
+
+def sh(cmd, cwd=None, timeout=None):
+    limit = timeout or SH_TIMEOUT
+    p = subprocess.Popen(cmd, cwd=cwd, env=ENV, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        out, err = p.communicate(timeout=limit)
+    except subprocess.TimeoutExpired:
+        _kill_tree(p.pid)
+        p.communicate()
+        raise RuntimeError(f"{' '.join(map(str, cmd))[:120]} -> timed out after {limit:.0f}s")
+    if p.returncode:
+        raise RuntimeError(f"{' '.join(map(str, cmd))[:120]} -> {err.strip()[-400:] or out.strip()[-400:]}")
+    return out
 
 
 def dur(path):
@@ -157,7 +188,7 @@ def s_render(ctx):
     hf_q = ctx["spec"].get("_v1_hyperframes_quality")
     if isinstance(hf_q, str) and hf_q.strip():
         cmd.extend(["-q", hf_q.strip()])
-    sh(cmd, cwd=ctx["dir"] / "project")
+    sh(cmd, cwd=ctx["dir"] / "project", timeout=RENDER_TIMEOUT)
     return "hyperframes", [mp4]
 
 

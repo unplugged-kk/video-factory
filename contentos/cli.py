@@ -59,6 +59,15 @@ def cmd_pipeline(a):
     return 0 if all(s.startswith(("OK", "SKIP")) for _, s, _ in rep) else 1
 
 
+def cmd_production(a):
+    """One run of the shared production core: progress on stderr, exactly one JSON result line on stdout."""
+    import json
+    from .production import core
+    result = core.run_until_blocked_or_done(a.spec, approve_private=a.approve_private)
+    print(json.dumps(result.as_json()))
+    return 0 if result.ok else 1
+
+
 def cmd_qa(a):
     res = run_qa(a.video, a.format)
     for c, s, d in res:
@@ -163,6 +172,8 @@ def main():
     pl.add_argument("--allow-paid", action="store_true"); pl.add_argument("--force", action="store_true")
     pl.add_argument("--only"); pl.add_argument("--approve-private", action="store_true", help="grant research/script/production gates (never publish)")
     pl.set_defaults(f=cmd_pipeline)
+    pr = sp.add_parser("production", help="shared production core: retries, failure classes, one JSON result line"); pr.add_argument("action", choices=["run"]); pr.add_argument("spec")
+    pr.add_argument("--approve-private", action="store_true"); pr.set_defaults(f=cmd_production)
     q = sp.add_parser("qa"); q.add_argument("video"); q.add_argument("--format", default="9:16"); q.set_defaults(f=cmd_qa)
     ap = sp.add_parser("approve"); ap.add_argument("content_id"); ap.add_argument("gate"); ap.add_argument("--note", default=""); ap.set_defaults(f=cmd_approve)
     j = sp.add_parser("jev"); j.add_argument("action", choices=["status", "triage"]); j.add_argument("topics", nargs="*"); j.set_defaults(f=cmd_jev)
