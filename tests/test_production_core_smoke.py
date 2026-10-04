@@ -179,6 +179,17 @@ def test_the_scrub_runs_before_every_attempt(ws):
     assert result.ok and seen == [["audio/01.wav", "content.json", "script-lint.json"]]
 
 
+def test_a_killed_render_leaves_no_work_folder_behind(ws):
+    spec = yaml.safe_load(write_spec(ws).read_text())
+    d = make_project(ws)
+    finished("cfvg-1", "brief", "script", "voice", "compose", "render", "qa", "package", "publish")
+    (d / "work-3f2a-killed-render" / "frames").mkdir(parents=True)  # hyperframes' scratch folder, left by a render that was killed
+    (d / "work-3f2a-killed-render" / "frames" / "0001.png").write_bytes(b"x")
+    removed = core.scrub_interrupted("cfvg-1", spec)
+    assert not list(d.glob("work-*")) and any("work-3f2a-killed-render" in r for r in removed)
+    assert len(present(d)) == 7, "the finished artifacts stay"
+
+
 def test_an_ordinary_retry_does_not_blame_a_killed_run(ws):
     spec = write_spec(ws)
     (core.PROJECTS / "cfvg-1" / "audio").mkdir(parents=True)  # what a failed voice try leaves: an empty folder, not an artifact

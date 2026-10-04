@@ -46,6 +46,10 @@ def scrub_interrupted(content_id, spec, project_dir=None):
     with ledger.db() as c:
         done = {r[0] for r in c.execute("SELECT DISTINCT stage FROM runs WHERE content_id=? AND status='OK'", (content_id,))}
     removed, dirty = [], False
+    for scratch in d.glob("work-*"):              # hyperframes' render scratch: a killed render never cleans it up, and nothing is rendering now
+        if scratch.is_dir():
+            shutil.rmtree(scratch, ignore_errors=True)
+            removed.append(f"render:{scratch.name}")
     for st in pipeline.STAGES:
         dirty = dirty or st not in done
         if not dirty:
