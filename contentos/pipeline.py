@@ -102,6 +102,7 @@ def s_compose(ctx):
     if ctx["spec"].get("render") == "mpt":
         return _mpt(mpt.compose, ctx)
     spec, W, H = ctx["spec"], *map(int, ctx["res"])
+    U = min(W, H)                                    # type scales with the short side, so 16:9 is not set in 1920-wide type
     proj = ctx["dir"] / "project"
     (proj / "assets/voice").mkdir(parents=True, exist_ok=True)
     shutil.copy(ROOT / "contentos/templates/gsap.min.js", proj / "gsap.min.js")
@@ -122,8 +123,8 @@ def s_compose(ctx):
         for k, (_, ws, we) in enumerate(wl):
             anim.append(f'tl.set("#w{i}_{k}",{{color:"#fbbf24"}},{t+ws:.2f});tl.set("#w{i}_{k}",{{color:"#fff"}},{t+we:.2f});')
         scenes.append(f'<div class="scene clip" id="s{i}" data-start="{t:.2f}" data-duration="{d}">'
-                      f'<div class="tag">{html.escape(ln.get("tag", f"{i}/{len(spec['script'])}"))}</div>'
-                      f'<h1 id="h{i}">{html.escape(ln["headline"])}</h1><p class="cap">{cap}</p></div>')
+                      f'<div class="head"><div class="tag">{html.escape(ln.get("tag", f"{i}/{len(spec['script'])}"))}</div>'
+                      f'<h1 id="h{i}">{html.escape(ln["headline"])}</h1></div><p class="cap">{cap}</p></div>')
         audios.append(f'<audio id="a{i}" src="./assets/voice/{i:02d}.wav" data-start="{t:.2f}" data-duration="{d}" class="clip"></audio>')
         anim.append(f'tl.fromTo("#s{i}",{{opacity:0}},{{opacity:1,duration:.3}},{t:.2f});'
                     f'tl.fromTo("#h{i}",{{y:60,opacity:0}},{{y:0,opacity:1,duration:.5,ease:"power3.out"}},{t+.1:.2f});'
@@ -135,10 +136,11 @@ def s_compose(ctx):
 <script src="./gsap.min.js"></script>
 <style>*{{margin:0;box-sizing:border-box}}body{{width:{W}px;height:{H}px;overflow:hidden;background:#090a0f;font-family:-apple-system,"Helvetica Neue",sans-serif;color:#fff}}
 #root{{position:relative;width:{W}px;height:{H}px;background:radial-gradient(circle at 50% 20%,#1a1e36,#08090e)}}
-.scene{{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 80px;text-align:center;opacity:0}}
+.scene{{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr) auto;row-gap:40px;padding:120px 70px {int(H*0.16)}px;text-align:center;opacity:0}}
+.head{{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}}
 .tag{{font:700 34px ui-monospace,Menlo,monospace;letter-spacing:3px;color:#a5b4fc;margin-bottom:36px}}
-h1{{font-size:{int(W*0.085)}px;font-weight:900;line-height:1.1;letter-spacing:-1px}}
-.cap{{position:absolute;left:70px;right:70px;bottom:{int(H*0.16)}px;font-size:{int(W*0.058)}px;font-weight:800;line-height:1.25;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.7)}}.cap span{{display:inline-block;color:#fff}}</style></head>
+h1{{font-size:{int(U*0.085)}px;font-weight:900;line-height:1.1;letter-spacing:-1px}}
+.cap{{font-size:{int(U*0.058)}px;font-weight:800;line-height:1.25;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.7)}}.cap span{{display:inline-block;color:#fff}}</style></head>
 <body><div id="root" data-composition-id="root" data-width="{W}" data-height="{H}" data-duration="{total}">
 {''.join(scenes)}{''.join(audios)}</div>
 <script>const tl=gsap.timeline({{paused:true}});{''.join(anim)}
