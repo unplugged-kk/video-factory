@@ -148,6 +148,8 @@ def cmd_factory_worker(a):
         cmd.append("--once")
     if a.port != 4300:
         cmd.extend(["--port", str(a.port)])
+    if a.host:
+        cmd.extend(["--host", a.host])
     return subprocess.call(cmd, cwd=str(root))
 
 
@@ -172,9 +174,10 @@ def main():
     q = sp.add_parser("queue"); q.add_argument("action", choices=["add", "list", "requeue"]); q.add_argument("args", nargs="*")
     q.add_argument("--approve-private", action="store_true"); q.add_argument("--priority", type=int, default=0); q.set_defaults(f=cmd_queue)
     w = sp.add_parser("worker"); w.add_argument("--concurrency", type=int, default=2); w.add_argument("--once", action="store_true", help="drain the queue then exit"); w.set_defaults(f=cmd_worker)
-    fw = sp.add_parser("factory-worker", help="ContentForge v1 queue worker (VIDEO_FACTORY_ROOT)")
+    fw = sp.add_parser("factory-worker", help="ContentForge v1 queue worker (exchange root: VIDEO_FACTORY_ROOT, default ~/.contentos/exchange)")
     fw.add_argument("--once", action="store_true", help="process available jobs then exit")
-    fw.add_argument("--port", type=int, default=4300, help="manifest.json HTTP port for processingReady")
+    fw.add_argument("--port", type=int, default=4300, help="manifest.json HTTP port for processingReady (0 = any free port)")
+    fw.add_argument("--host", help="address for manifest.json: the Tailscale address, default 127.0.0.1; never 0.0.0.0 (VIDEO_FACTORY_DASHBOARD_HOST)")
     fw.set_defaults(f=cmd_factory_worker)
     a = p.parse_args()
     sys.exit(a.f(a) or 0)
