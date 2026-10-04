@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -42,6 +43,19 @@ def test_cmd_never_bills_or_adds_music():
     assert not any(a.startswith("--confirm-") for a in c)
     assert "--bgm-type=none" in c
     assert "--video-script=--evil flag" in c  # `=` form: argparse cannot read script text as a flag
+
+
+def test_render_blocks_when_container_mounts_another_folder(tmp_path, monkeypatch):
+    (tmp_path / "project").mkdir()
+    req = {**mpt.request(SPEC), "audio": "/workspace/projects/t/audio/full.wav"}
+    (tmp_path / "project/mpt-request.json").write_text(json.dumps(req))
+
+    def container_cannot_see_it(argv, timeout=1500):
+        raise RuntimeError("test -f -> exit 1")
+
+    monkeypatch.setattr(mpt, "_run", container_cannot_see_it)
+    with pytest.raises(mpt.Unavailable, match="another folder"):
+        mpt.render({"dir": tmp_path})
 
 
 def test_mpt_lane_has_its_own_compose_sentinel():

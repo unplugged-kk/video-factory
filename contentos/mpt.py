@@ -108,6 +108,11 @@ def compose(ctx):
 def render(ctx):
     d = ctx["dir"]
     req = json.loads((d / "project/mpt-request.json").read_text())
+    try:  # a container started from another checkout still answers HTTP (doctor passes) but sees the wrong workspace
+        _run(["docker", "exec", CONTAINER, "test", "-f", req["audio"]])
+    except RuntimeError:
+        raise Unavailable(f"MPT container cannot see {req['audio']}: it was started from another folder. "
+                          f"docker compose up -d from {ROOT}")
     tid = str(uuid.uuid4())
     res = json.loads(_run(cmd(req, tid)).strip().splitlines()[-1])["result"]
     if not res.get("videos"):
