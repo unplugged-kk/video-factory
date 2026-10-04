@@ -39,6 +39,17 @@ deletes its own artifact so resume never trusts half-built output.
 copies `final-1.mp4` to `video.mp4` and writes `assets-rights.json`. Paid MPT sources and background music are never passed. Add `broll:` to script lines
 for stock-search phrases. See `examples/mpt-black-holes.yaml`.
 
+## ContentForge exchange (v1 worker)
+`./contentos.sh factory-worker` runs the production jobs ContentForge drops into a shared folder. That folder is the **exchange root**:
+data only (`building queue work done failed output state`), default `~/.contentos/exchange`, set with `VIDEO_FACTORY_ROOT`. ContentForge mounts
+that folder and nothing else; never point it at this repo (the worker refuses). Everything in it is untrusted input: the job id comes from the
+folder and file names, symlinks are ignored, the derived spec is written to `workspace/factory-specs/`, and state and manifest carry no host paths.
+
+    VIDEO_FACTORY_DASHBOARD_HOST=<tailscale address> ./contentos.sh factory-worker
+
+The readiness `manifest.json` is served on `VIDEO_FACTORY_DASHBOARD_HOST:4300` (`--host`, `--port`; default `127.0.0.1`; `0.0.0.0` is refused). If the
+address is not up yet (Tailscale down) the worker keeps rendering and retries the bind; ContentForge reads "not ready" meanwhile. Tests: `node --test contentos/adapters/v1/*.test.mjs`.
+
 ## Status (measured 2026-10-03, M5 Pro, 24 GB)
 
 | Piece | State |
