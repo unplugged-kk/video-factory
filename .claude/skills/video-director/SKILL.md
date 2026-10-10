@@ -38,3 +38,6 @@ Scene `direction`: `purpose`, `takeaway`, `treatment`, `technique` (registry ids
 
 ## Never
 Render or publish. Edit the ContentOS builder, `sceneplan.py`, HyperFrames or any existing project. Install global skills or upstream repos. Select candidate, unavailable, reference-only or paid capabilities for normal production. Add motion only to make a scene look busy.
+
+## Where outputs go
+Plans and generated media live outside Git in `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<job-id>/`; finished videos are exported to `$VIDEO_FACTORY_PUBLISH_DIR/ready/` by the pipeline `export` stage. Never commit media. See `docs/STORAGE.md`.

@@ -36,14 +36,14 @@ echo started >> "$FAKE_STAMPS/runs-$id.log"
 [ -n "$FAKE_SLEEP" ] && sleep "$FAKE_SLEEP"
 case "\${FAKE_MODE:-ok}" in
   ok)
-    mkdir -p "$FAKE_WS/projects/$id/project"
-    printf mp4 > "$FAKE_WS/projects/$id/video.mp4"
-    printf '{"width":1080,"height":1920,"fps":30,"duration":3.4}' > "$FAKE_WS/projects/$id/project/hyperframes.json"
+    mkdir -p "$FAKE_WS/jobs/2026/10/$id/project"
+    printf mp4 > "$FAKE_WS/jobs/2026/10/$id/video.mp4"
+    printf '{"width":1080,"height":1920,"fps":30,"duration":3.4}' > "$FAKE_WS/jobs/2026/10/$id/project/hyperframes.json"
     echo '{"ok":true,"failureClass":null,"stage":null,"error":null,"attempts":1,"elapsedS":0.1}' ;;
   transient) echo '{"ok":false,"failureClass":"transient","stage":"render","error":"render failed: chrome died (after 3 attempts)","attempts":3,"elapsedS":65}'; exit 1 ;;
   output) echo '{"ok":false,"failureClass":"output","stage":"qa","error":"qa failed: QA failed: [frozen_frames]","attempts":1,"elapsedS":2}'; exit 1 ;;
   blocked) echo '{"ok":false,"failureClass":"blocked","stage":"voice","error":"voice blocked: no healthy TTS provider","attempts":1,"elapsedS":0}'; exit 1 ;;
-  leak) echo "{\\"ok\\":false,\\"failureClass\\":\\"output\\",\\"stage\\":\\"render\\",\\"error\\":\\"render failed: tool -o $FAKE_WS/projects/$id/video.mp4 -> $HOME/.secret\\",\\"attempts\\":1,\\"elapsedS\\":0}"; exit 1 ;;
+  leak) echo "{\\"ok\\":false,\\"failureClass\\":\\"output\\",\\"stage\\":\\"render\\",\\"error\\":\\"render failed: tool -o $FAKE_WS/jobs/2026/10/$id/video.mp4 -> $HOME/.secret\\",\\"attempts\\":1,\\"elapsedS\\":0}"; exit 1 ;;
   crash) kill -9 $$ ;;
 esac
 `;
@@ -326,7 +326,7 @@ test("host paths in a tool's error never reach the shared folder", async () => {
     const text = fs.readFileSync(path.join(f.root, "state", "cfvg-508.json"), "utf8") + fs.readFileSync(path.join(f.root, "manifest.json"), "utf8");
     assert.ok(!text.includes(f.ws) && !text.includes(fs.realpathSync(f.ws)), "the workspace path leaked");
     assert.ok(!text.includes(os.homedir()), "the home folder leaked");
-    assert.match(f.state("cfvg-508").error, /<workspace>\/projects\/cfvg-508\/video\.mp4 -> ~\/\.secret/);
+    assert.match(f.state("cfvg-508").error, /<workspace>\/jobs\/2026\/10\/cfvg-508\/video\.mp4 -> ~\/\.secret/);
   } finally {
     f.cleanup();
   }

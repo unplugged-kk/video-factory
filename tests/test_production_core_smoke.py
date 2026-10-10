@@ -11,7 +11,7 @@ import pytest
 import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from contentos import ledger, pipeline  # noqa: E402
+from contentos import ledger, pipeline, storage  # noqa: E402
 from contentos.production import core  # noqa: E402
 
 OK = ("OK", "SKIP(resume)")
@@ -20,8 +20,7 @@ OK = ("OK", "SKIP(resume)")
 @pytest.fixture
 def ws(tmp_path, monkeypatch):
     """A private ledger and project folder, so scrubbing and recording never touch the real workspace."""
-    monkeypatch.setattr(ledger, "WS", tmp_path / "ws")
-    monkeypatch.setattr(core, "PROJECTS", tmp_path / "projects")
+    monkeypatch.setenv("VIDEO_FACTORY_WORKSPACE", str(tmp_path / "ws"))   # ledger and jobs/ both live in the workspace
     return tmp_path
 
 
@@ -127,7 +126,7 @@ def test_the_wall_clock_cap_stops_a_retry_that_could_not_finish_in_time(ws):
 
 def make_project(ws, content_id="cfvg-1", with_files=("content.json", "script-lint.json", "audio/01.wav", "project/index.html",
                                                         "video.mp4", "qa.json", "metadata.yaml")):
-    d = core.PROJECTS / content_id
+    d = storage.job_dir(content_id)
     for rel in with_files:
         f = d / rel
         f.parent.mkdir(parents=True, exist_ok=True)
@@ -192,7 +191,7 @@ def test_a_killed_render_leaves_no_work_folder_behind(ws):
 
 def test_an_ordinary_retry_does_not_blame_a_killed_run(ws):
     spec = write_spec(ws)
-    (core.PROJECTS / "cfvg-1" / "audio").mkdir(parents=True)  # what a failed voice try leaves: an empty folder, not an artifact
+    (storage.job_dir("cfvg-1") / "audio").mkdir(parents=True)  # what a failed voice try leaves: an empty folder, not an artifact
     logs = []
     run = scripted(report(("voice", "FAIL: tts flaked")), report(("voice", "OK")))
     result = core.run_until_blocked_or_done(spec, run=run, sleep=lambda s: None, log=logs.append)

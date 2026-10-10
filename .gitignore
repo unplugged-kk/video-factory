@@ -28,3 +28,13 @@ node_modules/
 
 # per-machine Claude Code permissions (not shared)
 .claude/settings.local.json
+
+# generated media and the external storage roots never belong in Git (see docs/STORAGE.md)
+*.mp4
+*.mov
+*.webm
+*.wav
+*.mp3
+*.m4a
+VideoFactory-Workspace/
+Video-Publishing/

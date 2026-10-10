@@ -25,14 +25,14 @@ def test_refuses_paid_source_and_missing_terms():
 
 
 def test_local_materials_only_from_projects(tmp_path, monkeypatch):
-    monkeypatch.setattr(mpt, "PROJECTS", tmp_path / "projects")
-    ok = tmp_path / "projects/a/clip.mp4"
+    monkeypatch.setenv("VIDEO_FACTORY_WORKSPACE", str(tmp_path / "ws"))
+    ok = tmp_path / "ws/jobs/2026/10/a/clip.mp4"
     ok.parent.mkdir(parents=True)
     ok.touch()
     outside = tmp_path / "outside.mp4"
     outside.touch()
     spec = {**SPEC, "mpt": {"source": "local", "materials": [str(ok)]}}
-    assert mpt.request(spec)["materials"] == ["/workspace/projects/a/clip.mp4"]
+    assert mpt.request(spec)["materials"] == ["/workspace/projects/2026/10/a/clip.mp4"]   # the container mounts jobs/ as /workspace/projects
     with pytest.raises(mpt.Unavailable):
         mpt.request({**SPEC, "mpt": {"source": "local", "materials": [str(outside)]}})
 

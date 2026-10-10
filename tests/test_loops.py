@@ -9,7 +9,7 @@ from contentos import jev, ledger, learn  # noqa: E402
 
 
 def _isolate(tmp_path, monkeypatch):
-    monkeypatch.setattr(ledger, "WS", tmp_path)
+    monkeypatch.setenv("VIDEO_FACTORY_WORKSPACE", str(tmp_path))   # the ledger lives in the (external) workspace
 
 
 class FakeJev(BaseHTTPRequestHandler):

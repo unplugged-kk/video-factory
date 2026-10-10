@@ -15,7 +15,7 @@
  * working on for VIDEO_FACTORY_STALE_MS goes back to queue/; a job taken over more than MAX_RECLAIMS times is failed.
  * SIGTERM/SIGINT stop the pipeline and leave the job in work/ for the next start.
  *
- * Test seams: VIDEO_FACTORY_WORKSPACE (default <repo>/workspace; the pipeline must write there too),
+ * Test seams: VIDEO_FACTORY_WORKSPACE (default ~/Desktop/VideoFactory-Workspace, the same as the pipeline; jobs live in jobs/YYYY/MM/<id>),
  * VIDEO_FACTORY_CONTENTOS (the launcher to run), VIDEO_FACTORY_POLL_MS, VIDEO_FACTORY_HEARTBEAT_MS,
  * VIDEO_FACTORY_STALE_MS, VIDEO_FACTORY_JOB_TIMEOUT_MS.
  * Delete with contentos/adapters/v1/ when contract v2 ships.
@@ -71,7 +71,24 @@ const JOB_TIMEOUT_MS = envMs("VIDEO_FACTORY_JOB_TIMEOUT_MS", 45 * 60_000);
 const MAX_RECLAIMS = 3;
 const TAIL_BYTES = 16 * 1024;
 
-const WORKSPACE = path.resolve(process.env.VIDEO_FACTORY_WORKSPACE?.trim() || path.join(REPO_ROOT, "workspace"));
+// Same default as contentos/storage.py: generated work lives OUTSIDE the repo. Python and this worker must agree on it.
+const WORKSPACE = path.resolve(process.env.VIDEO_FACTORY_WORKSPACE?.trim() || path.join(os.homedir(), "Desktop", "VideoFactory-Workspace"));
+/** The job folder is <workspace>/jobs/YYYY/MM/<jobId> (chosen by contentos/storage.py on first use). */
+export function findJobDir(workspace, jobId) {
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(jobId) || jobId.includes("..")) return null;
+  const jobs = path.join(workspace, "jobs");
+  let years = [];
+  try { years = fs.readdirSync(jobs).filter((n) => /^\d{4}$/.test(n)).sort(); } catch { return null; }
+  for (const y of years) {
+    let months = [];
+    try { months = fs.readdirSync(path.join(jobs, y)).filter((n) => /^[01]\d$/.test(n)).sort(); } catch { continue; }
+    for (const m of months) {
+      const p = path.join(jobs, y, m, jobId);
+      try { if (fs.statSync(p).isDirectory()) return p; } catch { /* not here */ }
+    }
+  }
+  return null;
+}
 const CONTENTOS = process.env.VIDEO_FACTORY_CONTENTOS?.trim() || path.join(REPO_ROOT, "contentos.sh");
 const HEARTBEAT_FILE = path.join(WORKSPACE, ".factory_worker.heartbeat");
 
@@ -461,7 +478,7 @@ async function processJob(D, jobId, jobDir) {
     return;
   }
 
-  const proj = path.join(WORKSPACE, "projects", jobId);
+  const proj = findJobDir(WORKSPACE, jobId) ?? path.join(WORKSPACE, "jobs", "missing", jobId);
   const mp4 = path.join(proj, "video.mp4");
   const hyper = path.join(proj, "project/hyperframes.json");
   if (!fs.existsSync(mp4)) {

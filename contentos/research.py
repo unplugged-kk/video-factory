@@ -7,7 +7,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from . import providers
+from . import providers, storage
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = Path("~/.agents/skills/last30days/scripts/last30days.py").expanduser()
@@ -17,7 +17,7 @@ def run(topic, days=30, deep=False):
     if not SCRIPT.exists():
         raise RuntimeError("last30days skill not installed at ~/.agents/skills/last30days")
     slug = re.sub(r"[^a-z0-9]+", "-", topic.lower()).strip("-")[:60]
-    out = ROOT / "workspace/research" / slug
+    out = storage.workspace_root() / "research" / slug
     out.mkdir(parents=True, exist_ok=True)
     env = {**os.environ, "PATH": "/opt/homebrew/bin:" + os.environ["PATH"]}
     cmd = [str(providers.VENV_PY), str(SCRIPT), topic, "--emit", "json", "--no-browser-cookies", "--days", str(days),

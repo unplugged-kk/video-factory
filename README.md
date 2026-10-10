@@ -11,7 +11,7 @@ every stage in a SQLite ledger, and refuses to publish without a gate.
 ./contentos.sh doctor                           # PASS / NOT_INSTALLED / OPTIONAL per provider, with fix commands
 ./contentos.sh route tts                        # which provider wins, and why (local-first policy)
 ./contentos.sh pipeline run examples/youtube-short.yaml --approve-private
-./contentos.sh qa workspace/projects/<id>/video.mp4
+./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/<id>/video.mp4
 ./contentos.sh status                           # recent ledger rows
 ./contentos.sh jev status | jev triage "topic"  # decision layer
 ./contentos.sh recommend <content_id>           # PUBLISH/HOLD/REVISE/ABANDON with reasons
@@ -24,8 +24,8 @@ docker compose up -d                           # container side: MoneyPrinterTur
 ~/.contentos/venv/bin/python -m pytest tests    # 15 tests
 ```
 
-Pipeline: `brief > script > voice > compose > render > qa > package > publish`. Each stage writes an
-artifact under `workspace/projects/<content_id>/` and resumes (skips) if it exists. A failed stage
+Pipeline: `brief > script > voice > compose > render > qa > package > export > publish`. Each stage writes an
+artifact under `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<content_id>/` (outside the repo; default `~/Desktop/VideoFactory-Workspace`; the `export` stage copies validated finals to `~/Desktop/Video-Publishing/ready/`, see [docs/STORAGE.md](docs/STORAGE.md)) and resumes (skips) if it exists. A failed stage
 deletes its own artifact so resume never trusts half-built output.
 
 ## Render lanes
@@ -67,6 +67,14 @@ heartbeat is under 60 s old.
 
 Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTORY_CONTENTOS`, `VIDEO_FACTORY_POLL_MS`, `VIDEO_FACTORY_HEARTBEAT_MS`,
 `VIDEO_FACTORY_STALE_MS`, `VIDEO_FACTORY_JOB_TIMEOUT_MS`.
+
+## Storage rules for every agent
+- Generated files (audio, images, scenes, renders, caches, logs) live **outside Git**, in `$VIDEO_FACTORY_WORKSPACE` (default `~/Desktop/VideoFactory-Workspace`), one folder per job: `jobs/YYYY/MM/<job-id>/`. Never write them into the repo and never `git add` media.
+- Only validated finals go to the publishing library `$VIDEO_FACTORY_PUBLISH_DIR` (default `~/Desktop/Video-Publishing`) via the pipeline `export` stage or `./contentos.sh storage export <job-id>`. Output: `ready/<project>/YYYY/MM/<content>__<job>.mp4` plus a `.publish.json` sidecar. Failed or unvalidated videos are never exported.
+- Optional spec fields that feed the sidecar (never guessed if absent): `project`, `project_name`, `content`, `topic`, `description`, `tags`, `platform_targets`, `language`, `kind` (short|long), `require_audio`.
+- If a configured folder is missing or unwritable, stop and report it. Do not fall back to the repo, and never delete files to free space (`storage cleanup` is dry-run unless the owner passes `--apply`).
+- Schedulers read `ready/`, claim with `python -m contentos.handoff claim`, and own `.state/claims/`; agents do not edit sidecars or claim files.
+- Full guide: [docs/STORAGE.md](docs/STORAGE.md). Check setup with `./contentos.sh storage paths --check`.
 
 ## Status (measured 2026-10-03, M5 Pro, 24 GB)
 

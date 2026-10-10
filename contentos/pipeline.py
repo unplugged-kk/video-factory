@@ -1,5 +1,5 @@
-"""Artifact-first pipeline. Every stage writes a durable file under workspace/projects/<content_id>/
-and one ledger row. Re-running skips stages whose artifact already exists (resume)."""
+"""Artifact-first pipeline. Every stage writes a durable file under <workspace>/jobs/YYYY/MM/<content_id>/
+(the workspace is outside the repository; see contentos/storage.py) and one ledger row. Re-running skips stages whose artifact already exists (resume)."""
 import html
 import json
 import os
@@ -11,13 +11,14 @@ from pathlib import Path
 
 import yaml
 
-from . import ledger, mpt, providers
+from . import export as exporter
+from . import ledger, mpt, providers, storage
 from .qa import probe_video, run_qa
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = [ROOT / "vendor/youtube-agent-skill/skills", Path("~/.claude/skills").expanduser()]
 ENV = {**os.environ, "HYPERFRAMES_PYTHON": str(providers.VENV_PY)}
-STAGES = ["brief", "script", "voice", "compose", "render", "qa", "package", "publish"]
+STAGES = ["brief", "script", "voice", "compose", "render", "qa", "package", "export", "publish"]
 
 
 class Blocked(Exception):
@@ -211,6 +212,15 @@ def s_package(ctx):
     return "yt-package/title", [meta]
 
 
+def s_export(ctx):
+    """Validate the final video and hand it to the publishing library (ready/ + sidecar). Idempotent; a video that fails
+    validation stays in the workspace and never reaches ready/."""
+    res = exporter.export_job(ctx["id"])
+    p = ctx["dir"] / "export-result.json"
+    p.write_text(json.dumps(res, indent=2))
+    return "export", [p]
+
+
 def s_publish(ctx):
     cfg = providers.load("youtube.yaml")["publish"]
     res = ctx["dir"] / "publish-result.json"
@@ -226,9 +236,9 @@ def s_publish(ctx):
 
 
 FN = {"brief": s_brief, "script": s_script, "voice": s_voice, "compose": s_compose, "render": s_render,
-      "qa": s_qa, "package": s_package, "publish": s_publish}
+      "qa": s_qa, "package": s_package, "export": s_export, "publish": s_publish}
 ARTIFACT = {"brief": "content.json", "script": "script-lint.json", "voice": "audio/%02d.wav", "compose": "project/index.html",
-            "render": "video.mp4", "qa": "qa.json", "package": "metadata.yaml", "publish": "publish-result.json"}
+            "render": "video.mp4", "qa": "qa.json", "package": "metadata.yaml", "export": "export-result.json", "publish": "publish-result.json"}
 RENDER_LANES = ("hyperframes", "mpt")
 
 
@@ -237,13 +247,35 @@ def artifact(st, spec):
     return "project/mpt-request.json" if st == "compose" and spec.get("render") == "mpt" else ARTIFACT[st]
 
 
+def _note_stage(d, st, arts):
+    """Record a finished stage in the job manifest (relative paths only). The manifest is a record, never a gate."""
+    try:
+        upd = {"artifacts": {st: [storage.rel(a, d) for a in arts]}}
+        if st == "render":
+            upd["final_output"] = "video.mp4"
+        storage.update_manifest(d, **upd)
+    except (OSError, storage.StorageError):
+        pass
+
+
+def _note_failure(d, st, exc):
+    try:
+        m = storage.read_manifest(d)
+        if m and m["status"] != "failed" and not (st == "export" and m["status"] == "ready"):
+            storage.update_manifest(d, status="failed", failure={"stage": st, "reason": storage.scrub(exc), "at": storage.now_iso()})
+    except (OSError, storage.StorageError):
+        pass
+
+
 def run(spec_path, allow_paid=False, force=False, only=None, approve_private=False):
     spec = yaml.safe_load(Path(spec_path).read_text())
     if spec.get("render", "hyperframes") not in RENDER_LANES:
         raise ValueError(f"render: {spec['render']!r} is not one of {RENDER_LANES}")
     cid = spec["content_id"]
-    d = ROOT / "workspace/projects" / cid
-    d.mkdir(parents=True, exist_ok=True)
+    storage.preflight(publish=True)                 # clear error if a configured folder is missing or read-only; never falls back to the repo
+    d, _manifest = storage.open_job(cid, spec)      # jobs/YYYY/MM/<content_id>/ plus manifest.json on first use
+    if _manifest["status"] != "exported":           # a resumed, already exported job stays exported
+        storage.update_manifest(d, status="running", failure=None)
     W, H = {"9:16": (1080, 1920), "16:9": (1920, 1080)}[spec.get("format", "9:16")]
     ctx = {"id": cid, "dir": d, "spec": spec, "allow_paid": allow_paid, "res": (W, H)}
     if approve_private:  # explicit test shortcut; private/dry-run only
@@ -266,6 +298,7 @@ def run(spec_path, allow_paid=False, force=False, only=None, approve_private=Fal
                 raise Blocked(f"gate {gate} not granted: contentos approve {cid} {gate}")
             prov, arts = FN[st](ctx)
             ledger.record(rid, cid, st, prov, "OK", t0, arts)
+            _note_stage(d, st, arts)
             report.append((st, "OK", time.time() - t0))
         except Blocked as e:
             art.unlink(missing_ok=True)
@@ -275,6 +308,7 @@ def run(spec_path, allow_paid=False, force=False, only=None, approve_private=Fal
         except Exception as e:
             art.unlink(missing_ok=True)  # never leave a half-built artifact that resume would trust
             ledger.record(rid, cid, st, "-", "FAIL", t0, error=str(e))
+            _note_failure(d, st, e)
             report.append((st, f"FAIL: {e}", time.time() - t0))
             break
     return rid, report

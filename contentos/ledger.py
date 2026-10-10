@@ -3,9 +3,9 @@ import json
 import sqlite3
 import time
 import uuid
-from pathlib import Path
 
-WS = Path(__file__).resolve().parent.parent / "workspace"
+from . import storage
+
 DDL = """CREATE TABLE IF NOT EXISTS runs(
  run_id TEXT, content_id TEXT, stage TEXT, provider TEXT, target TEXT,
  start REAL, end REAL, status TEXT, cash_cost REAL, artifacts TEXT, error TEXT, retries INT);
@@ -19,8 +19,10 @@ CREATE TABLE IF NOT EXISTS video_metrics(content_id TEXT, platform TEXT, views I
 
 
 def db():
-    WS.mkdir(exist_ok=True)
-    c = sqlite3.connect(WS / "ledger.db")
+    ws = storage.workspace_root()
+    if not ws.is_dir():
+        storage.ensure_dir(ws, "workspace")
+    c = sqlite3.connect(ws / "ledger.db")
     c.executescript(DDL)
     return c
 

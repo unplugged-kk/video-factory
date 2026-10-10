@@ -16,7 +16,7 @@ The three tools:
 ## 2. What each system is (verified by reading code and running tests, 2026-10-03, unless marked unverified)
 
 **contentos** - local-first YouTube pipeline on an Apple Silicon Mac. Python CLI, no server/API yet.
-- Stages: `brief > script > voice > compose > render > qa > package > publish`. Each stage writes an artifact under `workspace/projects/<id>/` and resumes if it exists.
+- Stages: `brief > script > voice > compose > render > qa > package > export > publish`. Each stage writes an artifact under `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<id>/` (external; see docs/STORAGE.md) and resumes if it exists.
 - SQLite ledger (`workspace-samples/ledger-schema.sql`), approval gates (SCRIPT_APPROVED before voice, PRODUCTION_APPROVED before render), local-first provider routing with paid providers blocked by default, 9 ffprobe/ffmpeg QA checks, a SQLite job queue and worker, a read-only dashboard on :4310.
 - Voice is Kokoro (local). `publish` is DRY_RUN only: there is no YouTube uploader.
 - It has a "Jev" adapter that calls ContentForge's decision API, but that only works with a pasted session cookie (ContentForge answers 401 otherwise).
@@ -63,3 +63,11 @@ The three tools:
 3. A phased rollout where every phase ships and verifies on its own.
 4. The five riskiest assumptions and a cheap test for each.
 5. Anything in the attached files that contradicts what I wrote above.
+
+## Storage rules for every agent
+- Generated files (audio, images, scenes, renders, caches, logs) live **outside Git**, in `$VIDEO_FACTORY_WORKSPACE` (default `~/Desktop/VideoFactory-Workspace`), one folder per job: `jobs/YYYY/MM/<job-id>/`. Never write them into the repo and never `git add` media.
+- Only validated finals go to the publishing library `$VIDEO_FACTORY_PUBLISH_DIR` (default `~/Desktop/Video-Publishing`) via the pipeline `export` stage or `./contentos.sh storage export <job-id>`. Output: `ready/<project>/YYYY/MM/<content>__<job>.mp4` plus a `.publish.json` sidecar. Failed or unvalidated videos are never exported.
+- Optional spec fields that feed the sidecar (never guessed if absent): `project`, `project_name`, `content`, `topic`, `description`, `tags`, `platform_targets`, `language`, `kind` (short|long), `require_audio`.
+- If a configured folder is missing or unwritable, stop and report it. Do not fall back to the repo, and never delete files to free space (`storage cleanup` is dry-run unless the owner passes `--apply`).
+- Schedulers read `ready/`, claim with `python -m contentos.handoff claim`, and own `.state/claims/`; agents do not edit sidecars or claim files.
+- Full guide: [docs/STORAGE.md](docs/STORAGE.md in the repo). Check setup with `./contentos.sh storage paths --check`.

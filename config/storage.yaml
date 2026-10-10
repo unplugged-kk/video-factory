@@ -1,0 +1,25 @@
+# Where generated files live. Environment variables win over this file; this file wins over the defaults.
+#   VIDEO_FACTORY_WORKSPACE    generated work (default ~/Desktop/VideoFactory-Workspace)
+#   VIDEO_FACTORY_PUBLISH_DIR  hand-off library for schedulers (default ~/Desktop/Video-Publishing)
+#   VIDEO_FACTORY_CACHE_DIR    optional shared cache (default <workspace>/shared-cache)
+#   VIDEO_FACTORY_EXPORT_MODE  nested | flat
+# Paths must be absolute (~ and $VARS are expanded) and outside this repository. Leave null to use the defaults.
+# Nothing is ever deleted automatically: cleanup is `contentos storage cleanup` (dry run) and `--apply`.
+workspace: null
+publish_dir: null
+cache_dir: null
+staging_dir: null          # must be on the same filesystem as the publishing directory; default <publish>/.staging
+
+export:
+  mode: nested             # nested: ready/<project>/YYYY/MM/   flat: ready/ (for schedulers that need one folder)
+
+validation:
+  require_audio: true      # a job can override with `require_audio: false` in its spec
+
+retention:
+  intermediate_days: 30    # exported jobs: scratch paths below become removable after this many days
+  intermediate_paths:      # relative to the job folder; the final video is never removed
+    - temporary
+    - project/work-*
+  failed_days: null        # null = keep failed jobs and their diagnostics until you decide
+  staging_stale_minutes: 60

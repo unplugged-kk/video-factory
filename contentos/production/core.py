@@ -8,9 +8,8 @@ from pathlib import Path
 
 import yaml
 
-from .. import ledger, pipeline
+from .. import ledger, pipeline, storage
 
-PROJECTS = pipeline.ROOT / "workspace/projects"
 TRANSIENT_STAGES = ("voice", "compose", "render")   # the stages that shell out to flaky tools (TTS, lint, headless Chrome)
 RETRY_BACKOFF = (15, 45)                             # seconds before retry 1 and 2: three tries in all
 WALL_CLOCK_CAP = 360                                 # seconds from the first try; keeps a retried render inside ContentForge's ~7 minute window
@@ -42,7 +41,9 @@ def scrub_interrupted(content_id, spec, project_dir=None):
     """Resume trusts any artifact it finds, and a kill leaves artifacts behind: compose writes index.html and then lints for
     seconds, voice writes a wav under ffmpeg. Keep an artifact only if the ledger recorded its stage OK and every stage
     before it; anything later is redone. Returns the artifacts it removed."""
-    d = Path(project_dir) if project_dir else PROJECTS / content_id
+    d = Path(project_dir) if project_dir else storage.find_job_dir(content_id)
+    if d is None:
+        return []                                   # no job folder yet: nothing a killed run could have left behind
     with ledger.db() as c:
         done = {r[0] for r in c.execute("SELECT DISTINCT stage FROM runs WHERE content_id=? AND status='OK'", (content_id,))}
     removed, dirty = [], False

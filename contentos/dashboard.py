@@ -8,11 +8,28 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import jev, ledger, providers
+from . import jev, ledger, providers, storage
 from .pipeline import STAGES, artifact
 
 ROOT = Path(__file__).resolve().parent.parent
-PROJ = ROOT / "workspace/projects"
+
+
+def _job_dirs():
+    """Job folders in the external workspace, plus not-yet-migrated projects from the old in-repo location (read-only)."""
+    seen = {}
+    jobs = storage.jobs_root()
+    for p in sorted(jobs.glob("[0-9][0-9][0-9][0-9]/[0-1][0-9]/*")) if jobs.is_dir() else []:
+        if p.is_dir():
+            seen[p.name] = p
+    legacy = storage.REPO / "workspace" / "projects"
+    for p in sorted(legacy.glob("*")) if legacy.is_dir() else []:
+        if p.is_dir() and p.name not in seen:
+            seen[p.name] = p
+    return [seen[k] for k in sorted(seen)]
+
+
+def _job_dir(cid):
+    return storage.find_job_dir(cid) or storage.legacy_job_dir(cid) if storage.valid_job_id(cid) else None
 SERVE = {"video.mp4": "video/mp4", "qa.json": "application/json", "script.md": "text/markdown",
          "metadata.yaml": "text/plain", "publish-result.json": "application/json", "script-lint.json": "application/json"}
 _cache = {"t": 0, "providers": None, "jev": None}
@@ -44,7 +61,7 @@ def state():
         appr.setdefault(cid, {})[gate] = {"by": by, "at": at}
     decs = c.execute("SELECT type, subject, decision, source, reasons, ts FROM decisions ORDER BY ts DESC LIMIT 25").fetchall()
     out = []
-    for d in sorted(p for p in PROJ.glob("*") if p.is_dir()) if PROJ.exists() else []:
+    for d in _job_dirs():
         cid, sts = d.name, contents.get(d.name, {})
         meta = json.loads((d / "content.json").read_text()) if (d / "content.json").exists() else {}
         stages = []
@@ -88,8 +105,9 @@ class H(BaseHTTPRequestHandler):
             return self._send(200, json.dumps(state()).encode(), "application/json")
         m = re.fullmatch(r"/media/([\w.-]+)/([\w.-]+)", self.path)
         if m and m.group(2) in SERVE and "/" not in m.group(1) and m.group(1) not in (".", ".."):
-            f = PROJ / m.group(1) / m.group(2)
-            if f.is_file():
+            jd = _job_dir(m.group(1))
+            f = jd / m.group(2) if jd else None
+            if f is not None and f.is_file():
                 data, ctype = f.read_bytes(), SERVE[m.group(2)]
                 rng = re.match(r"bytes=(\d+)-(\d*)", self.headers.get("Range", ""))
                 if rng:

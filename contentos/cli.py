@@ -2,7 +2,6 @@
 import argparse
 import sys
 
-import yaml
 
 from . import ledger, providers
 from .qa import run_qa
@@ -200,6 +199,8 @@ def main():
     q = sp.add_parser("queue"); q.add_argument("action", choices=["add", "list", "requeue"]); q.add_argument("args", nargs="*")
     q.add_argument("--approve-private", action="store_true"); q.add_argument("--priority", type=int, default=0); q.set_defaults(f=cmd_queue)
     w = sp.add_parser("worker"); w.add_argument("--concurrency", type=int, default=2); w.add_argument("--once", action="store_true", help="drain the queue then exit"); w.set_defaults(f=cmd_worker)
+    from . import storage_cli
+    storage_cli.register(sp)
     fw = sp.add_parser("factory-worker", help="ContentForge v1 queue worker (exchange root: VIDEO_FACTORY_ROOT, default ~/.contentos/exchange)")
     fw.add_argument("--once", action="store_true", help="process available jobs then exit")
     fw.add_argument("--port", type=int, default=4300, help="manifest.json HTTP port for processingReady (0 = any free port)")

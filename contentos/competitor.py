@@ -7,7 +7,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from . import providers
+from . import storage
 
 ROOT = Path(__file__).resolve().parent.parent
 AR = os.path.expanduser("~/.local/bin/agent-reach")
@@ -45,7 +45,7 @@ def analyze(url):
 
 
 def run(urls):
-    out = ROOT / "workspace/research"; out.mkdir(parents=True, exist_ok=True)
+    out = storage.workspace_root() / "research"; out.mkdir(parents=True, exist_ok=True)
     rows = []
     for u in urls:
         try:

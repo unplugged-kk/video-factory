@@ -5,7 +5,7 @@ import statistics as st
 from collections import defaultdict
 from pathlib import Path
 
-from . import jev, ledger
+from . import jev, ledger, storage
 
 MIN_N = 5          # below this, report 'insufficient_data' rather than a verdict
 ROOT = Path(__file__).resolve().parent.parent
@@ -95,7 +95,7 @@ def packaging_report():
 
 # LOOP 3 + 10: per-video recommendation, publish stays gated -------------------------------
 def recommend(content_id, use_jev=False):
-    d = ROOT / "workspace/projects" / content_id
+    d = storage.find_job_dir(content_id) or storage.legacy_job_dir(content_id) or (storage.jobs_root() / content_id)
     reasons, rec = [], "HOLD"
     qa = d / "qa.json"
     if not qa.exists():

@@ -9,9 +9,15 @@ import tomllib
 import uuid
 from pathlib import Path
 
+from . import storage
+
 ROOT = Path(__file__).resolve().parent.parent
 MPT_DIR = ROOT / "vendor/MoneyPrinterTurbo"
-PROJECTS = ROOT / "workspace/projects"   # mounted read-only at /workspace/projects in the container
+CONTAINER_PROJECTS = "/workspace/projects"   # the workspace jobs/ folder, mounted read-only here in the container
+
+
+def projects_root():
+    return storage.jobs_root()
 CONTAINER = "moneyprinterturbo-api"
 # The only sources contentos will pass. MPT has more (wavespeed, seedance, ofox, ...) that bill per call.
 LICENSE = {
@@ -42,14 +48,14 @@ def request(spec):
     terms = m.get("terms") or [t for ln in lines if (t := ln.get("broll") or ln.get("headline"))] or spec.get("tags", [])
     materials = []
     if source == "local":
-        base = PROJECTS.resolve()
+        base = projects_root().resolve()
         for p in m.get("materials") or []:
             f = (ROOT / p).resolve()
             if not f.is_relative_to(base):
-                raise Unavailable(f"local material {p} must live under workspace/projects/ (all the container can see)")
+                raise Unavailable(f"local material {p} must live under the workspace jobs/ folder (all the container can see)")
             if not f.is_file():
                 raise Unavailable(f"local material not found: {p}")
-            materials.append(f"/workspace/projects/{f.relative_to(base).as_posix()}")
+            materials.append(f"{CONTAINER_PROJECTS}/{f.relative_to(base).as_posix()}")
         if not materials:
             raise Unavailable("mpt.source=local needs mpt.materials")
     elif not terms:
@@ -101,7 +107,8 @@ def compose(ctx):
     _run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(full)])
     out = d / "project/mpt-request.json"
     out.parent.mkdir(exist_ok=True)
-    out.write_text(json.dumps({**req, "audio": f"/workspace/projects/{ctx['id']}/audio/full.wav"}, indent=2))
+    rel_job = d.resolve().relative_to(projects_root().resolve()).as_posix()
+    out.write_text(json.dumps({**req, "audio": f"{CONTAINER_PROJECTS}/{rel_job}/audio/full.wav"}, indent=2))
     return [full, out]  # the sentinel is written last
 
 
