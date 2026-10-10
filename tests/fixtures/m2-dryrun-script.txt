@@ -1,0 +1,13 @@
+On its own, an AI chat model only writes text. So how does an AI agent check the weather, or send an email?
+
+Here's the trick. With your question, the app gives the model a menu of tools: each has a name and a plain description.
+
+Ask: do I need a jacket in Austin? The model doesn't run anything. It writes out a request: use the weather tool, for Austin.
+
+The app reads that request and does the real work: it asks a weather service, and gets an answer.
+
+The app hands that answer back to the model, as another message. Now the model can reply: yes, take a jacket.
+
+That's the loop: the model asks, the app acts, the model reads the result. Sometimes it repeats before the final answer.
+
+Next: what happens when a tool call goes wrong?

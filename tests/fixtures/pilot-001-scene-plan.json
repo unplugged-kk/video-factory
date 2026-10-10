@@ -1,0 +1,29 @@
+{
+  "schema": "sceneplan/1",
+  "title": "What Happens When an AI Agent Uses a Tool?",
+  "note": "Scenes are anchored to narration words (starts_at), never to guessed seconds. Times are resolved from the real audio by contentos.production.sceneplan.resolve().",
+  "scenes": [
+    {"id": "hook", "title": "Hook", "starts_at": 0,
+     "visual": "Hook text 'Your AI model never runs a tool.' appears at frame 0; 'never' turns red; at 'It only asks.' the line dims and 'It only asks.' lands in amber while the MODEL node and an amber request packet pop in.",
+     "transition": "Cold open on text (no intro animation); slow camera push-in",
+     "caption_note": "hidden (hook text is the caption)"},
+    {"id": "goal-tools", "title": "1. A goal, plus tools", "starts_at": "here's the loop",
+     "visual": "Goal card ('Should I bring a jacket in Austin?') feeds the MODEL; tool list card appears; name, description and argument columns highlight in turn as they are spoken.",
+     "transition": "Hook text dissolves; kicker '1 / A GOAL, PLUS TOOLS' slides in; camera pans toward the model and tool list"},
+    {"id": "request", "title": "2. The model asks", "starts_at": "the model picks one",
+     "visual": "get_weather row is selected, others dim; tool list is replaced by an ILLUSTRATIVE tool_use JSON block; name and input lines highlight; header badge 'just text' pulses at 'a description of a call'. Amber request packet appears at the MODEL.",
+     "transition": "Tool list cross-fades into JSON; camera eases in"},
+    {"id": "run", "title": "3. Your app runs it", "starts_at": "in a typical setup",
+     "visual": "YOUR APP and EXTERNAL SYSTEM nodes join the stage; request packet travels MODEL to YOUR APP to EXTERNAL SYSTEM; terminal panel logs the illustrative call; API / DB / SHELL chips light on their words.",
+     "transition": "Nodes and connectors draw in; camera pans toward the external system"},
+    {"id": "result", "title": "4. The result comes back", "starts_at": "the result goes back",
+     "visual": "Terminal logs the response; green result packet travels back to the MODEL; tool_result JSON replaces the terminal, with the matching id highlighted; then a fork 'call another tool / give a final answer' selects 'final answer' and shows the reply.",
+     "transition": "Packet return path mirrors the outbound path; camera settles"},
+    {"id": "loop", "title": "The loop", "starts_at": "ask run observe decide",
+     "visual": "Actors dissolve; a four-node ring ASK / RUN / OBSERVE / DECIDE draws itself, each node lighting on its spoken word; camera pulls back; 'AGENT' appears in the centre.",
+     "transition": "Stage wipes to the ring; camera pull-back reveals the whole loop"},
+    {"id": "cta", "title": "Next", "starts_at": "next up what happens",
+     "visual": "Ring fades; end card 'UP NEXT: What happens when a tool call fails?' with a 'Watch next' pill.",
+     "transition": "Ring dissolves into end card; end card holds to the last frame"}
+  ]
+}

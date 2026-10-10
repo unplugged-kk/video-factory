@@ -1,0 +1,207 @@
+{
+  "schema": "sceneplan/1",
+  "title": "What Happens When an AI Agent Uses a Tool?",
+  "note": "M2 dry run (no render). Scenes are anchored to narration words, never to guessed seconds. Times in the estimated storyboard are words / 2.5 per second.",
+  "brief": {
+    "audience": "General technology learners; no programming knowledge assumed",
+    "takeaway": "An AI agent does not run tools itself: the model writes a request, the app carries it out, and the result goes back to the model.",
+    "arc": ["hook", "setup", "mechanism", "example", "recap", "cta"],
+    "tone": "clear, friendly, a little surprising; never hype",
+    "personality": "calm-precise",
+    "renderer": "hyperframes",
+    "opt_in": []
+  },
+  "scenes": [
+    {
+      "id": "hook", "title": "Hook", "starts_at": 0,
+      "visual": "Calm plain background. The line 'An AI chat model only writes text.' is already on screen at frame 0 and holds. At 'So how does' a second line, 'So how does an agent act?', fades in beneath it.",
+      "transition": "Cold open on the text, no intro animation. Exit: cross-dissolve into the diagram.",
+      "caption_note": "Hook text is the caption; word-synced captions are hidden in this scene.",
+      "direction": {
+        "purpose": "hook",
+        "takeaway": "An AI model only writes text; something else must do the real work.",
+        "treatment": "text",
+        "focal": "first headline line",
+        "technique": ["hf.native:html-svg-css"],
+        "why": "A held statement lets the contradiction land (a model that only writes text, yet agents act); one cue-timed second line adds the question without competing with it. A diagram here would explain before the viewer cares.",
+        "motion": {"primary": "second line fades in once, on its spoken cue", "ambient": "none"},
+        "cues": [{"at": "So how does", "do": "second headline line fades in"}],
+        "camera": "hold",
+        "exit": "cross-dissolve into the diagram",
+        "text_zone": "centre, inside the title-safe box",
+        "reframe": {
+          "16:9": "Two headline lines left-aligned in the middle third, generous empty space to the right.",
+          "9:16": "The same two lines stacked in the upper-middle; the lower caption band stays empty."
+        },
+        "verify": ["'Only writes text' is true of a text chat model; some models also produce images or audio, which is why the wording says 'AI chat model'."],
+        "checks": ["phone-legible", "cue-sync<=2f", "no-overshoot", "safe-zone"]
+      }
+    },
+    {
+      "id": "menu", "title": "The tool menu", "starts_at": "here's the trick",
+      "visual": "Static concept diagram. Left: a MODEL box. Right: an APP box. Between them a card titled TOOLS lists three generic tools, each with a name and a one-line description (Weather: looks up the weather. Email: sends a message. Files: opens a file). Rounded shapes, warm palette, no brand marks.",
+      "transition": "Cross-dissolve in from the hook text. The whole diagram is present from the start of the scene and holds.",
+      "caption_note": "Word-synced captions in the bottom band; menu text is at least as large as the captions so it can be read at a glance.",
+      "direction": {
+        "purpose": "setup",
+        "takeaway": "The app gives the model a menu of tools, each with a name and description.",
+        "treatment": "diagram",
+        "focal": "the TOOLS card",
+        "technique": ["hf.native:html-svg-css"],
+        "substituted_from": "treatment:handdrawn-p5brush",
+        "why": "The director preferred a hand-drawn look to feel friendly to non-technical learners, but p5.brush is a candidate awaiting owner review, so the scene uses the native SVG treatment with rounded shapes and a warm palette. No motion: the viewer needs to read three names and descriptions. If p5.brush is later promoted, this is the first scene to retry.",
+        "motion": {"primary": "none: held concept diagram (MODEL, APP, three-item TOOLS card)", "ambient": "none"},
+        "camera": "hold",
+        "exit": "cross-dissolve; the stage persists into the next scene",
+        "text_zone": "diagram inside the title-safe box; labels never under the caption band",
+        "fallback": "hf.native:html-svg-css",
+        "reframe": {
+          "16:9": "MODEL left, APP right, TOOLS card centred between and above them.",
+          "9:16": "MODEL on top, TOOLS card in the middle, APP below; the same relationships read top to bottom."
+        },
+        "verify": ["'The app gives the model a menu of tools with names and descriptions' was checked against Anthropic's tool-use overview (the model decides based on the request and each tool's description); wording in other providers' docs is unchecked."],
+        "checks": ["phone-legible", "safe-zone", "static-hold-readable"]
+      }
+    },
+    {
+      "id": "request", "title": "The model asks", "starts_at": "ask do i need a jacket",
+      "visual": "Same stage. The TOOLS card dims. A small question chip 'Do I need a jacket in Austin?' sits at the MODEL. At 'It writes out a request' a short request card appears beside the MODEL: 'use: Weather / place: Austin'. Nothing else moves; the APP box stays quiet.",
+      "transition": "Same stage continues; the TOOLS card dims by cross-fade at the scene start.",
+      "caption_note": "Word-synced captions in the bottom band; the request card text is at least caption size.",
+      "direction": {
+        "purpose": "mechanism",
+        "takeaway": "The model does not run the tool; it writes out a request for it.",
+        "treatment": "text",
+        "focal": "the request card",
+        "technique": ["hf.native:html-svg-css"],
+        "why": "One card appearing on the words 'writes out a request' ties the idea to its sound; moving anything else would split attention from the single new object.",
+        "motion": {"primary": "request card appears once, on its spoken cue; everything else holds", "ambient": "none"},
+        "cues": [{"at": "It writes out a request", "do": "request card appears beside the MODEL"}],
+        "camera": "hold",
+        "exit": "request card stays; connectors draw in the next scene",
+        "text_zone": "request card inside the title-safe box, clear of the caption band",
+        "reframe": {
+          "16:9": "Request card to the right of the MODEL, pointing toward the APP.",
+          "9:16": "Request card directly below the MODEL, above the APP."
+        },
+        "verify": ["The real request is a structured block (a tool name plus its inputs), not a sentence; the on-screen card must stay a short labelled card and the narration says 'writes out a request', not 'plain English'."],
+        "checks": ["phone-legible", "cue-sync<=2f", "no-overshoot", "safe-zone"]
+      }
+    },
+    {
+      "id": "run", "title": "The app does the work", "starts_at": "the app reads that request",
+      "visual": "Same stage, a SERVICE box appears at the far end (weather service). On 'reads that request' a line draws from the request card to the APP. On 'asks a weather service' a line draws from the APP to the SERVICE. On 'gets an answer' a return line draws from the SERVICE back to the APP.",
+      "transition": "A SERVICE box is present at scene start (cross-fade); connectors draw on their cues.",
+      "caption_note": "Word-synced captions in the bottom band; box labels at least caption size.",
+      "direction": {
+        "purpose": "mechanism",
+        "takeaway": "The app carries out the request and gets the real answer from a service.",
+        "treatment": "diagram",
+        "focal": "the line currently being drawn",
+        "technique": ["hf.rule:svg-path-draw", "hf.native:html-svg-css"],
+        "why": "The order of hand-offs is the lesson, so each connector draws exactly when its step is spoken; a static diagram would hide the sequence. Each draw is one segment on its own cue, not the rule's overlapping stagger, so narration controls the timing.",
+        "motion": {"primary": "three connector lines draw on, one per spoken step", "ambient": "none"},
+        "cues": [
+          {"at": "reads that request", "do": "line draws from the request card to the APP"},
+          {"at": "asks a weather service", "do": "line draws from the APP to the SERVICE"},
+          {"at": "gets an answer", "do": "return line draws from the SERVICE to the APP"}
+        ],
+        "camera": "hold",
+        "exit": "lines stay drawn; the next scene continues the return path",
+        "text_zone": "diagram inside the title-safe box, clear of the caption band",
+        "fallback": "hf.native:html-svg-css",
+        "reframe": {
+          "16:9": "Flow runs left to right: request card, APP, SERVICE; the return line curves back under the outbound line.",
+          "9:16": "Flow runs top to bottom with the return line on the right side; labels stay on the left."
+        },
+        "verify": ["'The app does the real work' holds for client tools. Provider-hosted server tools (for example web search or code execution) run on the provider's side, so decide whether a short on-screen note or narration caveat is wanted for accuracy."],
+        "checks": ["phone-legible", "cue-sync<=2f", "no-overshoot", "safe-zone"]
+      }
+    },
+    {
+      "id": "result", "title": "The answer goes back", "starts_at": "the app hands that answer back",
+      "visual": "A line draws from the APP back to the MODEL (mirroring the outbound path, because coming back is the idea). An answer card labelled 'example data: 12 degrees, cold' appears at the MODEL. At 'take a jacket' a reply card 'Yes, take a jacket.' appears under it.",
+      "transition": "Continues the same stage; no scene-level transition effect.",
+      "caption_note": "Word-synced captions in the bottom band; 'example data' label is always visible on the answer card.",
+      "direction": {
+        "purpose": "example",
+        "takeaway": "The answer goes back to the model as another message, so it can finish its reply.",
+        "treatment": "diagram",
+        "focal": "the answer card, then the reply card",
+        "technique": ["hf.rule:svg-path-draw", "hf.native:html-svg-css"],
+        "why": "The return line mirrors the outbound path because 'coming back' is the point; the two cards each appear on their own words so the viewer sees answer first, reply second.",
+        "motion": {"primary": "return line draws to the MODEL on its cue; answer card then reply card appear on theirs", "ambient": "none"},
+        "cues": [
+          {"at": "hands that answer back", "do": "return line draws from the APP to the MODEL and the answer card appears"},
+          {"at": "take a jacket", "do": "reply card appears under the answer card"}
+        ],
+        "camera": "hold",
+        "exit": "everything holds into the recap",
+        "text_zone": "cards inside the title-safe box, clear of the caption band",
+        "fallback": "hf.native:html-svg-css",
+        "reframe": {
+          "16:9": "Return line runs right to left under the outbound lines; answer and reply cards stack beside the MODEL.",
+          "9:16": "Return line runs bottom to top on the left side; answer and reply cards stack under the MODEL."
+        },
+        "verify": [
+          "The weather values on screen are illustrative and must stay labelled 'example data'.",
+          "'The result goes back as another message' matches Anthropic's tool-use overview (a follow-up message carrying a result tied to the original request)."
+        ],
+        "checks": ["phone-legible", "cue-sync<=2f", "no-overshoot", "safe-zone", "labeled-illustrative"]
+      }
+    },
+    {
+      "id": "loop", "title": "The loop", "starts_at": "that's the loop",
+      "visual": "The stage clears to a three-step loop diagram: MODEL ASKS, APP ACTS, MODEL READS, joined by arrows. Each arrow draws on its spoken step; labels do not move once shown. The final arrow closes the loop.",
+      "transition": "Cross-dissolve from the example stage to the loop diagram.",
+      "caption_note": "Word-synced captions in the bottom band; step labels are at least caption size.",
+      "direction": {
+        "purpose": "recap",
+        "takeaway": "An agent loops: the model asks, the app acts, the model reads the result.",
+        "treatment": "diagram",
+        "focal": "the arrow being drawn",
+        "technique": ["hf.rule:svg-path-draw", "hf.native:html-svg-css"],
+        "why": "A recap must be rememberable: three labels that stay put, with arrows that draw on the three spoken verbs, give the viewer the loop as a shape they can repeat.",
+        "motion": {"primary": "three loop arrows draw on their spoken steps; labels stay still", "ambient": "none"},
+        "cues": [
+          {"at": "the model asks", "do": "first arrow draws into MODEL ASKS"},
+          {"at": "the app acts", "do": "second arrow draws into APP ACTS"},
+          {"at": "the model reads the result", "do": "third arrow draws and closes the loop"}
+        ],
+        "camera": "hold",
+        "exit": "cross-dissolve to the end card",
+        "text_zone": "diagram inside the title-safe box, clear of the caption band",
+        "fallback": "hf.native:html-svg-css",
+        "reframe": {
+          "16:9": "Three steps in a row with a return arrow underneath closing the loop.",
+          "9:16": "Three steps stacked top to bottom with the return arrow along the right edge."
+        },
+        "verify": ["'Sometimes it repeats before the final answer': the tool-use overview shows one round trip and defers loop mechanics to a separate page, so confirm that page before keeping the claim."],
+        "checks": ["phone-legible", "cue-sync<=2f", "no-overshoot", "safe-zone", "static-hold-readable"]
+      }
+    },
+    {
+      "id": "next", "title": "Next", "starts_at": "next what happens",
+      "visual": "Static end card with one line: 'Next: what happens when a tool call goes wrong?'.",
+      "transition": "Cross-dissolve from the loop. The card holds to the last frame.",
+      "caption_note": "The end-card line is the caption; word-synced captions hidden in this scene.",
+      "direction": {
+        "purpose": "cta",
+        "takeaway": "Next question: what happens when a tool call goes wrong?",
+        "treatment": "static",
+        "focal": "the end-card line",
+        "technique": ["hf.native:html-svg-css"],
+        "why": "A held card gives the question room; any motion would only delay the end.",
+        "motion": {"primary": "none: static end card", "ambient": "none"},
+        "camera": "hold",
+        "exit": "holds to the last frame",
+        "text_zone": "centre, inside the title-safe box",
+        "reframe": {
+          "16:9": "One line centred, large, with empty space around it.",
+          "9:16": "The same line centred in the upper-middle, clear of the lower caption band."
+        },
+        "checks": ["phone-legible", "safe-zone", "static-hold-readable"]
+      }
+    }
+  ]
+}

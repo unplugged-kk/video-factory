@@ -1,0 +1,1809 @@
+{
+  "schema": "capabilities/1",
+  "note": "Capabilities the video-director may reference. Only entries with status 'installed' are usable in production. Reviewed by hand; `python -m contentos.production.direction registry` checks it against the files on disk.",
+  "verified": {
+    "date": "2026-10-11",
+    "hyperframes": "0.8.114",
+    "upstream_lock": "config/upstream-skills.lock.json"
+  },
+  "capabilities": [
+    {
+      "id": "renderer:hyperframes",
+      "name": "HyperFrames",
+      "kind": "renderer",
+      "status": "installed",
+      "purpose": "Default and only renderer for explainers: HTML/GSAP compositions rendered to MP4 from one paused, seek-safe timeline.",
+      "path": "package.json",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "Compositions must follow hyperframes-core: one paused GSAP timeline, no randomness or wall-clock, no render-time network.",
+        "Version is pinned in package.json; upgrade deliberately."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "hf.skill:core",
+      "name": "HyperFrames core",
+      "kind": "skill",
+      "status": "installed",
+      "purpose": "Composition contract: scene clips, data-* timing, seek-safety and determinism rules.",
+      "path": ".claude/skills/hyperframes-core/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "Vendored from a pinned upstream commit (config/upstream-skills.lock.json); gitignored, so a fresh checkout needs `python scripts/upstream_skills.py sync`."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "hf.skill:animation",
+      "name": "HyperFrames animation",
+      "kind": "skill",
+      "status": "installed",
+      "purpose": "Atomic motion rules, blueprints and the motion-analysis script.",
+      "path": ".claude/skills/hyperframes-animation/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "Vendored from a pinned upstream commit (config/upstream-skills.lock.json); gitignored, so a fresh checkout needs `python scripts/upstream_skills.py sync`."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "hf.skill:keyframes",
+      "name": "HyperFrames keyframes",
+      "kind": "skill",
+      "status": "installed",
+      "purpose": "Seek-safe keyframing, camera moves and keyframe diagnostics.",
+      "path": ".claude/skills/hyperframes-keyframes/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "Vendored from a pinned upstream commit (config/upstream-skills.lock.json); gitignored, so a fresh checkout needs `python scripts/upstream_skills.py sync`."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "skill:explainer-motion-craft",
+      "name": "Explainer motion craft",
+      "kind": "skill",
+      "status": "installed",
+      "purpose": "House motion rules R1-R6 for authoring explainer animation; the project's motion authority.",
+      "path": ".claude/skills/explainer-motion-craft/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "skill:explainer-visual-qa",
+      "name": "Explainer visual QA",
+      "kind": "skill",
+      "status": "installed",
+      "purpose": "Gates, phone-scale frame inspection, independent critic and A/B discipline; the project's QA authority.",
+      "path": ".claude/skills/explainer-visual-qa/SKILL.md",
+      "context": [
+        "post-render"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "craft:R1",
+      "name": "R1 Smooth settle",
+      "kind": "house-rule",
+      "status": "installed",
+      "purpose": "Default entrance ease is power3.out. No back, elastic or bounce unless the brief asks for playful. (Upstream motion doctrine; Pilot 001 had 5 back.out pops, variant B has 0.)",
+      "path": ".claude/skills/explainer-motion-craft/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "skill:explainer-motion-craft"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "craft:R2",
+      "name": "R2 Reveal on the spoken cue",
+      "kind": "house-rule",
+      "status": "installed",
+      "purpose": "An element appears when its word is spoken, using cue(phrase, scene) from the aligned word timings, not at scene start. Do not dump a scene's content in its first quarter.",
+      "path": ".claude/skills/explainer-motion-craft/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "skill:explainer-motion-craft"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "craft:R3",
+      "name": "R3 One world, one camera",
+      "kind": "house-rule",
+      "status": "installed",
+      "purpose": "Move the #stage wrapper once per scene (about 0.6-0.9 s, power2.inOut), then HOLD.",
+      "path": ".claude/skills/explainer-motion-craft/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "skill:explainer-motion-craft"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "craft:R4",
+      "name": "R4 Stillness beats fake life",
+      "kind": "house-rule",
+      "status": "installed",
+      "purpose": "No scale \"breathing\", no repeat:-1, no decorative loops. A held frame is fine. (Upstream says this; one upstream skill says the opposite, \"idle elements breathe\", and was rejected for explainers.)",
+      "path": ".claude/skills/explainer-motion-craft/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "skill:explainer-motion-craft"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "craft:R5",
+      "name": "R5 Safe zones",
+      "kind": "house-rule",
+      "status": "installed",
+      "purpose": "Captions and key content inside the title-safe box (80%, 10% inset per edge); everything visible inside action-safe (90%).",
+      "path": ".claude/skills/explainer-motion-craft/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "skill:explainer-motion-craft"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "9:16 platform UI overlap zones are not verified; treat the portrait layout as unconfirmed."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "craft:R6",
+      "name": "R6 Short statements",
+      "kind": "house-rule",
+      "status": "installed",
+      "purpose": "One idea per shot; split a claim of more than about 6 words or turn it into a visual. Narration pace: upstream and a second skill both budget 2.3-2.5 words/s (about 140-150 wpm).",
+      "path": ".claude/skills/explainer-motion-craft/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "skill:explainer-motion-craft"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "Guidance, not a tested threshold."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "hf.native:html-svg-css",
+      "name": "Native HTML, SVG and CSS",
+      "kind": "native",
+      "status": "installed",
+      "purpose": "Text, labels, diagrams and simple animation written directly as HTML/inline SVG/CSS inside a HyperFrames composition and driven by the scene's GSAP timeline.",
+      "path": ".claude/skills/hyperframes-core/SKILL.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:core"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "No text-card, stat-card or diagram templates exist in the repository (contentos/templates holds only gsap.min.js); each scene is authored per video."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:3d-camera-flight",
+      "name": "3D camera flight",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Perspective camera FLIGHT through a 3D-laid-out world — one static perspective stage + preserve-3d .world whose pose (translate3d + rotateX/rotateY) is tweened leg-by-leg from a single camera state object: dive into an angled grid...",
+      "path": ".claude/skills/hyperframes-animation/rules/3d-camera-flight.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:3d-page-scroll",
+      "name": "3D page scroll",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Full webpage rendered as a tilted 3D card whose internal content scrolls to reveal specific sections. Pair with asr-keyword-glow for on-page keyword highlighting.",
+      "path": ".claude/skills/hyperframes-animation/rules/3d-page-scroll.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:3d-text-depth-layers",
+      "name": "3D text depth layers",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Multiple offset text layers (N divs at (i*dx, i*dy) with decreasing alpha) create a stacked 3D extrusion illusion on large typography.",
+      "path": ".claude/skills/hyperframes-animation/rules/3d-text-depth-layers.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:ai-tracking-box",
+      "name": "AI tracking box",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "AI detection overlay — yellow #facc15 L-bracket corners + confidence label (fluctuating 95-99%) following a target on a sine arc path. Box position recomputed per-frame from target position (never tweened separately).",
+      "path": ".claude/skills/hyperframes-animation/rules/ai-tracking-box.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:ambient-glow-bloom",
+      "name": "Ambient glow bloom",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Un-triggered soft radial glow that blooms in behind a hero element and holds with a bounded idle breathe, or a single-pass traveling sheen across a surface. No click, no word-sync; peak opacity ≤ ~0.45, finite/deterministic.",
+      "path": ".claude/skills/hyperframes-animation/rules/ambient-glow-bloom.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:anchored-layout-expand",
+      "name": "Anchored layout expand",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Edge-pinned container grows/collapses along ONE axis and in-flow content reflows — pill springs open into a dropdown, panel grows a sub-task stack, input card steps taller as typed text wraps, pane expands over a neighbor.",
+      "path": ".claude/skills/hyperframes-animation/rules/anchored-layout-expand.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:asr-keyword-glow",
+      "name": "ASR keyword glow",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Highlight keywords with glow + scale + color synced to ASR word timestamps. Two GSAP tweens per word drive a CSS custom property --glow through attack-decay-rest envelope.",
+      "path": ".claude/skills/hyperframes-animation/rules/asr-keyword-glow.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:avatar-cloud-network",
+      "name": "Avatar cloud network",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Avatars on an elliptical ring with SVG connection lines to a center point, staggered entry. Cloud center coordinates must match the centerpiece element exactly.",
+      "path": ".claude/skills/hyperframes-animation/rules/avatar-cloud-network.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:camera-cursor-tracking",
+      "name": "Camera cursor tracking",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Two-phase virtual camera that locks the viewport to a moving focal point (typing cursor) — static initial framing then focal-point-locked tracking. Uses browser-native getBoundingClientRect() / ctx.measureText() after document.fonts.ready.",
+      "path": ".claude/skills/hyperframes-animation/rules/camera-cursor-tracking.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:card-morph-anchor",
+      "name": "Card morph anchor",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Container morphs apparent size + corner radius + surface treatment between two shots, then fades to reveal the real target underneath.",
+      "path": ".claude/skills/hyperframes-animation/rules/card-morph-anchor.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:center-outward-expansion",
+      "name": "Center outward expansion",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Elements start clustered at screen center and expand outward to final positions. Each element gets its target position via CSS once; GSAP tweens transform x / y offsets to 0 in lockstep with a shared driver.",
+      "path": ".claude/skills/hyperframes-animation/rules/center-outward-expansion.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:chart-scrub-readout",
+      "name": "Chart scrub readout",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Cursor/playhead scrubs an already-drawn chart — ONE driver moves a vertical tracking line + marker along a baked data polyline while a date/value tooltip steps through the data array (text writes only on index change);",
+      "path": ".claude/skills/hyperframes-animation/rules/chart-scrub-readout.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:chromatic-glitch",
+      "name": "Chromatic glitch",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "RGB-split / slice glitch that snaps sharp — offset color copies jitter on a deterministic hash of QUANTIZED timeline time (never Math.random), or horizontal slice bands displace and converge under a stepped ease;",
+      "path": ".claude/skills/hyperframes-animation/rules/chromatic-glitch.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:context-sensitive-cursor",
+      "name": "Context sensitive cursor",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Typing cursor whose background-color switches at segment boundaries plus square-wave blink via (tl.time() % cycle) < cycle/2.",
+      "path": ".claude/skills/hyperframes-animation/rules/context-sensitive-cursor.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:control-target-sync",
+      "name": "Control target sync",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Live-sync couple — a scrubbed/typed/picked control and its bound target change in the SAME beat: readout tween + target transform tween share one timeline label, duration, and ease (continuous scrub), or one threshold state array...",
+      "path": ".claude/skills/hyperframes-animation/rules/control-target-sync.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:coordinate-target-zoom",
+      "name": "Coordinate target zoom",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Zoom into non-centered elements via scale (outer wrapper) + counter-translation (inner wrapper).",
+      "path": ".claude/skills/hyperframes-animation/rules/coordinate-target-zoom.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:counting-dynamic-scale",
+      "name": "Counting dynamic scale",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Counter where transform scale grows with the value for escalating emphasis. A numeric proxy and scale tween share one timeline position.",
+      "path": ".claude/skills/hyperframes-animation/rules/counting-dynamic-scale.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:css-marker-patterns",
+      "name": "CSS marker patterns",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Pure CSS + GSAP implementations of marker-highlight drawing modes — highlight (yellow sweep), circle (hand-drawn ellipse), burst (radiating lines), scribble (chaotic), sketchout (rough rectangle outline).",
+      "path": ".claude/skills/hyperframes-animation/rules/css-marker-patterns.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:cursor-click-ripple",
+      "name": "Cursor click ripple",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Animated cursor moves to a target, depresses cursor + target together on click, emits an expanding ripple with attack-decay opacity envelope. Element lives in DOM from t=0 with opacity: 0 (no conditional rendering).",
+      "path": ".claude/skills/hyperframes-animation/rules/cursor-click-ripple.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:cursor-drag",
+      "name": "Cursor drag",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "The drag verb for driven cursors — grab (press dip + lift), travel (semi-transparent ghost rides the cursor in exact lockstep via matched tweens), drop-snap into a placed field with selection chrome.",
+      "path": ".claude/skills/hyperframes-animation/rules/cursor-drag.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:depth-of-field-blur",
+      "name": "Depth of field blur",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Selective rack-focus — GSAP-tween filter: blur() (+ slight opacity dim) on off-focus layers via a --dof var while the focal element stays sharp; single pull, two-plane rack, or blur-the-cluster-while-pushing-in.",
+      "path": ".claude/skills/hyperframes-animation/rules/depth-of-field-blur.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:depth-scatter-assemble",
+      "name": "Depth scatter assemble",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "N elements scatter into / reassemble from a rotating 3D depth-cloud — each starts at a deterministic index-derived 3D offset (translateZ + rotateX/Y + scatter) and settles to a clean flat layout; tumble-swap and radial-explode variants.",
+      "path": ".claude/skills/hyperframes-animation/rules/depth-scatter-assemble.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:discrete-text-sequence",
+      "name": "Discrete text sequence",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Replace entire text states at time thresholds for non-linear typing (typos, holds, bulk additions, backspaces). GSAP onUpdate-driven reverse search.",
+      "path": ".claude/skills/hyperframes-animation/rules/discrete-text-sequence.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:dynamic-content-sequencing",
+      "name": "Dynamic content sequencing",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Pre-compute a flat [{startTime, endTime, ...}] array from a script of {textMain, textAccent, charSpeed, hold} entries. Each phrase's window = chars × charSpeed + hold. Content-driven duration, no hand-tuned offsets.",
+      "path": ".claude/skills/hyperframes-animation/rules/dynamic-content-sequencing.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:gradient-text-sweep",
+      "name": "Gradient text sweep",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "A gradient tweened THROUGH letterforms — background-clip: text + an oversized-background backgroundPosition tween.",
+      "path": ".claude/skills/hyperframes-animation/rules/gradient-text-sweep.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:gsap-effects",
+      "name": "GSAP effects",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Drop-in GSAP timeline patterns — typewriter, audio visualizer, and other reusable choreography blocks.",
+      "path": ".claude/skills/hyperframes-animation/rules/gsap-effects.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:hacker-flip-3d",
+      "name": "Hacker flip 3D",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Character-level 3D rotation with deterministic glyph substitution (decryption). GSAP back.out ease + per-glyph onUpdate for the flicker hash.",
+      "path": ".claude/skills/hyperframes-animation/rules/hacker-flip-3d.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:kinetic-beat-slam",
+      "name": "Kinetic beat slam",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Percussive kinetic typography — short phrases slam in on ONE shared beat array with DISTINCT per-phrase entrances (scale-slam / side-snap / rise-rotate), optional rhythm chrome (metronome ticks, beat bar), then a locked finale.",
+      "path": ".claude/skills/hyperframes-animation/rules/kinetic-beat-slam.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:motion-blur-streak",
+      "name": "Motion blur streak",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Fake directional velocity blur on a fast entrance / camera push-through — blur peaks at max speed, resolves to 0 at the settle.",
+      "path": ".claude/skills/hyperframes-animation/rules/motion-blur-streak.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:multi-cursor-choreography",
+      "name": "Multi cursor choreography",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "N (2–4) labeled independent cursor actors work one canvas simultaneously — collaborative-canvas ambience.",
+      "path": ".claude/skills/hyperframes-animation/rules/multi-cursor-choreography.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:multi-phase-camera",
+      "name": "Multi phase camera",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Sequential camera-zoom system (pull-back / focus / push) plus continuous micro-drift.",
+      "path": ".claude/skills/hyperframes-animation/rules/multi-phase-camera.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:nudge-curve",
+      "name": "Nudge curve",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Slow-fast-slow three-phase group slide (power3.in ramp → linear burst → power4.out tail, 10/65/25 distance, tail ≥3× ramp-in) to reposition a composed group and reveal content during the burst.",
+      "path": ".claude/skills/hyperframes-animation/rules/nudge-curve.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:orbit-3d-entry",
+      "name": "Orbit 3D entry",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Elements flip in from 3D space (rotateX + rotateY + translateZ) then settle into a continuous elliptical orbit. Critical: entry MUST flip in-place at the orbital starting position (gsap.set BEFORE phase 1), not at scene center.",
+      "path": ".claude/skills/hyperframes-animation/rules/orbit-3d-entry.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:particle-burst",
+      "name": "Particle burst",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Deterministic particle / confetti events — confetti pop that bursts up and drifts down on gravity (optional instant-shrink), dot burst from behind text, glyph dissolve to particles.",
+      "path": ".claude/skills/hyperframes-animation/rules/particle-burst.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:physics-press-reaction",
+      "name": "Physics press reaction",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Physical click simulation — two sequential GSAP scale tweens (down to 0.9, up to 1.0) approximate a spring with overshoot. Pass a single targets array [\"#cta\", \"#cursor\"] to compress both together for tactile contact feel.",
+      "path": ".claude/skills/hyperframes-animation/rules/physics-press-reaction.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:press-release-spring",
+      "name": "Press release spring",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Tactile button press: linear compression then spring recovery via two adjacent GSAP tweens on the same property. Variations: color transition, shadow depth via CSS vars, release burst, background glow.",
+      "path": ".claude/skills/hyperframes-animation/rules/press-release-spring.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:reactive-displacement",
+      "name": "Reactive displacement",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Physical-collision transition where an entering element's GSAP tween drives the exiting element's displacement. Three concurrent tweens at the same timeline position with victim durations 40-50% of the intruder's.",
+      "path": ".claude/skills/hyperframes-animation/rules/reactive-displacement.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:scale-swap-transition",
+      "name": "Scale swap transition",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Coordinated morph between two DOM elements at the same screen center. Exit cluster shrinks + fades; entrance pops in with back.out(2) overshoot.",
+      "path": ".claude/skills/hyperframes-animation/rules/scale-swap-transition.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:sine-wave-loop",
+      "name": "Sine wave loop",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Continuous breathing/idle ambient motion. Two forms: GSAP sine.inOut yoyo with finite repeats (preferred when standalone) or onUpdate reading tl.time() (preferred when multiplying onto another live value).",
+      "path": ".claude/skills/hyperframes-animation/rules/sine-wave-loop.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:split-tilt-cards",
+      "name": "Split tilt cards",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Two cards side-by-side with opposing rotationY tilts (+/- baseTilt) and entry slides from their respective sides. Continuous floating runs in phase opposition (Math.PI offset).",
+      "path": ".claude/skills/hyperframes-animation/rules/split-tilt-cards.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:spring-pop-entrance",
+      "name": "Spring pop entrance",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "The canonical ENTRANCE pop — an element (or staggered group) arrives by springing scale: 0 → 1 with back.out overshoot, fromTo so it's correct at t=0 under seek. Single hero, staggered group (≤500ms cap), overshoot tuned by personality.",
+      "path": ".claude/skills/hyperframes-animation/rules/spring-pop-entrance.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:stat-bars-and-fills",
+      "name": "Stat bars and fills",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Data-viz primitives that pair a number with a graphic — growth bars (CSS scaleY stagger), progress fill (bar scaleX or measured SVG ring), and fractional star-rating wipe (clip-path). Transforms only, seek-safe.",
+      "path": ".claude/skills/hyperframes-animation/rules/stat-bars-and-fills.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:svg-icon-enrichment",
+      "name": "SVG icon enrichment",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Animate internal SVG elements (rotating hands, oscillating blades, pulsing dots, dash-flow lines) so icons feel alive.",
+      "path": ".claude/skills/hyperframes-animation/rules/svg-icon-enrichment.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:svg-path-draw",
+      "name": "SVG path draw",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "SVG outline draws itself stroke-by-stroke via stroke-dasharray / stroke-dashoffset. Measure with getTotalLength() at composition setup, set initial dashoffset = length, GSAP tweens to 0.",
+      "path": ".claude/skills/hyperframes-animation/rules/svg-path-draw.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:theme-crossfade-morph",
+      "name": "Theme crossfade morph",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Whole-theme in-place morph under a fixed anchor — background, typography, radii, icons, chrome and logos blend simultaneously (~0.3s) through N pre-styled skins while one anchor element never moves.",
+      "path": ".claude/skills/hyperframes-animation/rules/theme-crossfade-morph.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:vertical-spring-ticker",
+      "name": "Vertical spring ticker",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Slot-machine vertical scrolling using stepped GSAP tweens within a masked column.",
+      "path": ".claude/skills/hyperframes-animation/rules/vertical-spring-ticker.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:viewport-change",
+      "name": "Viewport change",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Virtual camera — simulate zoom / pan / focus-lock by transforming a single .world wrapper containing all scene content. Single-element composite transform translate(x,y) scale(S);",
+      "path": ".claude/skills/hyperframes-animation/rules/viewport-change.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.rule:waterfall-entry",
+      "name": "Waterfall entry",
+      "kind": "rule",
+      "status": "installed",
+      "purpose": "Staggered ARRIVAL cascade — words/elements whip in from below, each starting before the previous settles, an accelerating wave that resolves composed. Title cards, segment openers, list intros.",
+      "path": ".claude/skills/hyperframes-animation/rules/waterfall-entry.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "hf.blueprint:agent-progress-theater",
+      "name": "Agent progress theater",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "Agent work performed as WORKING-STATE theater — a short trigger beat hands the frame to the machine, which then visibly _works_: loaders spin, status phrases swap, dots pulse, counters tick — before the receipt...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/agent-progress-theater.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Key_Feature"
+      ]
+    },
+    {
+      "id": "hf.blueprint:camera-journey",
+      "name": "Camera journey",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "The real viewport camera is the STORYTELLER — a multi-leg journey (dive in → a mid-journey beat fires → travel to the consequence / reposition → landing push, at rest) across ONE continuous world, where the travel...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/camera-journey.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Benefits",
+        "Key_Feature"
+      ]
+    },
+    {
+      "id": "hf.blueprint:comparison-split",
+      "name": "Comparison split",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "Two paired items of equal weight shown side-by-side with mirrored 3D \"book-open\" tilts — the eye reads them as a balanced comparison, then a pill badge lands at each card's inner edge to punctuate.",
+      "path": ".claude/skills/hyperframes-animation/blueprints/comparison-split.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Key_Feature"
+      ]
+    },
+    {
+      "id": "hf.blueprint:constellation-hub",
+      "name": "Constellation hub",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "Labeled/iconned nodes spring into a ring/cluster around a center, then the shot resolves on the core — either by pushing the camera INTO the center (depth-of-field collapsing onto it) or by holding a hub mark while...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/constellation-hub.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Social_Proof",
+        "CTA"
+      ]
+    },
+    {
+      "id": "hf.blueprint:cta-morph-press",
+      "name": "CTA morph press",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A resting brand mark condenses at the same screen center into a smaller, brighter CTA, then a cursor arrives from off-stage and lands a human-aimed click on it.",
+      "path": ".claude/skills/hyperframes-animation/blueprints/cta-morph-press.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "CTA",
+        "Hook"
+      ]
+    },
+    {
+      "id": "hf.blueprint:cursor-ui-demo",
+      "name": "Cursor UI demo",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A visible custom cursor drives a real (reconstructed) app UI through clicks / hovers / drags so the screen changes state shot-to-shot, while the camera chases each interaction — the product surface is the subject and...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/cursor-ui-demo.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Product_Intro",
+        "Key_Feature",
+        "Hook",
+        "Benefits"
+      ]
+    },
+    {
+      "id": "hf.blueprint:dataviz-countup",
+      "name": "Dataviz countup",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "Make numbers and charts the hero — a count-up ring/number, a trend chart, a tilted stat/card grid — and traverse the data instruments with a camera that pushes THROUGH them (or scrolls across them) to land on one...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/dataviz-countup.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Problem",
+        "Product_Intro",
+        "Key_Feature",
+        "Social_Proof"
+      ]
+    },
+    {
+      "id": "hf.blueprint:device-surface-showcase",
+      "name": "Device surface showcase",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A product surface — a device mockup or a floating browser/app window — is the hero held in frame while its screens cycle through a real flow, showcased by a camera move that ranges from a static hold to a continuous...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/device-surface-showcase.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Key_Feature",
+        "Product_Intro"
+      ]
+    },
+    {
+      "id": "hf.blueprint:fixed-anchor-cycle",
+      "name": "Fixed anchor cycle",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "One element is PINNED — a wordmark, a composer box, an anchor line that enters once and never moves again — while the adjacent region (or the entire surrounding theme) cycles through many discrete states around it...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/fixed-anchor-cycle.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Benefits",
+        "Brand_Outro"
+      ]
+    },
+    {
+      "id": "hf.blueprint:grid-card-assemble",
+      "name": "Grid card assemble",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "N items (tiles / cards / logos / list-lines) self-assemble in a staggered cascade into a grid or vertical list and hold — a \"look how much / who / what it does\" beat that enumerates breadth at once;",
+      "path": ".claude/skills/hyperframes-animation/blueprints/grid-card-assemble.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Key_Feature",
+        "Benefits",
+        "Social_Proof"
+      ]
+    },
+    {
+      "id": "hf.blueprint:kinetic-type-beats",
+      "name": "Kinetic type beats",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A flat, centered, bold-type shot where the motion IS the word/phrase changing — the line either swaps tokens in place by hard cut, or builds a statement across full-screen beats (each with its own move) that lands a...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/kinetic-type-beats.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Problem",
+        "Product_Intro",
+        "Benefits",
+        "CTA",
+        "Brand_Outro"
+      ]
+    },
+    {
+      "id": "hf.blueprint:logo-assemble-lockup",
+      "name": "Logo assemble lockup",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A brand mark / wordmark comes to exist on screen and resolves into a centered logo lockup — built from parts (elements assemble or orbit in, letters cascade, an outline draws on, or a camera pushes through negative...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/logo-assemble-lockup.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Product_Intro",
+        "CTA",
+        "Brand_Outro"
+      ]
+    },
+    {
+      "id": "hf.blueprint:overwhelm-surround",
+      "name": "Overwhelm surround",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "Convey overwhelm by accumulation. Recognizable subjects assemble, density markers scatter in to amplify \"look how much,\" then the central subject morphs into the viewer's own avatar and elements close in from ALL...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/overwhelm-surround.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Problem"
+      ]
+    },
+    {
+      "id": "hf.blueprint:panel-edit-live-sync",
+      "name": "Panel edit live sync",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A bipartite stage — an inspector/editor panel bound to a target surface — where a cursor (or text caret) continuously manipulates a control (value scrub, unit/codegen dropdown pick, knob or easing-handle drag, inline...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/panel-edit-live-sync.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Key_Feature"
+      ]
+    },
+    {
+      "id": "hf.blueprint:prompt-type-submit-generate",
+      "name": "Prompt type submit generate",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "The AI-era demo shot — a [prompt / query / command] types character-by-character into a REAL product input (chat composer, search bar, terminal prompt, URL bar, sidebar assistant) and the machine answers: status...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/prompt-type-submit-generate.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Product_Intro",
+        "Key_Feature",
+        "CTA"
+      ]
+    },
+    {
+      "id": "hf.blueprint:spatial-pan-stations",
+      "name": "Spatial pan stations",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "Pre-place a sequence of labeled stations on one oversized canvas, then traverse it with a single virtual camera — repeated lateral/diagonal pans that center each station in turn and reveal a callout at every stop...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/spatial-pan-stations.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Problem",
+        "Product_Intro"
+      ]
+    },
+    {
+      "id": "hf.blueprint:ticker-takeover",
+      "name": "Ticker takeover",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A context phrase types in, an accent word cycles through options like a slot-machine to suggest \"this could be many things,\" then a hero CRASHES in from off-screen and physically shoves the text aside — \"actually...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/ticker-takeover.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Brand_Outro"
+      ]
+    },
+    {
+      "id": "hf.blueprint:titlecard-reveal",
+      "name": "Titlecard reveal",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "The calm breather/landing beat — one clean title or single brand/proof card revealed with exactly one restrained move (a slide-up crossfade, or a wipe-away-to-reveal), then a still hold.",
+      "path": ".claude/skills/hyperframes-animation/blueprints/titlecard-reveal.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Benefits",
+        "Social_Proof",
+        "CTA",
+        "Product_Intro"
+      ]
+    },
+    {
+      "id": "hf.blueprint:transcript-scroll-artifact-reveal",
+      "name": "Transcript scroll artifact reveal",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "The frame travels vertically along ONE long content surface — an agent transcript, a running task feed, an analysis document, a story draft — rendered full-bleed on a flat canvas (no device frame, no held mockup), by...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/transcript-scroll-artifact-reveal.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Key_Feature"
+      ]
+    },
+    {
+      "id": "hf.blueprint:typewriter-reveal",
+      "name": "Typewriter reveal",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A live text caret types (and edits) a line as a human would, then either collapses it to a point and pops a brand payoff, or holds it under a persistent brand mark while a sub-line types/swaps into the final CTA...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/typewriter-reveal.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Brand_Outro"
+      ]
+    },
+    {
+      "id": "hf.blueprint:video-text-pivot",
+      "name": "Video text pivot",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "A product video holds center and claims attention, then slides aside to hand its weight to a hero stat in the space it vacates, then both clear and kinetic text types into the center — accent words carrying the...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/video-text-pivot.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Product_Intro",
+        "Key_Feature"
+      ]
+    },
+    {
+      "id": "hf.blueprint:zoom-out-workspace-reveal",
+      "name": "Zoom out workspace reveal",
+      "kind": "blueprint",
+      "status": "installed",
+      "purpose": "Open TIGHT on one full-bleed detail — a graphic macro or a small UI region — let micro-action play in close-up, then ONE continuous decelerating zoom-out reveals that everything seen so far lives inside a containing...",
+      "path": ".claude/skills/hyperframes-animation/blueprints/zoom-out-workspace-reveal.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "roles": [
+        "Hook",
+        "Benefits"
+      ]
+    },
+    {
+      "id": "tool:align",
+      "name": "Word alignment",
+      "kind": "tool",
+      "status": "installed",
+      "purpose": "Aligns script words to ASR output so narration cues resolve to real times.",
+      "path": "contentos/production/align.py",
+      "context": [
+        "pre-render"
+      ],
+      "requires": [],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "tool:sceneplan",
+      "name": "Scene plan resolver",
+      "kind": "tool",
+      "status": "installed",
+      "purpose": "Resolves sceneplan/1 narration anchors into scene times; builds the timestamped storyboard.",
+      "path": "contentos/production/sceneplan.py",
+      "context": [
+        "pre-render"
+      ],
+      "requires": [],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "tool:preview",
+      "name": "Frame preview",
+      "kind": "tool",
+      "status": "installed",
+      "purpose": "Extracts frames and contact sheets from a project or MP4 for phone-scale inspection.",
+      "path": "contentos/production/preview.py",
+      "context": [
+        "post-render"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null
+    },
+    {
+      "id": "tool:motion-audit",
+      "name": "Motion audit",
+      "kind": "tool",
+      "status": "installed",
+      "purpose": "Measures easing inventory, one-frame pops and still fraction of a build or render.",
+      "path": "contentos/production/motion_audit.py",
+      "context": [
+        "post-render"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "Advisory metrics; not a blocking gate."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "tool:critic",
+      "name": "Critic report check",
+      "kind": "tool",
+      "status": "installed",
+      "purpose": "Validates an independent critic's JSON report and recomputes the verdict from its scores.",
+      "path": "contentos/production/critic.py",
+      "context": [
+        "post-render"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "Pass thresholds are provisional and uncalibrated."
+      ],
+      "fallback": null
+    },
+    {
+      "id": "tool:animation-map",
+      "name": "Animation map",
+      "kind": "tool",
+      "status": "available",
+      "purpose": "Static analysis of a composition's tweens (paced-slow, dead zones, collisions) from the vendored hyperframes-animation skill.",
+      "path": ".claude/skills/hyperframes-animation/scripts/animation-map.mjs",
+      "context": [
+        "post-render"
+      ],
+      "requires": [
+        "hf.skill:animation"
+      ],
+      "offline": false,
+      "paid": false,
+      "limitations": [
+        "Collision counts are usually by design; do not gate on them."
+      ],
+      "fallback": null,
+      "status_reason": "Installs nothing unless opted in: set HYPERFRAMES_SKILL_PKG_VERSION=0.8.114 and, after reading scripts/package-loader.mjs, HYPERFRAMES_SKILL_BOOTSTRAP_DEPS=1 (see explainer-motion-craft); the bootstrap fetches packages."
+    },
+    {
+      "id": "lane:mpt-stock",
+      "name": "MoneyPrinterTurbo stock-footage lane",
+      "kind": "lane",
+      "status": "available",
+      "purpose": "Whole-video render lane (render: mpt) that cuts free stock footage to the project's own voice track and burns subtitles.",
+      "path": "contentos/mpt.py",
+      "context": [
+        "alternate-renderer"
+      ],
+      "requires": [],
+      "offline": false,
+      "paid": false,
+      "limitations": [
+        "A separate lane for a whole video, not a per-scene technique inside a HyperFrames composition; scene-level use is not integrated.",
+        "Only pexels, pixabay, coverr and user-supplied footage are passed; user-supplied rights are not verified by contentos."
+      ],
+      "fallback": "hf.native:html-svg-css",
+      "status_reason": "Needs the moneyprinterturbo-api container running and free stock-source API keys configured; fetches footage over the network."
+    },
+    {
+      "id": "treatment:handdrawn-p5brush",
+      "name": "Hand-drawn p5.brush treatment",
+      "kind": "treatment",
+      "status": "candidate",
+      "purpose": "Optional pre-rendered hand-drawn texture (ink, charcoal, watercolour) for diagram marks, revealed by HyperFrames masks.",
+      "path": "docs/factory-v2/09-p5-brush-evaluation.md",
+      "context": [
+        "hyperframes"
+      ],
+      "requires": [
+        "renderer:hyperframes"
+      ],
+      "offline": true,
+      "paid": false,
+      "limitations": [
+        "Specialist asset generator, not a renderer; no module is built.",
+        "Strokes cannot be grown by redrawing; snapshots are pre-rendered and revealed with masks.",
+        "WebGL2 is needed at asset-generation time; Metal and software back-ends are not byte-identical, so one must be pinned.",
+        "Project assets about 4x larger; visual A/B judgement is still pending."
+      ],
+      "fallback": "hf.native:html-svg-css",
+      "status_reason": "Verdict KEEP EXPERIMENTAL in 09; promotion needs an explicit owner decision."
+    },
+    {
+      "id": "treatment:vibe-filter",
+      "name": "Vibe filters",
+      "kind": "treatment",
+      "status": "unavailable",
+      "purpose": "Named in the brief as a possible visual treatment; no implementation has been identified.",
+      "path": null,
+      "context": [],
+      "requires": [],
+      "offline": true,
+      "paid": false,
+      "limitations": [],
+      "fallback": null,
+      "status_reason": "No concrete implementation, dependency or asset found in the repository (the only 'vibe' hits are prose in vendor/OpenMontage); not usable until one is identified and verified."
+    },
+    {
+      "id": "ref:motion-ai-kit",
+      "name": "Motion AI Kit (motiondivision/ai-kit)",
+      "kind": "ref",
+      "status": "unavailable",
+      "purpose": "Animation tooling for interactive web UI built on the Motion library and CSS.",
+      "path": "docs/factory-v2/10-motion-director-integration-audit.md",
+      "context": [
+        "reference"
+      ],
+      "requires": [],
+      "offline": false,
+      "paid": true,
+      "limitations": [
+        "Docs search and spring generation need hosted MCP servers; MotionScore audits, example source and the transition editor need paid Motion+.",
+        "The repository ships no LICENSE file (MIT is only declared in package metadata), so its text must not be vendored."
+      ],
+      "fallback": null,
+      "status_reason": "Reference-only decision in 10 (sections 1 and 2.1): interactive web UI tool, hosted/paid dependencies, unclear licence."
+    }
+  ]
+}
