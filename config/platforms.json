@@ -1,0 +1,161 @@
+{
+  "schema": "platforms/1",
+  "checked": "2026-10-11",
+  "note": "Upload limits change often. confidence: official = first-party page read on the checked date; official-partial = first-party source for some fields only; third-party = vendor blog, not confirmed by the platform; conflicting = sources disagree (the lower figure is stored). Re-check before relying on any entry that is not 'official'. Limits are for organic uploads, not ads.",
+  "owner": {
+    "short_max_seconds": 300,
+    "short_default_max_seconds": 180,
+    "long_max_seconds": null,
+    "note": "Owner policy (2026-10-11): short-form never exceeds 5 minutes (hard ceiling) and targets at most 3 minutes by default; shorter is fine. Long-form length is undecided (null = no owner ceiling yet, only platform limits apply). Platform limits below still apply and are usually tighter."
+  },
+  "platforms": [
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "default_enabled": true,
+      "available_in_india": true,
+      "india_note": "Largest video platform in India; Partner Program open to Indian creators.",
+      "formats": {
+        "short": {
+          "label": "YouTube Shorts",
+          "max_seconds": 180,
+          "aspect_range": [0.5625, 1.0],
+          "preferred_aspect": "9:16",
+          "max_height": 1080,
+          "confidence": "official",
+          "notes": "Official page: up to 3 minutes; vertical videos uploaded as Shorts; max 1080p. The 3-minute limit replaced 60 s in Oct 2024 (third-party report). Vertical or square only (third-party).",
+          "sources": ["https://support.google.com/youtube/answer/10059070"]
+        },
+        "long": {
+          "label": "YouTube video",
+          "max_seconds": 900,
+          "aspect_range": null,
+          "preferred_aspect": "16:9",
+          "confidence": "official",
+          "tiers": {"verified": {"max_seconds": 43200, "max_mb": 262144}},
+          "notes": "Official: 15 minutes by default; verified accounts can upload longer; absolute maximum 256 GB or 12 hours, whichever is less. Phone verification is needed for the verified tier.",
+          "sources": ["https://support.google.com/youtube/answer/71673"]
+        }
+      }
+    },
+    {
+      "id": "instagram",
+      "name": "Instagram",
+      "default_enabled": true,
+      "available_in_india": true,
+      "india_note": "Main short-form platform for Indian creators since the TikTok ban.",
+      "formats": {
+        "short": {
+          "label": "Instagram Reels",
+          "max_seconds": 180,
+          "aspect_range": [0.5625, 1.91],
+          "preferred_aspect": "9:16",
+          "min_fps": 30,
+          "min_height": 720,
+          "confidence": "official-partial",
+          "notes": "Official help page: aspect ratio between 1.91:1 and 9:16, at least 30 fps and 720 px. Length: Instagram head Adam Mosseri announced Reels up to 3 minutes (Jan 2025, Threads post). Newer vendor and news reports say the in-app camera records up to 20 minutes and camera-roll uploads up to 15 minutes, but I found no first-party page; Instagram only recommends Reels under 3 minutes. 180 s is stored as the safe limit.",
+          "sources": ["https://help.instagram.com/1038071743007909", "https://www.threads.com/@mosseri/post/DE-efFqyStv", "https://www.socialmediatoday.com/news/instagram-update-reels-camera-with-improved-functions/806247/"]
+        }
+      }
+    },
+    {
+      "id": "x",
+      "name": "X",
+      "default_enabled": true,
+      "available_in_india": true,
+      "india_note": "",
+      "formats": {
+        "short": {
+          "label": "X video (standard account)",
+          "max_seconds": 140,
+          "aspect_range": [0.5625, 1.7778],
+          "preferred_aspect": "9:16",
+          "max_mb": 512,
+          "confidence": "official-partial",
+          "notes": "Official help page: standard accounts up to 140 seconds and 512 MB. Aspect ratios, codec and bitrate come from a vendor page (third-party).",
+          "sources": ["https://help.x.com/en/using-x/x-videos"]
+        },
+        "long": {
+          "label": "X video (Premium)",
+          "max_seconds": 14400,
+          "aspect_range": [0.5625, 1.7778],
+          "preferred_aspect": "16:9",
+          "max_mb": 16384,
+          "confidence": "official-partial",
+          "requires": "X Premium",
+          "notes": "Official help page: Premium videos shorter than 4 hours at 1080p, up to 16 GB (above 2 hours is uploaded at 720p). A vendor page says 3 hours and 8 GB; the official page is used. Requires an X Premium subscription (paid), so treat as unavailable unless the owner enables it.",
+          "sources": ["https://help.x.com/en/using-x/x-videos"]
+        }
+      }
+    },
+    {
+      "id": "threads",
+      "name": "Threads",
+      "default_enabled": true,
+      "available_in_india": true,
+      "india_note": "",
+      "formats": {
+        "short": {
+          "label": "Threads video",
+          "max_seconds": 300,
+          "aspect_range": [0.01, 10],
+          "preferred_aspect": "9:16",
+          "max_mb": 1024,
+          "min_fps": 23,
+          "max_fps": 60,
+          "confidence": "official",
+          "notes": "Threads API docs: up to 300 s, 1 GB, 23-60 fps, HEVC or H.264, MOV or MP4, AAC audio, max width 1920. The official Threads account also says videos can be up to 5 minutes. Short clips perform best (vendor guidance, not a rule).",
+          "sources": ["https://developers.facebook.com/docs/threads/posts/", "https://www.threads.com/@threads/post/CyyjSsxuCkI/good-question-you-can-attach-videos-up-to-5-minutes-long-to-a-post-on-threads"]
+        }
+      }
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "default_enabled": true,
+      "available_in_india": true,
+      "india_note": "Professional audience; fits technology explainers.",
+      "formats": {
+        "short": {
+          "label": "LinkedIn video",
+          "max_seconds": 600,
+          "aspect_range": null,
+          "preferred_aspect": "9:16",
+          "max_mb": 5120,
+          "confidence": "third-party",
+          "notes": "5 GB and a 10-minute length are widely cited by vendors; LinkedIn's own help page could not be read (the fetch was blocked). Verify before depending on it.",
+          "sources": ["https://kompozy.io/specs/linkedin-file-size-limit"]
+        },
+        "long": {
+          "label": "LinkedIn video (landscape)",
+          "max_seconds": 600,
+          "aspect_range": null,
+          "preferred_aspect": "16:9",
+          "max_mb": 5120,
+          "confidence": "third-party",
+          "notes": "Same unverified 10-minute / 5 GB figures as above.",
+          "sources": ["https://kompozy.io/specs/linkedin-file-size-limit"]
+        }
+      }
+    },
+    {
+      "id": "tiktok",
+      "name": "TikTok",
+      "default_enabled": false,
+      "available_in_india": false,
+      "india_note": "Blocked in India since 29 June 2020 and not on Indian app stores (vendor report, 2026). Disabled by default; enable only for a non-India audience or account.",
+      "formats": {
+        "short": {
+          "label": "TikTok",
+          "max_seconds": 180,
+          "aspect_range": [0.5625, 1.7778],
+          "preferred_aspect": "9:16",
+          "max_mb": 287,
+          "confidence": "conflicting",
+          "notes": "Vendor pages disagree: 3 minutes for most accounts versus up to 10 minutes. TikTok's own help page only says the app asks you to choose a maximum length. The lower figure is stored. 287 MB is the mobile-app upload limit (vendor).",
+          "sources": ["https://www.sendcove.app/integrations/tiktok/video-specs", "https://support.tiktok.com/en/using-tiktok/creating-videos/making-a-post"]
+        }
+      }
+    }
+  ]
+}
