@@ -1,0 +1,19 @@
+{
+  "critic": "independent",
+  "verdict": "revise",
+  "scores": {
+    "hook_clarity": 9,
+    "concept_specificity": 8,
+    "readability": 6,
+    "composition": 8,
+    "motion_causality": 8,
+    "continuity": 7,
+    "av_sync": 9,
+    "restraint": 9
+  },
+  "hard_failures": [],
+  "notes": [
+    {"time_s": 31.2, "issue": "Code panel text is too small to read on a phone in the 9:16 render."},
+    {"time_s": 14.8, "issue": "Small camera snap at the scene cut."}
+  ]
+}

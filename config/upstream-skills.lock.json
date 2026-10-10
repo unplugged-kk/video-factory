@@ -1,0 +1,25 @@
+{
+  "schema": "upstream-skills/1",
+  "note": "Pinned third-party skills. Installed by `python scripts/upstream_skills.py sync`, checked by `verify`, removed by `remove`. See docs/factory-v2/07-motion-graphics-skills-audit.md.",
+  "sources": [
+    {
+      "id": "hyperframes",
+      "repo": "https://github.com/heygen-com/hyperframes",
+      "tag": "v0.8.114",
+      "commit": "01c6f6004a00ecfa6e77ab4025b47a46a5e925fc",
+      "license": "Apache-2.0",
+      "accessed": "2026-10-10",
+      "why": "Tag matches the renderer pinned in package.json (hyperframes 0.8.114), so skill guidance and CLI behaviour agree.",
+      "skills": [
+        "hyperframes-core",
+        "hyperframes-animation",
+        "hyperframes-keyframes"
+      ],
+      "tree_sha256": {
+        "hyperframes-core": "24231d50e64af8393f43232e272836015b12bf77aa1c79db16078968e9c62a11",
+        "hyperframes-animation": "39bfce449c2ab02612b8ad87908546d8ffd6751d62609ed7511a45c237471336",
+        "hyperframes-keyframes": "faebacc6b922b30a2fc459af13eb9dc0914948bceee5fb2df54d25c57db3c953"
+      }
+    }
+  ]
+}
