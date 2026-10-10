@@ -1,0 +1,2954 @@
+{
+ "schema": "design-library/1",
+ "note": "Seed catalogue of upstream HyperFrames designs and transitions, tagged by register, mood, topic, energy. Tags are Claude's judgement (reviewed=false). Everything is `unverified` until a real render in OUR pipeline records verified.result. Rule A/B (contentos.intelligence.visual) still decides whether a choice is different enough.",
+ "upstream": {
+  "repo": "heygen-com/hyperframes",
+  "tag": "v0.8.114",
+  "licence": "Apache-2.0 (repo), MIT (shader-transitions package)"
+ },
+ "vocabulary": {
+  "kinds": [
+   "frame_preset",
+   "palette",
+   "visual_style",
+   "shader_transition",
+   "css_transition"
+  ],
+  "topics": [
+   "ai-ml",
+   "software-dev",
+   "data-science",
+   "science",
+   "security",
+   "finance-business",
+   "productivity",
+   "news-opinion",
+   "history-culture",
+   "consumer-lifestyle",
+   "wellness-nature",
+   "kids-education",
+   "announcements"
+  ],
+  "moods": [
+   "precise",
+   "technical",
+   "premium",
+   "raw",
+   "loud",
+   "playful",
+   "calm",
+   "warm",
+   "futuristic",
+   "dramatic",
+   "cultural",
+   "trustworthy",
+   "friendly",
+   "natural",
+   "editorial",
+   "urgent",
+   "refined",
+   "kinetic"
+  ],
+  "energy": [
+   "calm",
+   "medium",
+   "high"
+  ],
+  "register": [
+   "dark",
+   "light",
+   "mixed",
+   "n/a"
+  ],
+  "confidence": [
+   "unverified",
+   "experimental",
+   "validated",
+   "preferred",
+   "deprecated"
+  ]
+ },
+ "avoid_upstream": [
+  "star iris",
+  "tilt-shift",
+  "lens flare",
+  "hinge/door"
+ ],
+ "entries": {
+  "preset:biennale-yellow": {
+   "kind": "frame_preset",
+   "title": "Biennale Yellow",
+   "register": "light",
+   "moods": [
+    "cultural",
+    "editorial",
+    "warm"
+   ],
+   "topics": [
+    "history-culture",
+    "kids-education",
+    "news-opinion"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Archivo",
+    "Instrument Serif",
+    "JetBrains Mono"
+   ],
+   "colors": [
+    "#1B2566",
+    "#DCD6C4",
+    "#E26B4A",
+    "#E9E5DB",
+    "#F0DA7C",
+    "#F1EE2E",
+    "#F8F39B"
+   ],
+   "summary": "Biennale Yellow's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — warm parchment grounds, a single deep indigo ink, solar yellow deployed as bloom / panel / tile underprint, Instrument Serif display + Archivo sans + JetBrains Mon",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/biennale-yellow/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:blockframe": {
+   "kind": "frame_preset",
+   "title": "Blockframe",
+   "register": "light",
+   "moods": [
+    "playful",
+    "loud",
+    "friendly"
+   ],
+   "topics": [
+    "consumer-lifestyle",
+    "kids-education",
+    "productivity",
+    "announcements"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Inter",
+    "Space Grotesk"
+   ],
+   "colors": [
+    "#000000",
+    "#99E885",
+    "#C0F7FE",
+    "#F7CB46",
+    "#FE90E8",
+    "#FFDC8B",
+    "#FFFDF5",
+    "#FFFFFF"
+   ],
+   "summary": "BlockFrame's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — 4px black borders + 8px hard offset shadows, the five-pastel candy palette (pink/blue/green/yellow/cream) plus black/white/off-white, Inter 800–900 uppercase display + ",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/blockframe/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:blue-professional": {
+   "kind": "frame_preset",
+   "title": "Blue Professional",
+   "register": "light",
+   "moods": [
+    "trustworthy",
+    "precise",
+    "refined"
+   ],
+   "topics": [
+    "finance-business",
+    "productivity",
+    "software-dev",
+    "kids-education"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Inter",
+    "Space Grotesk"
+   ],
+   "colors": [
+    "#059669",
+    "#111111",
+    "#1E2BFA",
+    "#6B6B6B",
+    "#9A9A9A",
+    "#DC2626",
+    "#FDFAE7"
+   ],
+   "summary": "Blue Professional's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — the warm cream canvas, a single saturated cobalt (#1e2bfa) as the only accent, the three-step gray text ladder, Space Grotesk (display/numerals/chrome) + Inter (",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/blue-professional/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:bold-poster": {
+   "kind": "frame_preset",
+   "title": "Bold Poster",
+   "register": "light",
+   "moods": [
+    "loud",
+    "raw",
+    "urgent"
+   ],
+   "topics": [
+    "news-opinion",
+    "announcements",
+    "history-culture"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Libre Baskerville",
+    "Shrikhand",
+    "Space Grotesk"
+   ],
+   "colors": [
+    "#1C1410",
+    "#D8000F",
+    "#F5F2EF",
+    "#FFFFFF"
+   ],
+   "summary": "Bold Poster's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — the four-color palette (white / brown-black ink / tomato red / off-white), the three-face stack (Shrikhand display tilted at poster scale, Libre Baskerville serif body",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/bold-poster/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:broadside": {
+   "kind": "frame_preset",
+   "title": "Broadside",
+   "register": "dark",
+   "moods": [
+    "raw",
+    "urgent",
+    "loud"
+   ],
+   "topics": [
+    "news-opinion",
+    "security",
+    "announcements",
+    "software-dev"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Barlow",
+    "IBM Plex Mono"
+   ],
+   "colors": [
+    "#111111",
+    "#1A1A18",
+    "#282826",
+    "#505048",
+    "#888880",
+    "#E85D26",
+    "#F0ECE5"
+   ],
+   "summary": "Broadside's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — the two-register surface system (dark ink-black / fire-orange), massive Barlow in lowercase weight 900 treated as graphic primitive, IBM Plex Mono chrome (uppercase, 0.1",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/broadside/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested."
+   }
+  },
+  "preset:capsule": {
+   "kind": "frame_preset",
+   "title": "Capsule",
+   "register": "light",
+   "moods": [
+    "playful",
+    "premium",
+    "friendly"
+   ],
+   "topics": [
+    "consumer-lifestyle",
+    "wellness-nature"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Bodoni Moda",
+    "Space Grotesk"
+   ],
+   "colors": [
+    "#1A1A1A",
+    "#1E1E1E",
+    "#8BB4F7",
+    "#A06CE8",
+    "#A8E6CF",
+    "#C4D94E",
+    "#C5B5E0",
+    "#E85D4E",
+    "#F2D160",
+    "#F5B895"
+   ],
+   "summary": "Capsule's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — the pill geometry (9999px small / 2rem cards) with a 2px ink outline on everything, the sun-bleached cream canvas, the nine-color candy palette, Bodoni Moda + Space Grotes",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/capsule/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:cartesian": {
+   "kind": "frame_preset",
+   "title": "Cartesian",
+   "register": "light",
+   "moods": [
+    "calm",
+    "refined",
+    "precise"
+   ],
+   "topics": [
+    "science",
+    "data-science",
+    "finance-business",
+    "history-culture"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Inter",
+    "Playfair Display"
+   ],
+   "colors": [
+    "#1A1A1A",
+    "#5A5A5A",
+    "#8A8178",
+    "#B8B0A4",
+    "#E2DBD1",
+    "#EDE8E0"
+   ],
+   "summary": "Cartesian's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — the five-tone warm-stone palette, Playfair Display 400 + Inter, the universal 1px taupe hairline as the only structural device, compass-drafted geometric rings, and zero",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/cartesian/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:cobalt-grid": {
+   "kind": "frame_preset",
+   "title": "Cobalt Grid",
+   "register": "light",
+   "moods": [
+    "technical",
+    "precise"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "science"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "DM Mono",
+    "Hanken Grotesk",
+    "Newsreader"
+   ],
+   "colors": [
+    "#1F2BE0",
+    "#5560E5",
+    "#E6E0CE",
+    "#F0EBDE"
+   ],
+   "summary": "Cobalt Grid's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — warm cream paper, electric cobalt ink (the only ink), the permanent graph-paper grid, Newsreader serif 400 + Hanken Grotesk + DM Mono, the top/bottom cobalt hairlines,",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/cobalt-grid/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested."
+   }
+  },
+  "preset:code-editorial": {
+   "kind": "frame_preset",
+   "title": "Code Editorial",
+   "register": "mixed",
+   "moods": [
+    "editorial",
+    "refined",
+    "technical"
+   ],
+   "topics": [
+    "software-dev",
+    "ai-ml",
+    "productivity"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "EB Garamond",
+    "Inter",
+    "JetBrains Mono"
+   ],
+   "colors": [
+    "#141413",
+    "#181715",
+    "#1F1E1B",
+    "#252320",
+    "#CC785C",
+    "#ECE3D4",
+    "#EFE9DE",
+    "#FAF9F5"
+   ],
+   "summary": "Code editorial's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — warm cream paper (never pure white, never cool), a single terracotta coral as scarce \"voltage\", hairline ink elevation (no heavy shadow), EB Garamond for all displa",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/code-editorial/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested."
+   }
+  },
+  "preset:coral": {
+   "kind": "frame_preset",
+   "title": "Coral",
+   "register": "mixed",
+   "moods": [
+    "loud",
+    "kinetic",
+    "warm"
+   ],
+   "topics": [
+    "consumer-lifestyle",
+    "announcements",
+    "wellness-nature"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Bebas Neue",
+    "Inter"
+   ],
+   "colors": [
+    "#1A1A1A",
+    "#6B6B6B",
+    "#B0B0B0",
+    "#D44A4A",
+    "#E85D5D",
+    "#E8E0D4",
+    "#F5F0E8",
+    "#FFFFFF"
+   ],
+   "summary": "Coral's design.md. The unit is the frame (1920×1080), not the slide-in-a-deck. Atoms are identical and sacred — the three-surface system (coral fire / ink black / warm cream), Bebas Neue uppercase tracked + Inter body, the 45° diagonal hatch, decorative wallpa",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/coral/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:creative-mode": {
+   "kind": "frame_preset",
+   "title": "Creative Mode",
+   "register": "light",
+   "moods": [
+    "playful",
+    "raw",
+    "kinetic"
+   ],
+   "topics": [
+    "productivity",
+    "software-dev",
+    "consumer-lifestyle"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Archivo Black",
+    "JetBrains Mono",
+    "Space Grotesk"
+   ],
+   "colors": [
+    "#0F0F0F",
+    "#136636",
+    "#1F8A4C",
+    "#2A2A2A",
+    "#D14E8B",
+    "#E4DCC4",
+    "#E85A1F",
+    "#EFE9D9",
+    "#F06CA8",
+    "#F5C518"
+   ],
+   "summary": "Creative Mode's design.md. The unit is the frame (1920×1080), not the slide-in-a-deck. Atoms are identical and sacred — warm cream canvas, 4px ink borders, hard offset shadows (no blur), Archivo Black uppercase at 0.92 line-height, JetBrains Mono taxonomy, Spa",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/creative-mode/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:daisy-days": {
+   "kind": "frame_preset",
+   "title": "Daisy Days",
+   "register": "light",
+   "moods": [
+    "friendly",
+    "playful",
+    "warm"
+   ],
+   "topics": [
+    "kids-education",
+    "wellness-nature",
+    "consumer-lifestyle"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "Fredoka One",
+    "Quicksand"
+   ],
+   "colors": [
+    "#2D2D2D",
+    "#6B6B6B",
+    "#7ECDC0",
+    "#A8D8F0",
+    "#A8E6CF",
+    "#D4A5E8",
+    "#F5F0E6",
+    "#F7C8D4",
+    "#F8635F",
+    "#FDE68A"
+   ],
+   "summary": "Daisy Days' design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — the sunny-garden pastel palette (cream + turquoise/pink/butter/mint/ lavender/peach/sky + coral accent), charcoal 3px outlines, hard offset shadows (6/4px, no blur), the",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/daisy-days/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "preset:editorial-forest": {
+   "kind": "frame_preset",
+   "title": "Editorial Forest",
+   "register": "dark",
+   "moods": [
+    "natural",
+    "editorial",
+    "calm"
+   ],
+   "topics": [
+    "science",
+    "wellness-nature",
+    "history-culture"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "fonts": [
+    "JetBrains Mono",
+    "Source Serif 4"
+   ],
+   "colors": [
+    "#1A1A17",
+    "#243A21",
+    "#2E4A2A",
+    "#3A5A36",
+    "#D27E96",
+    "#E6DCC4",
+    "#E89CB1",
+    "#EFE7D4"
+   ],
+   "summary": "Editorial Forest's design.md. The unit is the frame (1920×1080). Atoms are identical and sacred — the green/pink/cream editorial triad, Source Serif 4 at weight 500 (optical-size axis) for all display + JetBrains Mono 500 uppercase chrome, flat paper depth (no",
+   "has_caption_skin": true,
+   "requires": [
+    "vendor fonts into assets/ (hyperframes-localize-fonts) - presets assume web fonts"
+   ],
+   "source": "skills/hyperframes-creative/frame-presets/editorial-forest/FRAME.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested."
+   }
+  },
+  "palette:bold-energetic": {
+   "kind": "palette",
+   "title": "Bold Energetic",
+   "register": "mixed",
+   "moods": [
+    "loud",
+    "kinetic"
+   ],
+   "topics": [
+    "announcements",
+    "consumer-lifestyle"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#FFBE0B",
+    "#FB5607",
+    "#FF006E",
+    "#8338EC",
+    "#3A86FF"
+   ],
+   "colour_sets": 8,
+   "summary": "Product launches, social media, announcements, high-energy content.",
+   "source": "skills/hyperframes-creative/palettes/bold-energetic.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "palette:clean-corporate": {
+   "kind": "palette",
+   "title": "Clean Corporate",
+   "register": "light",
+   "moods": [
+    "trustworthy",
+    "precise"
+   ],
+   "topics": [
+    "productivity",
+    "finance-business",
+    "kids-education",
+    "data-science",
+    "science"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#FFFCF2",
+    "#CCC5B9",
+    "#403D39",
+    "#252422",
+    "#EB5E28"
+   ],
+   "colour_sets": 8,
+   "summary": "Explainers, tutorials, presentations, professional content.",
+   "source": "skills/hyperframes-creative/palettes/clean-corporate.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "palette:dark-premium": {
+   "kind": "palette",
+   "title": "Dark Premium",
+   "register": "dark",
+   "moods": [
+    "premium",
+    "dramatic",
+    "futuristic"
+   ],
+   "topics": [
+    "ai-ml",
+    "finance-business",
+    "software-dev",
+    "security",
+    "data-science"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#000000",
+    "#14213D",
+    "#FCA311",
+    "#E5E5E5",
+    "#FFFFFF"
+   ],
+   "colour_sets": 8,
+   "summary": "Tech, finance, luxury, cinematic content.",
+   "source": "skills/hyperframes-creative/palettes/dark-premium.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "palette:jewel-rich": {
+   "kind": "palette",
+   "title": "Jewel Rich",
+   "register": "dark",
+   "moods": [
+    "premium",
+    "dramatic",
+    "refined"
+   ],
+   "topics": [
+    "history-culture",
+    "announcements"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#5F0F40",
+    "#9A031E",
+    "#FB8B24",
+    "#E36414",
+    "#0F4C5C"
+   ],
+   "colour_sets": 8,
+   "summary": "Luxury, events, sophisticated, high-end content.",
+   "source": "skills/hyperframes-creative/palettes/jewel-rich.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "palette:monochrome": {
+   "kind": "palette",
+   "title": "Monochrome",
+   "register": "mixed",
+   "moods": [
+    "dramatic",
+    "refined",
+    "raw"
+   ],
+   "topics": [
+    "news-opinion",
+    "security"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#F8F9FA",
+    "#E9ECEF",
+    "#DEE2E6",
+    "#CED4DA",
+    "#ADB5BD",
+    "#6C757D",
+    "#495057",
+    "#343A40",
+    "#212529"
+   ],
+   "colour_sets": 8,
+   "summary": "Dramatic, typography-focused, serious content.",
+   "source": "skills/hyperframes-creative/palettes/monochrome.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "palette:nature-earth": {
+   "kind": "palette",
+   "title": "Nature Earth",
+   "register": "mixed",
+   "moods": [
+    "natural",
+    "calm",
+    "warm"
+   ],
+   "topics": [
+    "wellness-nature",
+    "science"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#606C38",
+    "#283618",
+    "#FEFAE0",
+    "#DDA15E",
+    "#BC6C25"
+   ],
+   "colour_sets": 8,
+   "summary": "Sustainability, outdoor, organic, wellness content.",
+   "source": "skills/hyperframes-creative/palettes/nature-earth.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "palette:neon-electric": {
+   "kind": "palette",
+   "title": "Neon Electric",
+   "register": "dark",
+   "moods": [
+    "futuristic",
+    "kinetic",
+    "loud"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "consumer-lifestyle"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#F72585",
+    "#B5179E",
+    "#7209B7",
+    "#560BAD",
+    "#3A0CA3"
+   ],
+   "colour_sets": 8,
+   "summary": "Gaming, tech, nightlife, Gen Z content.",
+   "source": "skills/hyperframes-creative/palettes/neon-electric.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "palette:pastel-soft": {
+   "kind": "palette",
+   "title": "Pastel Soft",
+   "register": "light",
+   "moods": [
+    "friendly",
+    "calm",
+    "playful"
+   ],
+   "topics": [
+    "wellness-nature",
+    "kids-education",
+    "consumer-lifestyle"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#CDB4DB",
+    "#FFC8DD",
+    "#FFAFCC",
+    "#BDE0FE",
+    "#A2D2FF"
+   ],
+   "colour_sets": 8,
+   "summary": "Fashion, beauty, lifestyle, wellness content.",
+   "source": "skills/hyperframes-creative/palettes/pastel-soft.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "palette:warm-editorial": {
+   "kind": "palette",
+   "title": "Warm Editorial",
+   "register": "mixed",
+   "moods": [
+    "warm",
+    "editorial",
+    "cultural"
+   ],
+   "topics": [
+    "history-culture",
+    "news-opinion",
+    "science"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "colors": [
+    "#264653",
+    "#2A9D8F",
+    "#E9C46A",
+    "#F4A261",
+    "#E76F51"
+   ],
+   "colour_sets": 8,
+   "summary": "Storytelling, documentaries, case studies, narrative content.",
+   "source": "skills/hyperframes-creative/palettes/warm-editorial.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "style:swiss-pulse": {
+   "kind": "visual_style",
+   "title": "Swiss Pulse",
+   "register": "light",
+   "moods": [
+    "precise",
+    "technical"
+   ],
+   "topics": [
+    "software-dev",
+    "data-science",
+    "finance-business"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inspired_by": "Josef Muller-Brockmann",
+   "pairs_with": [
+    "shader:cinematic-zoom",
+    "shader:sdf-iris"
+   ],
+   "source": "skills/hyperframes-creative/references/visual-styles.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "style:velvet-standard": {
+   "kind": "visual_style",
+   "title": "Velvet Standard",
+   "register": "mixed",
+   "moods": [
+    "premium",
+    "refined"
+   ],
+   "topics": [
+    "finance-business",
+    "announcements"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inspired_by": "Massimo Vignelli",
+   "pairs_with": [
+    "shader:cross-warp-morph"
+   ],
+   "source": "skills/hyperframes-creative/references/visual-styles.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "style:deconstructed": {
+   "kind": "visual_style",
+   "title": "Deconstructed",
+   "register": "dark",
+   "moods": [
+    "raw",
+    "technical"
+   ],
+   "topics": [
+    "security",
+    "software-dev",
+    "news-opinion"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inspired_by": "Neville Brody",
+   "pairs_with": [
+    "shader:glitch",
+    "shader:whip-pan"
+   ],
+   "source": "skills/hyperframes-creative/references/visual-styles.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "style:maximalist-type": {
+   "kind": "visual_style",
+   "title": "Maximalist Type",
+   "register": "mixed",
+   "moods": [
+    "loud",
+    "kinetic"
+   ],
+   "topics": [
+    "announcements",
+    "consumer-lifestyle"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inspired_by": "Paula Scher",
+   "pairs_with": [
+    "shader:ridged-burn"
+   ],
+   "source": "skills/hyperframes-creative/references/visual-styles.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "style:data-drift": {
+   "kind": "visual_style",
+   "title": "Data Drift",
+   "register": "dark",
+   "moods": [
+    "futuristic",
+    "dramatic"
+   ],
+   "topics": [
+    "ai-ml",
+    "data-science",
+    "science"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inspired_by": "Refik Anadol",
+   "pairs_with": [
+    "shader:gravitational-lens",
+    "shader:domain-warp"
+   ],
+   "source": "skills/hyperframes-creative/references/visual-styles.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "style:soft-signal": {
+   "kind": "visual_style",
+   "title": "Soft Signal",
+   "register": "light",
+   "moods": [
+    "warm",
+    "calm",
+    "friendly"
+   ],
+   "topics": [
+    "wellness-nature",
+    "history-culture"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inspired_by": "Stefan Sagmeister",
+   "pairs_with": [
+    "shader:thermal-distortion"
+   ],
+   "source": "skills/hyperframes-creative/references/visual-styles.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "style:folk-frequency": {
+   "kind": "visual_style",
+   "title": "Folk Frequency",
+   "register": "light",
+   "moods": [
+    "playful",
+    "cultural",
+    "warm"
+   ],
+   "topics": [
+    "consumer-lifestyle",
+    "kids-education",
+    "history-culture"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inspired_by": "Eduardo Terrazas",
+   "pairs_with": [
+    "shader:swirl-vortex",
+    "shader:ripple-waves"
+   ],
+   "source": "skills/hyperframes-creative/references/visual-styles.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "style:shadow-cut": {
+   "kind": "visual_style",
+   "title": "Shadow Cut",
+   "register": "dark",
+   "moods": [
+    "dramatic",
+    "raw"
+   ],
+   "topics": [
+    "security",
+    "news-opinion",
+    "history-culture"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "inspired_by": "Hans Hillmann",
+   "pairs_with": [
+    "shader:domain-warp"
+   ],
+   "source": "skills/hyperframes-creative/references/visual-styles.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "shader:domain-warp": {
+   "kind": "shader_transition",
+   "title": "domain-warp",
+   "register": "n/a",
+   "moods": [
+    "dramatic",
+    "futuristic"
+   ],
+   "topics": [
+    "ai-ml",
+    "security",
+    "science"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Organic noise-based warp with glowing edge",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:ridged-burn": {
+   "kind": "shader_transition",
+   "title": "ridged-burn",
+   "register": "n/a",
+   "moods": [
+    "loud",
+    "dramatic",
+    "kinetic"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Ridged noise burn with sparks and heat glow",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:whip-pan": {
+   "kind": "shader_transition",
+   "title": "whip-pan",
+   "register": "n/a",
+   "moods": [
+    "kinetic",
+    "raw"
+   ],
+   "topics": [
+    "software-dev",
+    "news-opinion",
+    "productivity"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Horizontal motion blur simulating a fast camera pan",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:sdf-iris": {
+   "kind": "shader_transition",
+   "title": "sdf-iris",
+   "register": "n/a",
+   "moods": [
+    "precise",
+    "technical"
+   ],
+   "topics": [
+    "software-dev",
+    "data-science",
+    "ai-ml"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Circular iris wipe with glowing ring edge",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:ripple-waves": {
+   "kind": "shader_transition",
+   "title": "ripple-waves",
+   "register": "n/a",
+   "moods": [
+    "playful",
+    "calm"
+   ],
+   "topics": [
+    "consumer-lifestyle",
+    "wellness-nature",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Concentric ripple distortion radiating from centre",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:gravitational-lens": {
+   "kind": "shader_transition",
+   "title": "gravitational-lens",
+   "register": "n/a",
+   "moods": [
+    "futuristic",
+    "dramatic"
+   ],
+   "topics": [
+    "ai-ml",
+    "science",
+    "data-science"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Warping gravity well with chromatic aberration",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:cinematic-zoom": {
+   "kind": "shader_transition",
+   "title": "cinematic-zoom",
+   "register": "n/a",
+   "moods": [
+    "kinetic",
+    "precise"
+   ],
+   "topics": [
+    "software-dev",
+    "announcements",
+    "productivity"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Radial zoom blur with chromatic fringing",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:chromatic-split": {
+   "kind": "shader_transition",
+   "title": "chromatic-split",
+   "register": "n/a",
+   "moods": [
+    "technical",
+    "futuristic"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "security"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "RGB channel separation expanding from centre",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:glitch": {
+   "kind": "shader_transition",
+   "title": "glitch",
+   "register": "n/a",
+   "moods": [
+    "raw",
+    "technical",
+    "urgent"
+   ],
+   "topics": [
+    "security",
+    "software-dev",
+    "news-opinion"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Digital glitch with block displacement and scanlines",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:swirl-vortex": {
+   "kind": "shader_transition",
+   "title": "swirl-vortex",
+   "register": "n/a",
+   "moods": [
+    "playful",
+    "kinetic"
+   ],
+   "topics": [
+    "consumer-lifestyle",
+    "kids-education"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Spiral rotation with noise-based warping",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:thermal-distortion": {
+   "kind": "shader_transition",
+   "title": "thermal-distortion",
+   "register": "n/a",
+   "moods": [
+    "warm",
+    "calm"
+   ],
+   "topics": [
+    "wellness-nature",
+    "history-culture",
+    "consumer-lifestyle"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Heat shimmer rising from the bottom",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:flash-through-white": {
+   "kind": "shader_transition",
+   "title": "flash-through-white",
+   "register": "n/a",
+   "moods": [
+    "premium",
+    "urgent"
+   ],
+   "topics": [
+    "announcements",
+    "finance-business",
+    "news-opinion"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Flash to white then reveal the next scene",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:cross-warp-morph": {
+   "kind": "shader_transition",
+   "title": "cross-warp-morph",
+   "register": "n/a",
+   "moods": [
+    "refined",
+    "premium"
+   ],
+   "topics": [
+    "finance-business",
+    "science",
+    "history-culture"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Noise-driven morph blending both scenes",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "shader:light-leak": {
+   "kind": "shader_transition",
+   "title": "light-leak",
+   "register": "n/a",
+   "moods": [
+    "warm",
+    "dramatic"
+   ],
+   "topics": [
+    "history-culture",
+    "wellness-nature",
+    "news-opinion"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "Warm cinematic light leak with lens flare",
+   "requires": [
+    "literal colours (no var()) and explicit scene background-color",
+    "no 'transparent' in gradients",
+    "HyperShader owns scene visibility",
+    "scenes overlap during the transition window"
+   ],
+   "cost": "slow: Node-side layered render, several seconds per frame on 2-core software GL",
+   "source": "packages/shader-transitions/src/shaders/registry.ts",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "partial",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
+   }
+  },
+  "css-transition:crossfade": {
+   "kind": "css_transition",
+   "title": "Crossfade",
+   "family": "dissolve",
+   "register": "n/a",
+   "moods": [
+    "calm"
+   ],
+   "topics": [
+    "science",
+    "wellness-nature",
+    "history-culture",
+    "finance-business"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP dissolve transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-dissolve.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:blur-crossfade": {
+   "kind": "css_transition",
+   "title": "Blur Crossfade",
+   "family": "dissolve",
+   "register": "n/a",
+   "moods": [
+    "calm",
+    "refined"
+   ],
+   "topics": [
+    "science",
+    "wellness-nature",
+    "history-culture",
+    "finance-business"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP dissolve transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-dissolve.md",
+   "confidence": "experimental",
+   "evidence_count": 1,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "pass",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "ep3 copy, scene 4->5, 0.45s: check passed but Layout warned content_overlap between outgoing/incoming text (3 samples); add data-layout-allow-overlap on the scenes for the window. Render 1m45s, frames show blur-out/fade-in."
+   }
+  },
+  "css-transition:focus-pull": {
+   "kind": "css_transition",
+   "title": "Focus Pull",
+   "family": "dissolve",
+   "register": "n/a",
+   "moods": [
+    "refined",
+    "dramatic"
+   ],
+   "topics": [
+    "science",
+    "wellness-nature",
+    "history-culture",
+    "finance-business"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP dissolve transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-dissolve.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:color-dip": {
+   "kind": "css_transition",
+   "title": "Color Dip",
+   "family": "dissolve",
+   "register": "n/a",
+   "moods": [
+    "premium"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP dissolve transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-dissolve.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:push-slide": {
+   "kind": "css_transition",
+   "title": "Push Slide",
+   "family": "push",
+   "register": "n/a",
+   "moods": [
+    "precise"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP push transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-push.md",
+   "confidence": "experimental",
+   "evidence_count": 1,
+   "seeded_by": "claude",
+   "reviewed": false,
+   "verified": {
+    "result": "pass",
+    "date": "2026-10-11",
+    "aspect": "9:16",
+    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
+    "evidence": "ep3 copy, scene 2->3, 0.45s overlap: hyperframes check passed (0 layout warnings, 98/98 contrast), full render 1m45s on the normal fast path, mid-transition frames show the push."
+   }
+  },
+  "css-transition:vertical-push": {
+   "kind": "css_transition",
+   "title": "Vertical Push",
+   "family": "push",
+   "register": "n/a",
+   "moods": [
+    "precise",
+    "kinetic"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP push transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-push.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:elastic-push": {
+   "kind": "css_transition",
+   "title": "Elastic Push",
+   "family": "push",
+   "register": "n/a",
+   "moods": [
+    "playful",
+    "kinetic"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP push transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-push.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:squeeze": {
+   "kind": "css_transition",
+   "title": "Squeeze",
+   "family": "push",
+   "register": "n/a",
+   "moods": [
+    "kinetic",
+    "raw"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP push transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-push.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:zoom-through": {
+   "kind": "css_transition",
+   "title": "Zoom Through",
+   "family": "scale",
+   "register": "n/a",
+   "moods": [
+    "kinetic",
+    "dramatic"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP scale transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-scale.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:zoom-out": {
+   "kind": "css_transition",
+   "title": "Zoom Out",
+   "family": "scale",
+   "register": "n/a",
+   "moods": [
+    "calm",
+    "refined"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP scale transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-scale.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:circle-iris": {
+   "kind": "css_transition",
+   "title": "Circle Iris",
+   "family": "radial",
+   "register": "n/a",
+   "moods": [
+    "playful",
+    "precise"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP radial transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-radial.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:diamond-iris": {
+   "kind": "css_transition",
+   "title": "Diamond Iris",
+   "family": "radial",
+   "register": "n/a",
+   "moods": [
+    "precise"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP radial transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-radial.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:diagonal-split": {
+   "kind": "css_transition",
+   "title": "Diagonal Split",
+   "family": "radial",
+   "register": "n/a",
+   "moods": [
+    "raw",
+    "kinetic"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP radial transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-radial.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:staggered-color-blocks": {
+   "kind": "css_transition",
+   "title": "Staggered Color Blocks",
+   "family": "cover",
+   "register": "n/a",
+   "moods": [
+    "loud",
+    "playful"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP cover transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-cover.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:horizontal-blinds": {
+   "kind": "css_transition",
+   "title": "Horizontal Blinds",
+   "family": "cover",
+   "register": "n/a",
+   "moods": [
+    "precise"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP cover transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-cover.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:vertical-blinds": {
+   "kind": "css_transition",
+   "title": "Vertical Blinds",
+   "family": "cover",
+   "register": "n/a",
+   "moods": [
+    "precise"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP cover transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-cover.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:blur-through": {
+   "kind": "css_transition",
+   "title": "Blur Through",
+   "family": "blur",
+   "register": "n/a",
+   "moods": [
+    "calm",
+    "refined"
+   ],
+   "topics": [
+    "science",
+    "wellness-nature",
+    "history-culture",
+    "finance-business"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP blur transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-blur.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:directional-blur": {
+   "kind": "css_transition",
+   "title": "Directional Blur",
+   "family": "blur",
+   "register": "n/a",
+   "moods": [
+    "kinetic"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP blur transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-blur.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:glitch": {
+   "kind": "css_transition",
+   "title": "Glitch",
+   "family": "distortion",
+   "register": "n/a",
+   "moods": [
+    "raw",
+    "technical",
+    "urgent"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP distortion transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-distortion.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:chromatic-aberration": {
+   "kind": "css_transition",
+   "title": "Chromatic Aberration",
+   "family": "distortion",
+   "register": "n/a",
+   "moods": [
+    "technical",
+    "futuristic"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP distortion transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-distortion.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:ripple": {
+   "kind": "css_transition",
+   "title": "Ripple",
+   "family": "distortion",
+   "register": "n/a",
+   "moods": [
+    "playful",
+    "calm"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP distortion transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-distortion.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:vhs-tape": {
+   "kind": "css_transition",
+   "title": "Vhs Tape",
+   "family": "distortion",
+   "register": "n/a",
+   "moods": [
+    "raw",
+    "cultural"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP distortion transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-distortion.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:light-leak": {
+   "kind": "css_transition",
+   "title": "Light Leak",
+   "family": "light",
+   "register": "n/a",
+   "moods": [
+    "warm",
+    "dramatic"
+   ],
+   "topics": [
+    "science",
+    "wellness-nature",
+    "history-culture",
+    "finance-business"
+   ],
+   "energy": "calm",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP light transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-light.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:overexposure-burn": {
+   "kind": "css_transition",
+   "title": "Overexposure Burn",
+   "family": "light",
+   "register": "n/a",
+   "moods": [
+    "dramatic",
+    "loud"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP light transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-light.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:film-burn": {
+   "kind": "css_transition",
+   "title": "Film Burn",
+   "family": "light",
+   "register": "n/a",
+   "moods": [
+    "warm",
+    "cultural"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP light transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-light.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:shutter": {
+   "kind": "css_transition",
+   "title": "Shutter",
+   "family": "mechanical",
+   "register": "n/a",
+   "moods": [
+    "precise",
+    "technical"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP mechanical transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-mechanical.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:clock-wipe": {
+   "kind": "css_transition",
+   "title": "Clock Wipe",
+   "family": "mechanical",
+   "register": "n/a",
+   "moods": [
+    "precise",
+    "playful"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP mechanical transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-mechanical.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:gravity-drop": {
+   "kind": "css_transition",
+   "title": "Gravity Drop",
+   "family": "other",
+   "register": "n/a",
+   "moods": [
+    "playful",
+    "kinetic"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP other transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-other.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:morph-circle": {
+   "kind": "css_transition",
+   "title": "Morph Circle",
+   "family": "other",
+   "register": "n/a",
+   "moods": [
+    "playful",
+    "friendly"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP other transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-other.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:3d-card-flip": {
+   "kind": "css_transition",
+   "title": "3D Card Flip",
+   "family": "3d",
+   "register": "n/a",
+   "moods": [
+    "playful",
+    "technical"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP 3d transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-3d.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:grid-dissolve": {
+   "kind": "css_transition",
+   "title": "Grid Dissolve",
+   "family": "grid",
+   "register": "n/a",
+   "moods": [
+    "technical"
+   ],
+   "topics": [
+    "ai-ml",
+    "software-dev",
+    "data-science",
+    "productivity",
+    "kids-education"
+   ],
+   "energy": "medium",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP grid transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": "upstream warns visible repeating grids look cheap; use sparingly",
+   "source": "skills/hyperframes-animation/transitions/css-grid.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  },
+  "css-transition:page-burn": {
+   "kind": "css_transition",
+   "title": "Page Burn",
+   "family": "destruction",
+   "register": "n/a",
+   "moods": [
+    "dramatic",
+    "raw"
+   ],
+   "topics": [
+    "announcements",
+    "news-opinion",
+    "consumer-lifestyle",
+    "security"
+   ],
+   "energy": "high",
+   "aspects": [
+    "16:9",
+    "9:16",
+    "1:1"
+   ],
+   "summary": "CSS/GSAP destruction transition (transform/opacity/filter/clip-path on scene containers)",
+   "requires": [
+    "scenes overlap during the transition window",
+    "outgoing scene fully visible when it starts (no exit animation before it)"
+   ],
+   "cost": "fast: normal render path",
+   "notes": null,
+   "source": "skills/hyperframes-animation/transitions/css-destruction.md",
+   "confidence": "unverified",
+   "evidence_count": 0,
+   "seeded_by": "claude",
+   "reviewed": false
+  }
+ },
+ "findings": [
+  {
+   "id": "DL-001",
+   "topic": "shader transitions",
+   "finding": "In headless-shell without drawElementImage, HyperShader silently degrades to hard cuts; the Node-side layered path blends effects over black scene textures. Treat shader transitions as untested until a Mac render proves them; never rely on them for a deadline."
+  },
+  {
+   "id": "DL-002",
+   "topic": "opaque per-scene backgrounds",
+   "finding": "Giving each scene an opaque background hides any shared overlay that has no z-index (the caption layer vanished). Raise shared layers (captions, progress, brand marks) above the scenes."
+  },
+  {
+   "id": "DL-003",
+   "topic": "backdrop variety vs coherence",
+   "finding": "Six unrelated backdrop colours passed Rule A but the independent critic called it 'six templates from one pack' (continuity 6 vs 9). One colour family varied by tier/structure also passed Rule A (5 of 6 distinct) and was preferred. Pick backdrops from one palette/preset family."
+  },
+  {
+   "id": "DL-004",
+   "topic": "css transition overlap",
+   "finding": "CSS transitions overlap two scenes; hyperframes check raises content_overlap warnings for text-over-text (blur crossfade). Mark the window with data-layout-allow-overlap. Push-slide raised none."
+  },
+  {
+   "id": "DL-005",
+   "topic": "rule B extraction",
+   "finding": "Rule B reads the signature from #root CSS; once scenes carry their own backdrops it is stale (flagged a different-looking video as a duplicate of pilot-001). Compute the signature from the opening scene or the measured scene backdrops before relying on Rule B with per-scene backdrops."
+  },
+  {
+   "id": "DL-006",
+   "topic": "static lint of shader compositions",
+   "finding": "hyperframes lint reports missing_timeline_registry for HyperShader.init compositions unless window.__timelines[id] is assigned explicitly."
+  },
+  {
+   "id": "DL-007",
+   "topic": "fonts",
+   "finding": "Frame presets assume web fonts (Barlow, Playfair, Bodoni...); vendor them into assets/ (hyperframes-localize-fonts) before a render, as our pipeline renders offline."
+  }
+ ]
+}

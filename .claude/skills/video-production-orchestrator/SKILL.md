@@ -12,6 +12,7 @@ You run a video from request to exported file, and you decide *how* before anyth
 2. **What should the viewer do or understand after?** One sentence. If there is none, stop and ask.
 3. **Which format?** `short` or `long`, platforms, aspect. Lengths come from `python -m contentos.production.platforms budget --kind short|long`, never from a guess.
 4. **Which techniques?** Query the catalogue by purpose, not by taste: `python -m contentos.intelligence.catalogue query --purpose <p> --content-type <t> --aspect 9:16`. Every candidate shows why it ranked. Then apply the simpler-alternative test from `video-director`.
+   **Which look and transitions?** Query the design library by subject: `python -m contentos.intelligence.designs recommend --topic <t> --mood <m> --register dark|light --aspect 9:16 --prefer-fast`. Pick backdrops from ONE preset or palette family (see docs/video-intelligence/03-design-library.md); use CSS transitions, not shader transitions, until a Mac render has verified them; then run Rule A and Rule B.
 5. **What can fail?** `./contentos.sh doctor`, `./contentos.sh storage paths --check`, and `references/knowledge-base.md` known failures. Name the fallback before you rely on a tool.
 
 Write the answers into a decision record (`templates/decision-record.example.json`) in the job folder. Say what is evidence and what is your judgement; an absent number is "unknown", never a guess.
