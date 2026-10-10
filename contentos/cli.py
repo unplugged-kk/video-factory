@@ -75,6 +75,20 @@ def cmd_qa(a):
     return 1 if any(s == "FAIL" for _, s, _ in res) else 0
 
 
+def cmd_preview(a):
+    """Frames at exact timestamps: from a HyperFrames project (pre-render) or a finished MP4 (post-render), plus a contact sheet."""
+    from pathlib import Path
+    from .production import preview
+    times = [float(x) for x in a.at.split(",")]
+    out = Path(a.out)
+    frames = preview.video_frames(a.target, times, out) if a.target.endswith(".mp4") else preview.snapshot(a.target, times, out)
+    if a.sheet:
+        preview.contact_sheet(frames, out / "contact-sheet.png", cols=a.cols)
+    for f in frames:
+        print(f)
+    return 0
+
+
 def cmd_approve(a):
     ledger.approve(a.content_id, a.gate, note=a.note)
     print(f"approved {a.gate} for {a.content_id}")
@@ -175,6 +189,7 @@ def main():
     pr = sp.add_parser("production", help="shared production core: retries, failure classes, one JSON result line"); pr.add_argument("action", choices=["run"]); pr.add_argument("spec")
     pr.add_argument("--approve-private", action="store_true"); pr.set_defaults(f=cmd_production)
     q = sp.add_parser("qa"); q.add_argument("video"); q.add_argument("--format", default="9:16"); q.set_defaults(f=cmd_qa)
+    pv = sp.add_parser("preview", help="preview frames from a project dir (pre-render) or an .mp4 (post-render)"); pv.add_argument("target"); pv.add_argument("--at", required=True, help="comma-separated seconds"); pv.add_argument("--out", required=True); pv.add_argument("--sheet", action="store_true"); pv.add_argument("--cols", type=int, default=6); pv.set_defaults(f=cmd_preview)
     ap = sp.add_parser("approve"); ap.add_argument("content_id"); ap.add_argument("gate"); ap.add_argument("--note", default=""); ap.set_defaults(f=cmd_approve)
     j = sp.add_parser("jev"); j.add_argument("action", choices=["status", "triage"]); j.add_argument("topics", nargs="*"); j.set_defaults(f=cmd_jev)
     l = sp.add_parser("learn"); l.add_argument("loop", choices=["providers", "cost", "calibration", "platforms", "packaging"]); l.set_defaults(f=cmd_learn)
