@@ -4,6 +4,8 @@ Local-first YouTube content pipeline for an Apple Silicon Mac. Thin Python CLI t
 tools you already have (hyperframes, ffmpeg, Kokoro, whisper.cpp, the `yt-*` Agent Skills), records
 every stage in a SQLite ledger, and refuses to publish without a gate.
 
+**New here, or an agent?** Read [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) for how the factory works end to end, then [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the rules.
+
 ```bash
 ./scripts/bootstrap-mac.sh                      # idempotent installs + doctor
 ./contentos.sh doctor                           # PASS / NOT_INSTALLED / OPTIONAL per provider, with fix commands
