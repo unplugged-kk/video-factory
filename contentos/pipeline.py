@@ -12,7 +12,7 @@ from pathlib import Path
 import yaml
 
 from . import export as exporter
-from . import ledger, mpt, providers, storage
+from . import hf, ledger, mpt, providers, storage
 from .qa import probe_video, run_qa
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -106,7 +106,7 @@ def s_voice(ctx):
         wav = vd / f"{i:02d}.wav"
         if not wav.exists():
             raw = vd / f"{i:02d}.raw.wav"
-            sh(["npx", "--no-install", "hyperframes", "tts", ln.get("tts", ln["say"]), "-v", voice, "-o", str(raw)])
+            sh(hf.command("tts", ln.get("tts", ln["say"]), "-v", voice, "-o", raw))
             sh(["ffmpeg", "-y", "-i", str(raw), "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", "24000", str(wav)])
             raw.unlink()
         outs.append(wav)
@@ -117,7 +117,7 @@ def words_for(wav, workdir):
     """Word timings from whisper.cpp (via hyperframes). Falls back to even spacing if ASR is unavailable."""
     workdir.mkdir(exist_ok=True)
     try:
-        sh(["npx", "--no-install", "hyperframes", "transcribe", str(wav), "--json", "-d", str(workdir)])
+        sh(hf.command("transcribe", wav, "--json", "-d", workdir))
         return [(w["text"], w["start"], w["end"]) for w in json.loads((workdir / "transcript.json").read_text())]
     except Exception:
         return None
@@ -177,7 +177,7 @@ h1{{font-size:{int(U*0.085)}px;font-weight:900;line-height:1.1;letter-spacing:-1
 {''.join(scenes)}{''.join(audios)}</div>
 <script>const tl=gsap.timeline({{paused:true}});{''.join(anim)}
 window.__timelines=window.__timelines||{{}};window.__timelines["root"]=tl;</script></body></html>""")
-    sh(["npx", "--no-install", "hyperframes", "lint"], cwd=proj)
+    sh(hf.command("lint"), cwd=proj)
     return "hyperframes", [proj / "index.html", proj / "hyperframes.json"]
 
 
@@ -185,7 +185,7 @@ def s_render(ctx):
     if ctx["spec"].get("render") == "mpt":
         return _mpt(mpt.render, ctx)
     mp4 = ctx["dir"] / "video.mp4"
-    cmd = ["npx", "--no-install", "hyperframes", "render", "-o", str(mp4)]
+    cmd = hf.command("render", "-o", mp4)
     hf_q = ctx["spec"].get("_v1_hyperframes_quality")
     if isinstance(hf_q, str) and hf_q.strip():
         cmd.extend(["-q", hf_q.strip()])

@@ -6,6 +6,8 @@ Local only. --describe false keeps hyperframes from calling Gemini even if GEMIN
 import subprocess
 from pathlib import Path
 
+from .. import hf
+
 
 def _run(cmd, cwd=None, timeout=300):
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=cwd, timeout=timeout)
@@ -17,8 +19,8 @@ def _run(cmd, cwd=None, timeout=300):
 def snapshot(project, times, out, cwd=None):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
-    _run(["npx", "--no-install", "hyperframes", "snapshot", str(project), "--at", ",".join(f"{t:.2f}" for t in times),
-          "--no-end", "--describe", "false", "-o", str(out)], cwd=cwd)
+    _run(hf.command("snapshot", project, "--at", ",".join(f"{t:.2f}" for t in times),
+                 "--no-end", "--describe", "false", "-o", out), cwd=cwd)
     return sorted(out.glob("*.png"))
 
 

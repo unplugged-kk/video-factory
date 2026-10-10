@@ -28,6 +28,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
+from contentos import hf  # noqa: E402
 from contentos.production import motion_audit as ma, preview  # noqa: E402
 
 VARIANTS = ("control", "variant-b")
@@ -112,7 +113,7 @@ def cmd_render(a):
         for fmt in FORMATS:
             mp4 = d / "renders" / f"{v}-{fmt}.mp4"
             mp4.parent.mkdir(exist_ok=True)
-            rc, s = run(["npx", "--no-install", "hyperframes", "render", "-o", str(mp4)], d / fmt, d / f"logs/render-{fmt}.log")
+            rc, s = run(hf.command("render", "-o", mp4), d / fmt, d / f"logs/render-{fmt}.log")
             out[f"{v}/{fmt}"] = {"render_seconds": s, "bytes": mp4.stat().st_size}
             print(v, fmt, out[f"{v}/{fmt}"], flush=True)
     (Path(a.exp) / "render-times.json").write_text(json.dumps(out, indent=1))
@@ -142,7 +143,7 @@ def cmd_measure(a):
             ydif, fps = ma.video_ydif(mp4)
             r["motion"] = ma.motion_stats(ydif, fps)
             for name in ("lint", "check"):
-                rc, _ = run(["npx", "--no-install", "hyperframes", name], d / fmt, d / f"logs/{name}-{fmt}.log", check=False)
+                rc, _ = run(hf.command(name), d / fmt, d / f"logs/{name}-{fmt}.log", check=False)
                 r[name] = {"exit": rc, "tail": (d / f"logs/{name}-{fmt}.log").read_text().strip().splitlines()[-3:]}
             res["runs"][f"{v}/{fmt}"] = r
             print("measured", v, fmt, flush=True)
