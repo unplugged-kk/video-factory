@@ -1,0 +1,18 @@
+{
+  "schema": "decision-record/1",
+  "request": "What happens when an AI agent uses a tool? (example)",
+  "classes": {"dominant": "explainer", "secondary": []},
+  "objective": {"audience": "developers new to agents", "takeaway": "The model asks; your code runs the tool.", "action": "learn"},
+  "format": {"chosen": {"kind": "short", "aspect": "9:16", "max_seconds": 180},
+             "eliminated": [{"option": "long 16:9", "why": "not requested; platforms.py long budget not needed"}],
+             "ratings_are_judgement": {"retention_fit": 4, "clarity": 5, "cost": 4, "reuse": 3, "risk": 4}},
+  "techniques": [{"scene": "contrast", "purpose": "difference", "chosen": "hf.blueprint:comparison-split",
+                  "catalogue_score": {"purpose": 3, "content_type": 2, "aspect": 1, "complexity": 0, "confidence": 0},
+                  "confidence": "unverified", "simpler_alternative_rejected_because": "two states must be weighed side by side"}],
+  "integrations": [{"id": "renderer:hyperframes", "status": "installed", "verified_by": "doctor 2026-10-10", "fallback": null}],
+  "expected_bottlenecks": ["compose authoring", "render ~26 s for a 50 s short (measured once)"],
+  "visual": {"rule_a": "declare >= ceil(scenes/2) backdrops", "rule_b": "check against last 5 shipped"},
+  "evidence": ["docs/video-intelligence/02-known-failures.md"],
+  "uncertainty": ["no audience analytics exist; all quality statements are internal review"],
+  "approvals_needed": ["SCRIPT_APPROVED", "PRODUCTION_APPROVED"]
+}

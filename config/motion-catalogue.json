@@ -1,0 +1,1939 @@
+{
+ "schema": "motion-catalogue/1",
+ "note": "Seed data. Maps each rule/blueprint in config/capabilities.json to the communication problem it solves. First draft by heuristic from each technique's own description (seeded_by heuristic-v1, reviewed false): treat purposes as a starting point to correct, never as evidence. Confidence stays 'unverified' with evidence_count 0 until an experiment or a shipped, QA-passed use is recorded in the workspace evidence overlay. Stable registry: contentos/production/direction.py never reads this file.",
+ "vocabulary": {
+  "purposes": [
+   "sequence",
+   "relationship",
+   "difference",
+   "emphasis",
+   "quantity",
+   "structure",
+   "demonstration",
+   "transition",
+   "mood",
+   "reveal",
+   "focus",
+   "rhythm",
+   "closure",
+   "social-proof"
+  ],
+  "content_types": [
+   "explainer",
+   "tutorial",
+   "product-demo",
+   "data-story",
+   "announcement",
+   "opinion",
+   "story",
+   "news",
+   "social-proof"
+  ],
+  "complexity": [
+   "low",
+   "medium",
+   "high"
+  ],
+  "confidence": [
+   "unverified",
+   "experimental",
+   "validated",
+   "preferred",
+   "deprecated"
+  ]
+ },
+ "entries": {
+  "hf.rule:3d-camera-flight": {
+   "purposes": [
+    "structure",
+    "mood"
+   ],
+   "content_types": [
+    "explainer",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:3d-page-scroll": {
+   "purposes": [
+    "demonstration",
+    "reveal"
+   ],
+   "content_types": [
+    "product-demo",
+    "tutorial"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:3d-text-depth-layers": {
+   "purposes": [
+    "emphasis",
+    "mood"
+   ],
+   "content_types": [
+    "announcement",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:ai-tracking-box": {
+   "purposes": [
+    "focus",
+    "demonstration"
+   ],
+   "content_types": [
+    "explainer",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:ambient-glow-bloom": {
+   "purposes": [
+    "mood",
+    "focus"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:anchored-layout-expand": {
+   "purposes": [
+    "structure",
+    "reveal"
+   ],
+   "content_types": [
+    "product-demo",
+    "tutorial"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:asr-keyword-glow": {
+   "purposes": [
+    "emphasis",
+    "rhythm"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:avatar-cloud-network": {
+   "purposes": [
+    "relationship",
+    "social-proof"
+   ],
+   "content_types": [
+    "social-proof",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:camera-cursor-tracking": {
+   "purposes": [
+    "focus",
+    "demonstration"
+   ],
+   "content_types": [
+    "tutorial",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:card-morph-anchor": {
+   "purposes": [
+    "transition"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:center-outward-expansion": {
+   "purposes": [
+    "reveal",
+    "structure"
+   ],
+   "content_types": [
+    "explainer",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:chart-scrub-readout": {
+   "purposes": [
+    "quantity",
+    "focus"
+   ],
+   "content_types": [
+    "data-story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:chromatic-glitch": {
+   "purposes": [
+    "emphasis",
+    "mood"
+   ],
+   "content_types": [
+    "news",
+    "story",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": "rapid colour flicker: keep it brief and well under 3 flashes per second",
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:context-sensitive-cursor": {
+   "purposes": [
+    "demonstration",
+    "rhythm"
+   ],
+   "content_types": [
+    "tutorial",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:control-target-sync": {
+   "purposes": [
+    "relationship",
+    "demonstration"
+   ],
+   "content_types": [
+    "tutorial",
+    "product-demo",
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:coordinate-target-zoom": {
+   "purposes": [
+    "focus"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:counting-dynamic-scale": {
+   "purposes": [
+    "quantity",
+    "emphasis"
+   ],
+   "content_types": [
+    "data-story",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:css-marker-patterns": {
+   "purposes": [
+    "emphasis"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:cursor-click-ripple": {
+   "purposes": [
+    "demonstration"
+   ],
+   "content_types": [
+    "tutorial",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:cursor-drag": {
+   "purposes": [
+    "demonstration"
+   ],
+   "content_types": [
+    "tutorial",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:depth-of-field-blur": {
+   "purposes": [
+    "focus"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:depth-scatter-assemble": {
+   "purposes": [
+    "structure",
+    "reveal"
+   ],
+   "content_types": [
+    "explainer",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:discrete-text-sequence": {
+   "purposes": [
+    "sequence",
+    "demonstration"
+   ],
+   "content_types": [
+    "tutorial",
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:dynamic-content-sequencing": {
+   "purposes": [
+    "sequence",
+    "rhythm"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:gradient-text-sweep": {
+   "purposes": [
+    "emphasis"
+   ],
+   "content_types": [
+    "announcement",
+    "opinion"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:gsap-effects": {
+   "purposes": [
+    "rhythm"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:hacker-flip-3d": {
+   "purposes": [
+    "reveal",
+    "emphasis"
+   ],
+   "content_types": [
+    "explainer",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": "glyph flicker: keep it brief",
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:kinetic-beat-slam": {
+   "purposes": [
+    "emphasis",
+    "rhythm"
+   ],
+   "content_types": [
+    "opinion",
+    "announcement",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:motion-blur-streak": {
+   "purposes": [
+    "transition",
+    "mood"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": "fast directional motion: keep it short",
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:multi-cursor-choreography": {
+   "purposes": [
+    "relationship",
+    "demonstration"
+   ],
+   "content_types": [
+    "product-demo",
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:multi-phase-camera": {
+   "purposes": [
+    "focus",
+    "structure"
+   ],
+   "content_types": [
+    "explainer",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:nudge-curve": {
+   "purposes": [
+    "transition"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:orbit-3d-entry": {
+   "purposes": [
+    "reveal",
+    "structure"
+   ],
+   "content_types": [
+    "announcement",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:particle-burst": {
+   "purposes": [
+    "emphasis",
+    "closure"
+   ],
+   "content_types": [
+    "announcement",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": "bursts can flash: keep contrast changes gentle",
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:physics-press-reaction": {
+   "purposes": [
+    "demonstration"
+   ],
+   "content_types": [
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:press-release-spring": {
+   "purposes": [
+    "demonstration"
+   ],
+   "content_types": [
+    "product-demo",
+    "tutorial"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:reactive-displacement": {
+   "purposes": [
+    "transition",
+    "relationship"
+   ],
+   "content_types": [
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:scale-swap-transition": {
+   "purposes": [
+    "transition",
+    "difference"
+   ],
+   "content_types": [
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:sine-wave-loop": {
+   "purposes": [
+    "mood"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:split-tilt-cards": {
+   "purposes": [
+    "difference"
+   ],
+   "content_types": [
+    "explainer",
+    "product-demo",
+    "opinion"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:spring-pop-entrance": {
+   "purposes": [
+    "reveal"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:stat-bars-and-fills": {
+   "purposes": [
+    "quantity",
+    "difference"
+   ],
+   "content_types": [
+    "data-story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:svg-icon-enrichment": {
+   "purposes": [
+    "demonstration",
+    "mood"
+   ],
+   "content_types": [
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:svg-path-draw": {
+   "purposes": [
+    "reveal",
+    "sequence"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:theme-crossfade-morph": {
+   "purposes": [
+    "transition",
+    "difference"
+   ],
+   "content_types": [
+    "product-demo",
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:vertical-spring-ticker": {
+   "purposes": [
+    "emphasis",
+    "sequence"
+   ],
+   "content_types": [
+    "announcement",
+    "data-story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:viewport-change": {
+   "purposes": [
+    "focus",
+    "structure"
+   ],
+   "content_types": [
+    "explainer",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.rule:waterfall-entry": {
+   "purposes": [
+    "reveal",
+    "rhythm"
+   ],
+   "content_types": [
+    "announcement",
+    "opinion",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:agent-progress-theater": {
+   "purposes": [
+    "demonstration",
+    "sequence"
+   ],
+   "content_types": [
+    "explainer",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:camera-journey": {
+   "purposes": [
+    "sequence",
+    "structure"
+   ],
+   "content_types": [
+    "story",
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:comparison-split": {
+   "purposes": [
+    "difference"
+   ],
+   "content_types": [
+    "explainer",
+    "product-demo",
+    "opinion"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:constellation-hub": {
+   "purposes": [
+    "relationship",
+    "structure"
+   ],
+   "content_types": [
+    "explainer",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:cta-morph-press": {
+   "purposes": [
+    "closure"
+   ],
+   "content_types": [
+    "announcement",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:cursor-ui-demo": {
+   "purposes": [
+    "demonstration"
+   ],
+   "content_types": [
+    "tutorial",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:dataviz-countup": {
+   "purposes": [
+    "quantity"
+   ],
+   "content_types": [
+    "data-story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:device-surface-showcase": {
+   "purposes": [
+    "demonstration",
+    "reveal"
+   ],
+   "content_types": [
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:fixed-anchor-cycle": {
+   "purposes": [
+    "sequence",
+    "difference"
+   ],
+   "content_types": [
+    "explainer",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:grid-card-assemble": {
+   "purposes": [
+    "structure",
+    "reveal"
+   ],
+   "content_types": [
+    "explainer",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:kinetic-type-beats": {
+   "purposes": [
+    "emphasis",
+    "rhythm"
+   ],
+   "content_types": [
+    "opinion",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:logo-assemble-lockup": {
+   "purposes": [
+    "closure",
+    "reveal"
+   ],
+   "content_types": [
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:overwhelm-surround": {
+   "purposes": [
+    "emphasis",
+    "mood"
+   ],
+   "content_types": [
+    "opinion",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:panel-edit-live-sync": {
+   "purposes": [
+    "relationship",
+    "demonstration"
+   ],
+   "content_types": [
+    "tutorial",
+    "product-demo"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:prompt-type-submit-generate": {
+   "purposes": [
+    "demonstration",
+    "sequence"
+   ],
+   "content_types": [
+    "explainer",
+    "product-demo",
+    "tutorial"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:spatial-pan-stations": {
+   "purposes": [
+    "sequence",
+    "structure"
+   ],
+   "content_types": [
+    "explainer",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:ticker-takeover": {
+   "purposes": [
+    "emphasis",
+    "sequence"
+   ],
+   "content_types": [
+    "opinion",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:titlecard-reveal": {
+   "purposes": [
+    "reveal",
+    "closure"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "product-demo",
+    "data-story",
+    "announcement",
+    "opinion",
+    "story",
+    "news",
+    "social-proof"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:transcript-scroll-artifact-reveal": {
+   "purposes": [
+    "sequence",
+    "demonstration"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "high",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:typewriter-reveal": {
+   "purposes": [
+    "sequence",
+    "rhythm"
+   ],
+   "content_types": [
+    "explainer",
+    "tutorial",
+    "story"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "low",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:video-text-pivot": {
+   "purposes": [
+    "transition",
+    "emphasis"
+   ],
+   "content_types": [
+    "product-demo",
+    "announcement"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  },
+  "hf.blueprint:zoom-out-workspace-reveal": {
+   "purposes": [
+    "reveal",
+    "structure"
+   ],
+   "content_types": [
+    "product-demo",
+    "explainer"
+   ],
+   "aspects": [
+    "9:16",
+    "16:9"
+   ],
+   "complexity": "medium",
+   "accessibility": null,
+   "validation": [
+    "hyperframes lint",
+    "hyperframes check",
+    "motion_audit: no pops, eases inventoried"
+   ],
+   "evidence_count": 0,
+   "confidence": "unverified",
+   "seeded_by": "heuristic-v1",
+   "reviewed": false,
+   "examples": []
+  }
+ }
+}

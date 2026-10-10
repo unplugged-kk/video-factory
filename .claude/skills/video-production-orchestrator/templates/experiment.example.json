@@ -1,0 +1,16 @@
+{
+  "schema": "experiment/1",
+  "id": "C-001",
+  "category": "C",
+  "hypothesis": "Writing the hypothesis so it can be wrong.",
+  "variable": "one major variable only",
+  "baseline": "what shipped",
+  "candidate": "the single change",
+  "controlled": ["script", "audio", "plan", "assets", "resolution", "fps", "renderer", "session"],
+  "stopping_rule": "written before the run",
+  "measured": {"render_seconds": null, "bytes": null, "motion_audit": null},
+  "reviews": [],
+  "limits": ["n=1 is a smoke test", "reviewers can see which arm is which"],
+  "decision": "investigate",
+  "confidence": "experimental"
+}

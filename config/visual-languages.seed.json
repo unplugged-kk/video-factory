@@ -1,0 +1,46 @@
+{
+ "schema": "visual-languages/1",
+ "note": "Seed: looks of videos already shipped. ep3-what-is-generative-ai is deliberately NOT listed: it is the case the rule is checked against.",
+ "entries": [
+  {
+   "content_id": "ep2-tool-call-failure",
+   "series": "agent-tool-use",
+   "signature": {
+    "structure": "paper",
+    "temperature": "warm",
+    "texture": "paper",
+    "base": {
+     "hue": 1,
+     "tier": "light"
+    },
+    "accents": [
+     0,
+     2
+    ]
+   },
+   "shared": [],
+   "recorded_at": "2026-10-10T00:00:00Z",
+   "source": "css-extract of the shipped composition"
+  },
+  {
+   "content_id": "pilot-001-agent-tool-use",
+   "series": "agent-tool-use",
+   "signature": {
+    "structure": "radial",
+    "temperature": "cool",
+    "texture": "grid",
+    "base": {
+     "hue": 7,
+     "tier": "dark"
+    },
+    "accents": [
+     1,
+     5
+    ]
+   },
+   "shared": [],
+   "recorded_at": "2026-10-10T00:00:00Z",
+   "source": "css-extract of the shipped composition"
+  }
+ ]
+}

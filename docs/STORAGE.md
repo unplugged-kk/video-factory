@@ -122,6 +122,8 @@ Nothing is deleted automatically. `./contentos.sh storage cleanup` is a **dry ru
 
 Stop workers first. `--apply` **copies** (never moves or deletes), verifies each tree by file count, size and digest, copies `ledger.db` with the SQLite backup API, skips jobs that are active in the ledger (`--include-active` overrides), never overwrites an existing destination, and writes a log to `<workspace>/recovery/migrations/`. Old folders stay where they are until you delete them yourself after checking. Legacy repo-root folders (`output/ state/ done/ …`) are copied to `recovery/legacy-root/`; `reference/stale-july-2025-artifacts` is left alone. Foreign manifests are kept: `adopt` stores the original as `metadata/legacy-manifest.json` and starts a job manifest. Dashboard, learn and research read both locations, so nothing breaks mid-migration.
 
+**If `ledger.db` is reported as skipped** ("destination already exists"), a command already created an empty ledger in the workspace. Compare row counts in both (`select count(*) from runs`), and if the new one is empty move it aside (`mv ledger.db ledger.db.empty-bak`) and run `migrate --apply` again. See docs/video-intelligence/02-known-failures.md (KF-003).
+
 **Recovery / undo:** originals are untouched, so undo = delete the copies under the workspace (listed in the migration log) and unset the env vars.
 
 ## 11. Recovery and troubleshooting

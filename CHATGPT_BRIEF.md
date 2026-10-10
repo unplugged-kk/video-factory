@@ -71,3 +71,5 @@ The three tools:
 - If a configured folder is missing or unwritable, stop and report it. Do not fall back to the repo, and never delete files to free space (`storage cleanup` is dry-run unless the owner passes `--apply`).
 - Schedulers read `ready/`, claim with `python -m contentos.handoff claim`, and own `.state/claims/`; agents do not edit sidecars or claim files.
 - Full guide: [docs/STORAGE.md](docs/STORAGE.md in the repo). Check setup with `./contentos.sh storage paths --check`.
+
+- Producing or auditing a whole video: use the `video-production-orchestrator` skill (`.claude/skills/video-production-orchestrator/` in the repo). It sets the order of phases, the two background rules (`python -m contentos.intelligence.visual ...`) and technique lookup (`python -m contentos.intelligence.catalogue query ...`). Design and known failures: `docs/video-intelligence/ in the repo`.
