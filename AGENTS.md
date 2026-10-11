@@ -173,4 +173,6 @@ text slides is expected, not a defect. `contentos/production/sheet.py` (labelled
 `timeline.py` are new and in shadow mode: usable as `python -m contentos.production.sheet` but not wired
 into `contentos.sh` or the pipeline. The labelled sheet needs an ffmpeg built with `drawtext`; the
 `/opt/homebrew` build on this Mac has no freetype, so on this machine it fails closed by design — use
-`./contentos.sh preview <video> --at ... --out DIR --sheet` instead of passing `--allow-unlabelled`. `docs/HOW_IT_WORKS.md` section 10 holds the longer list.
+`./contentos.sh preview <video> --at ... --out DIR --sheet` instead of passing `--allow-unlabelled`, which
+produces an unlabelled sheet and is not the same artifact. Wire `sheet.py` into the QA workflow only after a
+labelled sheet has been generated successfully on this Mac and its labels inspected. `docs/HOW_IT_WORKS.md` section 10 holds the longer list.
