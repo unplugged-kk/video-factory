@@ -1,0 +1,32 @@
+---
+description: Video factory operating contract — gates, hard stops and where the real instructions live
+alwaysApply: true
+---
+# Video factory (contentos)
+
+This repo builds videos locally. `AGENTS.md` is the contract — read it before doing anything.
+`docs/CURSOR.md` explains how this project is driven from Cursor; `README.md` is the command reference.
+
+Hard stops, in every session:
+
+- **Never publish.** `publish` is a dry run and `config/youtube.yaml` has `publish.enabled: false`. Do not
+  change either, and do not build an uploader unless asked.
+- **Never spend money** — no paid APIs, providers, stock sources or hosted services, including
+  `--allow-paid` and the paid MoneyPrinterTurbo sources.
+- **Never edit** `config/*.yaml`, the approval gates, or the pinned `hyperframes` version in `package.json`
+  (0.8.114) without an explicit request.
+- **Never write generated media into the repo.** It goes to `$VIDEO_FACTORY_WORKSPACE`
+  (`~/Desktop/VideoFactory-Workspace`); the code refuses an in-repo root by design.
+- **Never touch git history** (no commit, push, stash, reset) and never delete files to free space.
+- **Never print anything** from `~/.contentos/secrets/`.
+
+Two gates block the pipeline and are granted by a human, never by you: `SCRIPT_APPROVED` before the `voice`
+stage and `PRODUCTION_APPROVED` before `render`. Show the script, wait; show the composed project, wait.
+`--approve-private` is only for a run the owner has already approved or explicitly asked to be unattended.
+
+When the task is to produce or audit a video, read
+`.claude/skills/video-production-orchestrator/SKILL.md` first and follow its phases — it names the other
+skills, the two background rules and the evidence requirements. Do not improvise a pipeline around it.
+
+Run toolchain commands through `./contentos.sh` (it puts `/opt/homebrew/bin` first, so the stale x86_64
+`ffmpeg` in `/usr/local/bin` cannot break the run).

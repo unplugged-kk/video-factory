@@ -1,0 +1,30 @@
+---
+description: Python conventions and guardrails for contentos code, tests, scripts and config
+globs: contentos/**, tests/**, scripts/**, config/**
+alwaysApply: false
+---
+# Working on the code
+
+- **Verification is `~/.contentos/venv/bin/python -m pytest tests`.** Never run a bare `pytest` from the
+  repo root: `vendor/` contributes roughly 182 unrelated tests. The ContentForge worker is checked with
+  `node --test contentos/adapters/v1/*.test.mjs`.
+- **Do not add dependencies.** Everything runs on Python 3.12 stdlib plus PyYAML, ffmpeg/ffprobe and the
+  pinned `hyperframes` binary. No paid or hosted service may enter the code path; the local-first policy is
+  enforced in `contentos/providers.py` and the paid block is deliberate.
+- **`config/*.yaml` and `config/*.json` are data, not code.** They are registries and thresholds the owner
+  curates (`capabilities.json`, `platforms.json`, `quality.yaml`, `pipeline` gates). Change them only when
+  asked; never rewrite a threshold to make a check pass.
+- **Never modify `vendor/`** (upstream code), `node_modules/`, or the generated pinned skills
+  `.claude/skills/hyperframes-*` (hash-verified; restore with `python scripts/upstream_skills.py sync`).
+- **Never write media or run artifacts into the repo.** Output paths must resolve under
+  `$VIDEO_FACTORY_WORKSPACE`; an in-repo root must stay a hard error, not a fallback. Media file types and
+  both storage roots are gitignored as a second line of defence.
+- **Follow the existing module shape:** small, single-purpose modules with an explicit
+  `if __name__ == "__main__":` CLI where a command is useful, `StorageError`/typed errors rather than bare
+  `Exception`, and JSON schemas written next to their validator (`sceneplan/1`, `timeline/1`, `sheet/1`,
+  `capabilities/1`). Data never goes to stdout mixed with prose where a caller parses it.
+- **Keep edits inside this repo.** Files outside it, `~/.contentos/` state, `*.publish.json` sidecars and
+  `.state/claims/` belong to other owners.
+- Tests should exercise real behaviour (the suite builds tiny real videos with ffmpeg in `tmp`); when you
+  change behaviour, change or add a test in the same commit-sized change and run the suite before claiming
+  success.

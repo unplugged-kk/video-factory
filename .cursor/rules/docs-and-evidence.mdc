@@ -1,0 +1,23 @@
+---
+description: How to write and update the docs, status tables and reports in this repo
+globs: docs/**, README.md, AGENTS.md, CHATGPT_BRIEF.md
+alwaysApply: false
+---
+# Docs and evidence
+
+- **Label provenance.** Distinguish what you read in a file, what you measured by running something, what
+  someone else claims, and what you inferred. Unverified statements say so; a claim without a source is not
+  a finding. Prefer a fresh measurement over a remembered number, and date-stamp status claims
+  ("measured 2026-10-11") because several tables here are snapshots.
+- **No invented facts or numbers.** This documentation feeds what appears on screen: a fabricated figure
+  becomes a fabricated video. Illustrative data is labelled illustrative.
+- **Point at canonical files instead of copying them.** The "Storage rules for every agent" block currently
+  exists in three places — `README.md`, `docs/AGENT_BRIEF.md`, `docs/HOW_IT_WORKS.md`. If you must change
+  it, change all three in the same edit; otherwise link to `docs/STORAGE.md` rather than restating it.
+- **Keep the doc map true.** `AGENTS.md` section 9 and `docs/CURSOR.md` route readers to the right document;
+  a new doc that nothing links to is invisible. Add it to the map and to the `README.md` status table.
+- **Distinguish built, wired and planned.** Several modules exist but are not reachable from
+  `contentos.sh` (`production/sheet.py`, `production/timeline.py` in shadow mode, `visual_gate.py`,
+  `motion_audit.py` as a library). Say which it is instead of implying integration.
+- Record known failures with their reproduction command in `docs/video-intelligence/02-known-failures.md`
+  (the KF-series) rather than leaving them in a chat log.
