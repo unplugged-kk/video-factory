@@ -193,6 +193,45 @@ def signature_from_css(css):
             "base": {"hue": base_hue, "tier": base_tier}, "accents": fam[:2]}   # the two most used accent families, most used first
 
 
+SCENE_RULE = re.compile(r"(#s-[\w-]+|#scene-[\w-]+|\.scene-[\w-]+|\[data-scene[^\]]*\])\s*\{([^}]*)\}")
+
+
+def scene_backdrop_warnings(css):
+    """KF-006. The signature is read from ONE rule (#root, else .scene, else body). If the composition paints its backdrops
+    per scene (#s-*, #scene-*, .scene-*, [data-scene]), that rule can be stale or absent and the signature then describes a
+    backdrop no scene shows. This does not change the signature; it says when it may not describe the video.
+    What the signature *should* be for a per-scene video is an open decision (docs/video-intelligence/04-...)."""
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    variables = _vars(css)
+    scene_fills = {}
+    for sel, body in SCENE_RULE.findall(css):
+        m = re.search(r"background(?:-image|-color)?\s*:\s*([^;}]+)", body)
+        if not m:
+            continue
+        v = _resolve(m.group(1), variables)
+        cols = [_rgb(h.group(0)) for h in HEX.finditer(v)]
+        if cols or "gradient" in v:
+            mean = tuple(sum(c[i] for c in cols) / len(cols) for i in range(3)) if cols else (0.03, 0.03, 0.05)
+            scene_fills[sel] = (tier(mean), hue_bucket(mean))
+    if not scene_fills:
+        return []
+    root = _decl(css, r"#root")
+    root = _resolve(root, variables) if root else None
+    cols = [_rgb(h.group(0)) for h in HEX.finditer(root or "")]
+    if root and (cols or "gradient" in root):
+        mean = tuple(sum(c[i] for c in cols) / len(cols) for i in range(3)) if cols else (0.03, 0.03, 0.05)
+        root_fill = (tier(mean), hue_bucket(mean))
+    else:
+        root_fill = None
+    differs = [s for s, f in scene_fills.items() if root_fill is None or f[0] != root_fill[0] or not _near(f[1], root_fill[1])]
+    if not differs:
+        return []
+    return [{"code": "per_scene_backdrops_not_in_signature", "severity": "warning",
+             "stale_root": root_fill is not None, "scenes_differing": sorted(differs),
+             "message": (f"signature is read from #root/.scene/body, but {len(differs)} scene rule(s) paint a different backdrop"
+                         f"{'' if root_fill is None else ' than #root'}; the signature may not describe this video")}]
+
+
 COMPOSITIONS = ("project/index.html", "portrait/index.html", "hf/index.html", "index.html", "landscape/index.html")
 
 
@@ -262,12 +301,19 @@ def rule_b(signature, entries, *, content_id=None, window=WINDOW, shared=()):
             "duplicates": [r["against"] for r in failing]}
 
 
-def claim(content_id, signature, *, series=None, shared=(), window=WINDOW, dry_run=False, seed=SEED, path=None):
+def claim(content_id, signature, *, series=None, shared=(), window=WINDOW, dry_run=False, seed=SEED, path=None,
+          warnings=(), acknowledge_warnings=False):
     storage.check_job_id(content_id)
     path = Path(path) if path else ledger_path()
     with storage.file_lock(path.with_suffix(".lock")):
         entries = ledger(seed, path)
         res = rule_b(signature, entries, content_id=content_id, window=window, shared=shared)
+        if warnings:
+            res["warnings"] = list(warnings)
+        if res["ok"] and warnings and not dry_run and not acknowledge_warnings:
+            res["ok"] = False
+            res["refused"] = "signature may not describe this video (see warnings); re-run with --acknowledge-warnings to record anyway"
+            return res
         if res["ok"] and not dry_run:
             mine = [e for e in _read_entries(path) if e["content_id"] != content_id]
             mine.append({"content_id": content_id, "series": series, "signature": signature, "shared": list(shared),
@@ -374,7 +420,7 @@ def _main(argv=None):
     u = sub.add_parser("used"); u.add_argument("target")
     c = sub.add_parser("check"); c.add_argument("target"); c.add_argument("--as", dest="content_id", help="content id to exclude from the comparison (default: the folder name)"); c.add_argument("--window", type=int, default=WINDOW); c.add_argument("--shared", nargs="*", default=[])
     cl = sub.add_parser("claim"); cl.add_argument("content_id"); cl.add_argument("target"); cl.add_argument("--series")
-    cl.add_argument("--window", type=int, default=WINDOW); cl.add_argument("--shared", nargs="*", default=[]); cl.add_argument("--dry-run", action="store_true")
+    cl.add_argument("--window", type=int, default=WINDOW); cl.add_argument("--shared", nargs="*", default=[]); cl.add_argument("--dry-run", action="store_true"); cl.add_argument("--acknowledge-warnings", action="store_true")
     s = sub.add_parser("scenes"); s.add_argument("video"); s.add_argument("--timing"); s.add_argument("--starts"); s.add_argument("--motif")
     p = sub.add_parser("plan"); p.add_argument("plan")
     a = ap.parse_args(argv)
@@ -386,10 +432,13 @@ def _main(argv=None):
             sig = signature_of(a.target)
             cid = a.content_id or (Path(a.target).name if Path(a.target).is_dir() else a.target)
             res = rule_b(sig, ledger(), content_id=cid, window=a.window, shared=a.shared)
-            _report({"signature": sig, **res})
+            warns = scene_backdrop_warnings(_css_text(find_composition(a.target)))
+            _report({"signature": sig, **res, **({"warnings": warns} if warns else {})})
             return 0 if res["ok"] else 1
         if a.cmd == "claim":
-            res = claim(a.content_id, signature_of(a.target), series=a.series, shared=a.shared, window=a.window, dry_run=a.dry_run)
+            res = claim(a.content_id, signature_of(a.target), series=a.series, shared=a.shared, window=a.window, dry_run=a.dry_run,
+                        warnings=scene_backdrop_warnings(_css_text(find_composition(a.target))),
+                        acknowledge_warnings=a.acknowledge_warnings)
             _report(res)
             return 0 if res["ok"] else 1
         if a.cmd == "scenes":

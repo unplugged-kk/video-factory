@@ -52,3 +52,5 @@ The critic's score for the unchanged baseline moved up to 2 points between round
 - Test shader transitions and one full preset (`frame.md` typography, caption skin) on the Mac.
 - Composition fixes the critic raised, independent of backdrops: content fills only ~60% of the 9:16 frame, faint secondary text, handle does not spell the channel name.
 - Evidence overlay writer (`<workspace>/intelligence/design-evidence.json`) fed by the critic, so confidence moves from evidence, not from this file.
+
+> **Update:** this document describes the library as committed in 9f806e3. The confidence bonus and `verified` field described here were replaced by separate available / validated (per named environment) / recommended (fit only) concepts; see `04-visual-reliability-gate.md`.

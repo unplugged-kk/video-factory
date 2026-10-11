@@ -1,5 +1,5 @@
 {
- "schema": "design-library/1",
+ "schema": "design-library/2",
  "note": "Seed catalogue of upstream HyperFrames designs and transitions, tagged by register, mood, topic, energy. Tags are Claude's judgement (reviewed=false). Everything is `unverified` until a real render in OUR pipeline records verified.result. Rule A/B (contentos.intelligence.visual) still decides whether a choice is different enough.",
  "upstream": {
   "repo": "heygen-com/hyperframes",
@@ -63,7 +63,6 @@
   "confidence": [
    "unverified",
    "experimental",
-   "validated",
    "preferred",
    "deprecated"
   ]
@@ -118,7 +117,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:blockframe": {
    "kind": "frame_preset",
@@ -164,7 +165,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:blue-professional": {
    "kind": "frame_preset",
@@ -209,7 +212,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:bold-poster": {
    "kind": "frame_preset",
@@ -251,7 +256,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:broadside": {
    "kind": "frame_preset",
@@ -297,13 +304,24 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested.",
+     "level": "rendered",
+     "result": "partial",
+     "method": "colour tokens applied as per-scene backdrops on an ep3 copy",
+     "checks": {
+      "hyperframes_check": true,
+      "fonts_vendored": null,
+      "caption_skin_rendered": null
+     },
+     "notes": "Typography and caption skin not tested; only colours were used."
+    }
+   ]
   },
   "preset:capsule": {
    "kind": "frame_preset",
@@ -349,7 +367,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:cartesian": {
    "kind": "frame_preset",
@@ -393,7 +413,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:cobalt-grid": {
    "kind": "frame_preset",
@@ -436,13 +458,24 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested.",
+     "level": "rendered",
+     "result": "partial",
+     "method": "colour tokens applied as per-scene backdrops on an ep3 copy",
+     "checks": {
+      "hyperframes_check": true,
+      "fonts_vendored": null,
+      "caption_skin_rendered": null
+     },
+     "notes": "Typography and caption skin not tested; only colours were used."
+    }
+   ]
   },
   "preset:code-editorial": {
    "kind": "frame_preset",
@@ -489,13 +522,24 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested.",
+     "level": "rendered",
+     "result": "partial",
+     "method": "colour tokens applied as per-scene backdrops on an ep3 copy",
+     "checks": {
+      "hyperframes_check": true,
+      "fonts_vendored": null,
+      "caption_skin_rendered": null
+     },
+     "notes": "Typography and caption skin not tested; only colours were used."
+    }
+   ]
   },
   "preset:coral": {
    "kind": "frame_preset",
@@ -540,7 +584,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:creative-mode": {
    "kind": "frame_preset",
@@ -588,7 +634,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:daisy-days": {
    "kind": "frame_preset",
@@ -635,7 +683,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "preset:editorial-forest": {
    "kind": "frame_preset",
@@ -681,13 +731,24 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Colour tokens only, applied as per-scene backdrops on an ep3 copy (9:16). hyperframes check passed (98/98 contrast); Rule A passed. Preset typography, fonts and caption skin NOT tested.",
+     "level": "rendered",
+     "result": "partial",
+     "method": "colour tokens applied as per-scene backdrops on an ep3 copy",
+     "checks": {
+      "hyperframes_check": true,
+      "fonts_vendored": null,
+      "caption_skin_rendered": null
+     },
+     "notes": "Typography and caption skin not tested; only colours were used."
+    }
+   ]
   },
   "palette:bold-energetic": {
    "kind": "palette",
@@ -720,7 +781,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "palette:clean-corporate": {
    "kind": "palette",
@@ -756,7 +819,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "palette:dark-premium": {
    "kind": "palette",
@@ -793,7 +858,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "palette:jewel-rich": {
    "kind": "palette",
@@ -827,7 +894,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "palette:monochrome": {
    "kind": "palette",
@@ -865,7 +934,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "palette:nature-earth": {
    "kind": "palette",
@@ -899,7 +970,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "palette:neon-electric": {
    "kind": "palette",
@@ -934,7 +1007,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "palette:pastel-soft": {
    "kind": "palette",
@@ -969,7 +1044,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "palette:warm-editorial": {
    "kind": "palette",
@@ -1004,7 +1081,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "style:swiss-pulse": {
    "kind": "visual_style",
@@ -1034,7 +1113,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "style:velvet-standard": {
    "kind": "visual_style",
@@ -1062,7 +1143,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "style:deconstructed": {
    "kind": "visual_style",
@@ -1092,7 +1175,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "style:maximalist-type": {
    "kind": "visual_style",
@@ -1120,7 +1205,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "style:data-drift": {
    "kind": "visual_style",
@@ -1150,7 +1237,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "style:soft-signal": {
    "kind": "visual_style",
@@ -1179,7 +1268,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "style:folk-frequency": {
    "kind": "visual_style",
@@ -1210,7 +1301,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "style:shadow-cut": {
    "kind": "visual_style",
@@ -1239,7 +1332,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "shader:domain-warp": {
    "kind": "shader_transition",
@@ -1273,13 +1368,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:ridged-burn": {
    "kind": "shader_transition",
@@ -1313,13 +1420,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:whip-pan": {
    "kind": "shader_transition",
@@ -1353,13 +1472,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:sdf-iris": {
    "kind": "shader_transition",
@@ -1393,13 +1524,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:ripple-waves": {
    "kind": "shader_transition",
@@ -1433,13 +1576,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:gravitational-lens": {
    "kind": "shader_transition",
@@ -1473,13 +1628,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:cinematic-zoom": {
    "kind": "shader_transition",
@@ -1513,13 +1680,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:chromatic-split": {
    "kind": "shader_transition",
@@ -1553,13 +1732,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:glitch": {
    "kind": "shader_transition",
@@ -1594,13 +1785,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:swirl-vortex": {
    "kind": "shader_transition",
@@ -1633,13 +1836,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:thermal-distortion": {
    "kind": "shader_transition",
@@ -1673,13 +1888,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:flash-through-white": {
    "kind": "shader_transition",
@@ -1713,13 +1940,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:cross-warp-morph": {
    "kind": "shader_transition",
@@ -1753,13 +1992,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "shader:light-leak": {
    "kind": "shader_transition",
@@ -1793,13 +2044,25 @@
    "evidence_count": 0,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "partial",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "Sampler of all 14 shaders at 1080x1920. Default render path: HyperShader falls back to opacity-flip = hard cuts (page-side compositing needs drawElementImage, absent in headless-shell 141). HF_PAGE_SIDE_COMPOSITING=false (Node-side layered path): effects render but the scene textures are black, so every transition flashes black; 270 frames took 13m55s. Not verified on a Mac with a real GPU.",
+     "level": "rendered",
+     "result": "fail",
+     "method": "14-shader sampler, 1080x1920",
+     "checks": {
+      "hyperframes_check": true,
+      "no_fallback_in_log": false,
+      "transition_blend": false,
+      "not_black": false
+     },
+     "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    }
+   ]
   },
   "css-transition:crossfade": {
    "kind": "css_transition",
@@ -1832,7 +2095,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:blur-crossfade": {
    "kind": "css_transition",
@@ -1867,13 +2132,29 @@
    "evidence_count": 1,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "pass",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "ep3 copy, scene 4->5, 0.45s: check passed but Layout warned content_overlap between outgoing/incoming text (3 samples); add data-layout-allow-overlap on the scenes for the window. Render 1m45s, frames show blur-out/fade-in."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "ep3 copy, scene 4->5, 0.45s: check passed but Layout warned content_overlap between outgoing/incoming text (3 samples); add data-layout-allow-overlap on the scenes for the window. Render 1m45s, frames show blur-out/fade-in.",
+     "level": "rendered",
+     "result": "pass",
+     "method": "ep3d copy: llm blur-crossfades over outputs",
+     "checks": {
+      "hyperframes_check": true,
+      "transition_blend": true,
+      "captions_visible": true,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "notes": "Re-evidenced with contentos.production.visual_gate (blend, 7/7 intermediate samples, 0 black; caption ink visible 32/32 samples; 1080x1920). Layout warned content_overlap during the overlap window. Both transitions come from one 1m45s render.",
+     "measurements": {
+      "render_seconds": 105
+     }
+    }
+   ]
   },
   "css-transition:focus-pull": {
    "kind": "css_transition",
@@ -1907,7 +2188,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:color-dip": {
    "kind": "css_transition",
@@ -1941,7 +2224,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:push-slide": {
    "kind": "css_transition",
@@ -1976,13 +2261,29 @@
    "evidence_count": 1,
    "seeded_by": "claude",
    "reviewed": false,
-   "verified": {
-    "result": "pass",
-    "date": "2026-10-11",
-    "aspect": "9:16",
-    "environment": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114",
-    "evidence": "ep3 copy, scene 2->3, 0.45s overlap: hyperframes check passed (0 layout warnings, 98/98 contrast), full render 1m45s on the normal fast path, mid-transition frames show the push."
-   }
+   "available": true,
+   "validations": [
+    {
+     "environment": "cloud-linux-swiftshader-hf0.8.114",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "evidence": "ep3 copy, scene 2->3, 0.45s overlap: hyperframes check passed (0 layout warnings, 98/98 contrast), full render 1m45s on the normal fast path, mid-transition frames show the push.",
+     "level": "rendered",
+     "result": "pass",
+     "method": "ep3d copy: contrast pushes over bigidea",
+     "checks": {
+      "hyperframes_check": true,
+      "transition_blend": true,
+      "captions_visible": true,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "notes": "Re-evidenced with contentos.production.visual_gate (blend, 7/7 intermediate samples, 0 black; caption ink visible 32/32 samples; 1080x1920). No layout warnings. Both transitions come from one 1m45s render.",
+     "measurements": {
+      "render_seconds": 105
+     }
+    }
+   ]
   },
   "css-transition:vertical-push": {
    "kind": "css_transition",
@@ -2017,7 +2318,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:elastic-push": {
    "kind": "css_transition",
@@ -2051,7 +2354,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:squeeze": {
    "kind": "css_transition",
@@ -2085,7 +2390,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:zoom-through": {
    "kind": "css_transition",
@@ -2119,7 +2426,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:zoom-out": {
    "kind": "css_transition",
@@ -2154,7 +2463,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:circle-iris": {
    "kind": "css_transition",
@@ -2189,7 +2500,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:diamond-iris": {
    "kind": "css_transition",
@@ -2223,7 +2536,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:diagonal-split": {
    "kind": "css_transition",
@@ -2258,7 +2573,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:staggered-color-blocks": {
    "kind": "css_transition",
@@ -2292,7 +2609,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:horizontal-blinds": {
    "kind": "css_transition",
@@ -2326,7 +2645,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:vertical-blinds": {
    "kind": "css_transition",
@@ -2360,7 +2681,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:blur-through": {
    "kind": "css_transition",
@@ -2394,7 +2717,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:directional-blur": {
    "kind": "css_transition",
@@ -2428,7 +2753,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:glitch": {
    "kind": "css_transition",
@@ -2463,7 +2790,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:chromatic-aberration": {
    "kind": "css_transition",
@@ -2497,7 +2826,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:ripple": {
    "kind": "css_transition",
@@ -2532,7 +2863,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:vhs-tape": {
    "kind": "css_transition",
@@ -2566,7 +2899,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:light-leak": {
    "kind": "css_transition",
@@ -2600,7 +2935,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:overexposure-burn": {
    "kind": "css_transition",
@@ -2634,7 +2971,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:film-burn": {
    "kind": "css_transition",
@@ -2669,7 +3008,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:shutter": {
    "kind": "css_transition",
@@ -2704,7 +3045,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:clock-wipe": {
    "kind": "css_transition",
@@ -2739,7 +3082,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:gravity-drop": {
    "kind": "css_transition",
@@ -2773,7 +3118,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:morph-circle": {
    "kind": "css_transition",
@@ -2808,7 +3155,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:3d-card-flip": {
    "kind": "css_transition",
@@ -2843,7 +3192,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:grid-dissolve": {
    "kind": "css_transition",
@@ -2877,7 +3228,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   },
   "css-transition:page-burn": {
    "kind": "css_transition",
@@ -2911,7 +3264,9 @@
    "confidence": "unverified",
    "evidence_count": 0,
    "seeded_by": "claude",
-   "reviewed": false
+   "reviewed": false,
+   "available": true,
+   "validations": []
   }
  },
  "findings": [
@@ -2950,5 +3305,59 @@
    "topic": "fonts",
    "finding": "Frame presets assume web fonts (Barlow, Playfair, Bodoni...); vendor them into assets/ (hyperframes-localize-fonts) before a render, as our pipeline renders offline."
   }
- ]
+ ],
+ "validation": {
+  "note": "Three separate questions. AVAILABLE: the option exists in the pinned upstream (entry has available=true and the pin below). VALIDATED: it passed the required checks for its kind in ONE named environment, recorded in entry.validations. RECOMMENDED: it fits the topic/mood/register/energy/aspect asked for; a fit score only, never evidence of validation. A render that finishes without errors is not validation.",
+  "available_pin": "hyperframes@0.8.114",
+  "default_environment": "mac-hf0.8.114",
+  "environments": {
+   "cloud-linux-swiftshader-hf0.8.114": "cloud Linux container, 2 cores, 8 GB, SwiftShader software GL, headless-shell 141, hyperframes 0.8.114 (development only; never stands in for Mac)",
+   "mac-hf0.8.114": "the Mac the factory renders on, hyperframes 0.8.114 (no entry validated here yet; see 04-visual-reliability-gate.md for the experiment)"
+  },
+  "levels": {
+   "structural": "static checks only (hyperframes check/lint, schema, CSS parse, layer-order). Proves the file is well-formed, nothing about pixels.",
+   "rendered": "a render was made at the target aspect and its frames were measured (transition verdict, caption ink, size, duration).",
+   "reviewed": "rendered, plus a named human sign-off. Critic scores may be attached but are advisory and never sufficient."
+  },
+  "required": {
+   "css_transition": [
+    "hyperframes_check",
+    "transition_blend",
+    "captions_visible",
+    "output_size_matches_aspect",
+    "render_time_recorded"
+   ],
+   "shader_transition": [
+    "hyperframes_check",
+    "no_fallback_in_log",
+    "transition_blend",
+    "not_black",
+    "captions_visible",
+    "output_size_matches_aspect",
+    "render_time_recorded"
+   ],
+   "frame_preset": [
+    "hyperframes_check",
+    "fonts_vendored",
+    "caption_skin_rendered",
+    "captions_visible",
+    "secondary_text_contrast",
+    "output_size_matches_aspect",
+    "render_time_recorded"
+   ],
+   "palette": [
+    "hyperframes_check",
+    "rule_a_distinct_backdrops",
+    "captions_visible",
+    "secondary_text_contrast",
+    "output_size_matches_aspect"
+   ],
+   "visual_style": [
+    "hyperframes_check",
+    "rendered_frames_inspected",
+    "captions_visible",
+    "output_size_matches_aspect"
+   ]
+  }
+ }
 }
