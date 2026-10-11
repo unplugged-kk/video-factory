@@ -13,6 +13,7 @@ import yaml
 
 from . import export as exporter
 from . import hf, ledger, mpt, providers, storage
+from .production import align
 from .qa import probe_video, run_qa
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -123,6 +124,17 @@ def words_for(wav, workdir):
         return None
 
 
+def caption_words(toks, asr, d):
+    """Caption timings for one script line: the SCRIPT words (their spelling is what the caption shows), timed by
+    aligning them to the ASR words. asr is [(text,start,end)] from words_for, or None; without it the words are
+    spaced evenly over the take. Sequence alignment keeps an ASR insertion/deletion from shifting every later word."""
+    if asr:
+        wl, _ = align.align_words(toks, [{"text": w, "start": s, "end": e} for w, s, e in asr])
+        return wl
+    step = (d - 0.35) / len(toks)
+    return [(w, k * step, (k + 1) * step) for k, w in enumerate(toks)]
+
+
 def _mpt(fn, ctx):
     try:
         return "mpt", fn(ctx)
@@ -145,12 +157,7 @@ def s_compose(ctx):
         d = round(dur(wav) + 0.35, 2)
         asr = words_for(wav, ctx["dir"] / "audio" / f"tx{i:02d}")
         toks = ln["say"].split()                      # captions show the SCRIPT words; ASR supplies timing only
-        if asr and len(asr) > 0:
-            n = len(asr)
-            wl = [(w, asr[min(int(k * n / len(toks)), n - 1)][1], asr[min(int((k + 1) * n / len(toks)), n) - 1][2]) for k, w in enumerate(toks)]
-        else:
-            step = (d - 0.35) / len(toks)
-            wl = [(w, k * step, (k + 1) * step) for k, w in enumerate(toks)]
+        wl = caption_words(toks, asr, d)
         cap = "".join(f'<span id="w{i}_{k}">{html.escape(w)}</span> ' for k, (w, _, _) in enumerate(wl))
         for k, (_, ws, we) in enumerate(wl):
             anim.append(f'tl.set("#w{i}_{k}",{{color:"#fbbf24"}},{t+ws:.2f});tl.set("#w{i}_{k}",{{color:"#fff"}},{t+we:.2f});')
