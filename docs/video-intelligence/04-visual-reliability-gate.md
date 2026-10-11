@@ -351,3 +351,13 @@ O.3 Results on Ep3 (read-only run, `workspace/experiments/timeline-shadow-001/ep
 O.4 What this does and does not show. The legacy comparison is a consistency check: `timings.js`, `word-timings.json` and the timeline all derive from the same alignment output, so agreement shows the container loses nothing, not that the timing is right. It does not demonstrate the roadmap's E1 benefit (better timing, survival of a +/-12 % re-time). "span" is an extension to the 06 spec's two source values (matched, interpolated), recorded in the module. Not built: cue resolution from word anchors with offsets (offset is fixed at 0.0), compose reading the timeline, supplied-audio ingest (G3), labelled sheets (G4), safe-zone check (G6).
 
 O.5 Dependencies and acceptance for the next steps (from 07 section 3, thresholds still provisional and owner-confirmable). E1 needs an owner-owned 30-45 s voiceover and about 12 human-marked word onsets (without anchors timing accuracy is unmeasurable); go if median error <= 80 ms and p95 <= 160 ms, >= 90 % of cues within 2 frames, 0 manual edits after a +/-12 % re-time, and the baseline is >= 1.5x worse on median. Wiring `s_compose` to emit the shadow timeline touches `pipeline.py`, which carries the other session's uncommitted `caption_words` change, so it waits until that is committed or the owner assigns it.
+
+## P. Timeline-labelled contact sheets (G4) — initial implementation
+
+Status: INITIAL, on branch `feature/labelled-contact-sheets` (not merged). Isolated: `contentos/production/sheet.py` + `tests/test_sheet.py`; no `pipeline.py` change, no new renderer or dependency (ffmpeg `drawtext` only).
+
+- Input: a video and a `timeline/1` JSON. Frames are taken just after each scene start, just before each scene end, and at each cue time plus a settle offset (default 0.15 s); points closer than 0.15 s merge.
+- Each tile is labelled at its bottom-left with time, scene, the word being spoken (with its alignment source) and the cue text. Output: `sheet.png`, `sheet.json` (schema `sheet/1`, per-tile `label` and `label_full`), `frames/`.
+- Fails closed if no font file or no `drawtext` is available, unless `--allow-unlabelled` is given (the manifest then says `labelled: false`).
+- Evidence: 8 unit tests (one proves the label really darkens pixels and fails if labelling is skipped). A real 31-tile sheet was generated from the Ep3 E3b Mac render and the Ep3 timeline and inspected visually in the cloud container.
+- Limits: label times come from the ASR-derived timeline (`timing_trust: asr-derived-unverified`), so they are review aids, not verified sync. Label placement was checked on the Ep3 portrait video only. It has not been run on the Mac.
