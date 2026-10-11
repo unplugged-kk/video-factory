@@ -200,3 +200,12 @@ def test_cli_exit_codes(tmp_path, capsys):
     assert designs.main(["recommend", "--topic", "ai-ml", "--env", "nope"]) == 2
     assert designs.main(["show", "nope"]) == 1
     assert designs.main(["--seed", str(tmp_path / "missing.json"), "validate"]) == 2
+
+
+def test_shaders_are_partial_on_the_mac_and_failed_in_the_cloud(lib):
+    # Mac sampler evidence exists but lacks captions/check/second render, so it is partial, never validated; cloud stays failed
+    doc, entries = lib
+    for e in entries.values():
+        if e["kind"] == "shader_transition":
+            assert designs.status(e, doc["validation"], MAC) == "partial"
+            assert designs.status(e, doc["validation"], CLOUD) == "failed"

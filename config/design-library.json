@@ -1385,6 +1385,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1437,6 +1460,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1489,6 +1535,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1541,6 +1610,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1593,6 +1685,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1645,6 +1760,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1697,6 +1835,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1749,6 +1910,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1802,6 +1986,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1853,6 +2060,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1905,6 +2135,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -1957,6 +2210,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -2009,6 +2285,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },
@@ -2061,6 +2360,29 @@
       "not_black": false
      },
      "notes": "Default path: silent opacity-flip hard cut (14/14 measured). Node-side layered path: black scene textures (12/14 measured), 13m55s for 18 s. Mac not tested."
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "partial",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "checks": {
+      "hyperframes_check": null,
+      "no_fallback_in_log": true,
+      "transition_blend": true,
+      "not_black": true,
+      "captions_visible": null,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 14.0
+     },
+     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
+     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
+     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
     }
    ]
   },

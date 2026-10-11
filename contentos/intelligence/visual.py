@@ -9,6 +9,13 @@ Rule B (across videos): a new video's visual signature must differ from each of 
 2 of 5 fields (structure, temperature, texture, base, accents). A series may declare `--shared accents` (and/or texture)
 as brand tokens; those are then not counted, so a channel can keep its accent colour but not its whole look.
 
+Per-scene backdrops (a composition that paints #s-<id> / #scene-<id> / #<id> / .scene-<id> / [data-scene] rules): the
+signature is that of the DURATION-DOMINANT backdrop, the one whose scenes last longest in total (durations from the
+timing file: scenes[].dur, or end-start). The distribution is always reported; a warning is always raised when more
+than one backdrop is used (so `claim` needs --acknowledge-warnings); near-ties (top two within 5 points of total
+duration) are flagged as ambiguous and Rule B is also evaluated for each tied candidate. Without usable scene durations
+the signature falls back to the single global rule (#root, .scene, body) and says so.
+
 Signature = {structure: radial|linear|flat|mesh|paper, temperature: warm|cool|neutral, texture: grid|noise|paper|none,
 base: {hue: 0-11|null, tier: dark|dim|mid|light}, accents: [the two most used accent hue buckets]}. Hue buckets are 30 degrees wide; colours in
 adjacent buckets count as the same family (teal and cyan are one family). Comparing hue buckets, not hex values,
@@ -18,7 +25,7 @@ Ledger: config/visual-languages.seed.json (Git; shipped videos) + <workspace>/in
 (written by `claim`, under a lock). Nothing here edits a project.
 
   python -m contentos.intelligence.visual used <job-id|dir>
-  python -m contentos.intelligence.visual check <job-id|dir> [--window 5] [--shared accents]
+  python -m contentos.intelligence.visual check <job-id|dir> [--window 5] [--shared accents] [--timing timing.json]
   python -m contentos.intelligence.visual claim <content-id> <job-id|dir> [--series S] [--shared accents] [--dry-run]
   python -m contentos.intelligence.visual scenes <video.mp4> (--timing timing.json | --starts 0,9.2,..) [--motif WHY]
   python -m contentos.intelligence.visual plan <plan.json>        # {"scenes":[{"id":..,"backdrop":..}],"motif":null}
@@ -129,17 +136,20 @@ def _resolve(value, variables):
     return value
 
 
-def signature_from_css(css):
+def signature_from_css(css, decl_override=None):
+    """Signature of a composition. `decl_override` (a resolved background declaration) replaces the #root/.scene/body
+    lookup; it is how the duration-dominant per-scene backdrop is used. Without it behaviour is unchanged."""
     variables = _vars(css)
-    decl = None
-    for sel in (r"#root", r"\.scene\b", r"html\s*,\s*body", r"body"):
-        decl = _decl(css, sel)
-        if decl:
-            decl = _resolve(decl, variables)
-            if HEX.search(decl) or "gradient" in decl:
-                break
-    if not decl and "--bg" in variables:
-        decl = _resolve(variables["--bg"], variables)
+    decl = decl_override
+    if decl is None:
+        for sel in (r"#root", r"\.scene\b", r"html\s*,\s*body", r"body"):
+            decl = _decl(css, sel)
+            if decl:
+                decl = _resolve(decl, variables)
+                if HEX.search(decl) or "gradient" in decl:
+                    break
+        if not decl and "--bg" in variables:
+            decl = _resolve(variables["--bg"], variables)
     colors = [_rgb(m.group(0)) for m in HEX.finditer(decl or "")]
     if not colors:
         colors = [(0.03, 0.03, 0.05)]
@@ -155,7 +165,7 @@ def signature_from_css(css):
     else:
         structure = "flat"
     low = css.lower()
-    if re.search(r"#grid\b|\.grid-bg|bg-grid", low) or re.search(r"linear-gradient\([^)]*1px,\s*transparent\s*1px\)", low):
+    if re.search(r"#grid\b|\.grid-bg|bg-grid", low) or re.search(r"linear-gradient\([^)]*1px,\s*transparent\s*1px\)", (decl or "").lower() if decl_override is not None else low):
         texture = "grid"
     elif "feturbulence" in low or re.search(r"\.noise|#noise|grain", low):
         texture = "noise"
@@ -232,6 +242,143 @@ def scene_backdrop_warnings(css):
                          f"{'' if root_fill is None else ' than #root'}; the signature may not describe this video")}]
 
 
+TIE_SHARE = 0.05          # top two backdrops within 5 points of the total duration are an ambiguous dominant
+SCENE_SELECTORS = ("#s-{id}", "#scene-{id}", "#{id}", ".scene-{id}", '[data-scene="{id}"]', "[data-scene='{id}']")
+
+
+def scene_durations(doc):
+    """[(scene id, seconds)] and a list of problems from a timing document. Real shapes: ep3 timing.json
+    scenes[]{id,start,dur}; ep2 scenes.json scenes[]{id,start,end}. Duration = dur, else end - start. Anything else (no id,
+    non-number, bool, NaN/inf, <= 0, duplicate id) is reported and the scene is left out (duplicates keep both, flagged)."""
+    out, problems, seen = [], [], set()
+    scenes = (doc or {}).get("scenes") if isinstance(doc, dict) else None
+    if not isinstance(scenes, list) or not scenes:
+        return [], [{"code": "no_scenes", "message": "the timing document has no scenes[]"}]
+    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) 
+    for i, sc in enumerate(scenes):
+        sid = sc.get("id") if isinstance(sc, dict) else None
+        if not isinstance(sid, str) or not sid:
+            problems.append({"code": "scene_without_id", "index": i})
+            continue
+        if sid in seen:
+            problems.append({"code": "duplicate_scene_id", "scene": sid})
+        seen.add(sid)
+        d = sc.get("dur")
+        if d is None and num(sc.get("start")) and num(sc.get("end")):
+            d = sc["end"] - sc["start"]
+        if not num(d) or d <= 0:
+            problems.append({"code": "invalid_duration", "scene": sid, "value": repr(sc.get("dur", sc.get("end")))})
+            continue
+        out.append((sid, float(d)))
+    return out, problems
+
+
+def _norm_decl(decl):
+    return re.sub(r"\s+", " ", re.sub(r"!important", "", decl, flags=re.IGNORECASE)).strip().lower()
+
+
+def _scene_decl(css, sid, variables):
+    for fmt in SCENE_SELECTORS:
+        m = re.search(re.escape(fmt.format(id=sid)) + r"\s*\{([^}]*)\}", css)
+        if not m:
+            continue
+        b = re.search(r"background(?:-image|-color)?\s*:\s*([^;}]+)", m.group(1))
+        if b:
+            v = _resolve(b.group(1), variables)
+            if HEX.search(v) or "gradient" in v:
+                return _norm_decl(v)
+    return None
+
+
+def backdrop_profile(css, timing_doc):
+    """Total duration per backdrop. A scene's backdrop is its own rule's background; a scene with none inherits the global
+    one (#root/.scene/body). Returns None when per-scene durations are unusable (caller falls back to the global rule)."""
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    variables = _vars(css)
+    durs, problems = scene_durations(timing_doc)
+    if not durs:
+        return {"usable": False, "problems": problems, "backdrops": []}
+    glob = None
+    for sel in (r"#root", r"\.scene\b", r"html\s*,\s*body", r"body"):
+        d = _decl(css, sel)
+        if d:
+            d = _resolve(d, variables)
+            if HEX.search(d) or "gradient" in d:
+                glob = _norm_decl(d)
+                break
+    groups, order = {}, []
+    for sid, secs in durs:
+        own = _scene_decl(css, sid, variables)
+        key = own if own is not None else (glob if glob is not None else "(global default)")
+        if key not in groups:
+            groups[key] = {"decl": key, "scenes": [], "seconds": 0.0, "inherits_global": own is None}
+            order.append(key)
+        groups[key]["scenes"].append(sid)
+        groups[key]["seconds"] += secs
+    total = sum(g["seconds"] for g in groups.values())
+    rows = [dict(g, seconds=round(g["seconds"], 3), share=round(g["seconds"] / total, 4)) for g in (groups[k] for k in order)]
+    ranked = sorted(range(len(rows)), key=lambda i: (-round(rows[i]["seconds"], 3), i))     # equal seconds: earliest first
+    top = rows[ranked[0]]
+    tied = [rows[i] for i in ranked if top["share"] - rows[i]["share"] < TIE_SHARE]
+    return {"usable": True, "total_seconds": round(total, 3), "backdrops": rows, "dominant": top,
+            "ambiguous": len(tied) > 1, "tied": [t["decl"] for t in tied] if len(tied) > 1 else [], "problems": problems}
+
+
+def signature_for(css, timing_doc=None):
+    """(signature, basis). basis explains where the signature came from; it is recorded with a claim."""
+    prof = backdrop_profile(css, timing_doc) if timing_doc is not None else None
+    if not prof or not prof["usable"] or len(prof["backdrops"]) < 2:
+        return signature_from_css(css), {"basis": "global-rule", "profile": prof}
+    dom = prof["dominant"]
+    return signature_from_css(css, decl_override=dom["decl"]), {"basis": "duration-dominant", "profile": prof}
+
+
+def backdrop_warnings(css, timing_doc=None):
+    """Warnings for Rule B. Multiple backdrops always warn. See the module docstring for the semantics."""
+    prof = backdrop_profile(css, timing_doc) if timing_doc is not None else None
+    if prof and prof["usable"] and len(prof["backdrops"]) >= 2:
+        d = prof["dominant"]
+        w = [{"code": "multiple_backdrops", "severity": "warning", "basis": "duration-dominant",
+              "dominant_share": d["share"], "dominant_seconds": d["seconds"], "backdrops": len(prof["backdrops"]),
+              "message": (f"{len(prof['backdrops'])} backdrops in use; the signature is the duration-dominant one "
+                          f"({d['share']:.0%} of {prof['total_seconds']}s, scenes {','.join(d['scenes'])}); Rule B does not see the others")}]
+        if prof["ambiguous"]:
+            w.append({"code": "dominant_backdrop_ambiguous", "severity": "warning", "tied": prof["tied"],
+                      "message": f"top backdrops are within {TIE_SHARE:.0%} of total duration; picked the longest (earliest on equal), Rule B also evaluated per candidate"})
+        for pr in prof["problems"]:
+            w.append({"code": "timing_" + pr["code"], "severity": "warning", **{k: v for k, v in pr.items() if k != "code"}})
+        return w
+    base = scene_backdrop_warnings(css)
+    if base and (prof is None or not prof["usable"]):
+        reason = "no timing file found or it has no usable scene durations" if prof is None else "scene durations unusable: " + ", ".join(p["code"] for p in prof["problems"])
+        base.append({"code": "scene_durations_unavailable", "severity": "warning", "message": reason + "; falling back to the global rule"})
+    return base
+
+
+def load_timing(composition, explicit=None):
+    """Timing document for a composition: --timing, else <job>/audio/timing.json or <job>/scenes.json next to the
+    composition's folder (project/, portrait/, hf/ ...) or in the same folder. First one that has scenes[] wins."""
+    cands = [Path(explicit)] if explicit else []
+    c = Path(composition).parent
+    for base in (c, c.parent):
+        cands += [base / "audio" / "timing.json", base / "scenes.json", base / "timing.json"]
+    for p in cands:
+        if p.is_file():
+            try:
+                doc = json.loads(p.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                if explicit:
+                    raise VisualError(f"unreadable timing file {p}") from None
+                continue
+            if isinstance(doc, dict) and isinstance(doc.get("scenes"), list) and doc["scenes"]:
+                return doc
+            if explicit:
+                return doc
+    if explicit:
+        raise VisualError(f"timing file {explicit} not found")
+    return None
+
+
 COMPOSITIONS = ("project/index.html", "portrait/index.html", "hf/index.html", "index.html", "landscape/index.html")
 
 
@@ -302,7 +449,7 @@ def rule_b(signature, entries, *, content_id=None, window=WINDOW, shared=()):
 
 
 def claim(content_id, signature, *, series=None, shared=(), window=WINDOW, dry_run=False, seed=SEED, path=None,
-          warnings=(), acknowledge_warnings=False):
+          warnings=(), acknowledge_warnings=False, basis=None):
     storage.check_job_id(content_id)
     path = Path(path) if path else ledger_path()
     with storage.file_lock(path.with_suffix(".lock")):
@@ -317,7 +464,7 @@ def claim(content_id, signature, *, series=None, shared=(), window=WINDOW, dry_r
         if res["ok"] and not dry_run:
             mine = [e for e in _read_entries(path) if e["content_id"] != content_id]
             mine.append({"content_id": content_id, "series": series, "signature": signature, "shared": list(shared),
-                         "recorded_at": storage.now_iso(), "source": "claim"})
+                         "recorded_at": storage.now_iso(), "source": "claim", **({"basis": basis} if basis else {})})
             storage.write_json_atomic(path, {"schema": "visual-languages/1", "entries": mine})
             res["recorded"] = True
         return res
@@ -418,27 +565,43 @@ def _main(argv=None):
     ap = argparse.ArgumentParser(prog="python -m contentos.intelligence.visual", description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     u = sub.add_parser("used"); u.add_argument("target")
-    c = sub.add_parser("check"); c.add_argument("target"); c.add_argument("--as", dest="content_id", help="content id to exclude from the comparison (default: the folder name)"); c.add_argument("--window", type=int, default=WINDOW); c.add_argument("--shared", nargs="*", default=[])
-    cl = sub.add_parser("claim"); cl.add_argument("content_id"); cl.add_argument("target"); cl.add_argument("--series")
+    u.add_argument("--timing")
+    c = sub.add_parser("check"); c.add_argument("target"); c.add_argument("--timing"); c.add_argument("--as", dest="content_id", help="content id to exclude from the comparison (default: the folder name)"); c.add_argument("--window", type=int, default=WINDOW); c.add_argument("--shared", nargs="*", default=[])
+    cl = sub.add_parser("claim"); cl.add_argument("content_id"); cl.add_argument("target"); cl.add_argument("--series"); cl.add_argument("--timing")
     cl.add_argument("--window", type=int, default=WINDOW); cl.add_argument("--shared", nargs="*", default=[]); cl.add_argument("--dry-run", action="store_true"); cl.add_argument("--acknowledge-warnings", action="store_true")
     s = sub.add_parser("scenes"); s.add_argument("video"); s.add_argument("--timing"); s.add_argument("--starts"); s.add_argument("--motif")
     p = sub.add_parser("plan"); p.add_argument("plan")
     a = ap.parse_args(argv)
     try:
         if a.cmd == "used":
-            _report(signature_of(a.target))
+            comp = find_composition(a.target)
+            css, timing = _css_text(comp), load_timing(comp, a.timing)
+            sig, info = signature_for(css, timing)
+            _report(sig)
+            for w in backdrop_warnings(css, timing):
+                print(f"warning: {w['message']}", file=sys.stderr)
             return 0
         if a.cmd == "check":
-            sig = signature_of(a.target)
+            comp = find_composition(a.target)
+            css, timing = _css_text(comp), load_timing(comp, a.timing)
+            sig, info = signature_for(css, timing)
             cid = a.content_id or (Path(a.target).name if Path(a.target).is_dir() else a.target)
             res = rule_b(sig, ledger(), content_id=cid, window=a.window, shared=a.shared)
-            warns = scene_backdrop_warnings(_css_text(find_composition(a.target)))
-            _report({"signature": sig, **res, **({"warnings": warns} if warns else {})})
+            warns = backdrop_warnings(css, timing)
+            extra = {"basis": info["basis"]}
+            prof = info["profile"]
+            if prof and prof.get("usable") and len(prof["backdrops"]) >= 2:
+                extra["backdrop_distribution"] = [{"decl": b["decl"], "scenes": b["scenes"], "seconds": b["seconds"], "share": b["share"]} for b in prof["backdrops"]]
+                if prof["ambiguous"]:
+                    extra["tie_sensitivity"] = [{"candidate": d, "rule_b_ok": rule_b(signature_from_css(css, decl_override=d), ledger(), content_id=cid, window=a.window, shared=a.shared)["ok"]} for d in prof["tied"]]
+            _report({"signature": sig, **res, **extra, **({"warnings": warns} if warns else {})})
             return 0 if res["ok"] else 1
         if a.cmd == "claim":
-            res = claim(a.content_id, signature_of(a.target), series=a.series, shared=a.shared, window=a.window, dry_run=a.dry_run,
-                        warnings=scene_backdrop_warnings(_css_text(find_composition(a.target))),
-                        acknowledge_warnings=a.acknowledge_warnings)
+            comp = find_composition(a.target)
+            css, timing = _css_text(comp), load_timing(comp, a.timing)
+            sig, info = signature_for(css, timing)
+            res = claim(a.content_id, sig, series=a.series, shared=a.shared, window=a.window, dry_run=a.dry_run,
+                        warnings=backdrop_warnings(css, timing), acknowledge_warnings=a.acknowledge_warnings, basis=info["basis"])
             _report(res)
             return 0 if res["ok"] else 1
         if a.cmd == "scenes":
