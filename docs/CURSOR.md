@@ -102,6 +102,7 @@ python -m contentos.production.critic report.json        # validates the indepen
 | The agent says `NOT_INSTALLED` | `./contentos.sh doctor` prints the fix command per provider. Do not let it substitute a paid provider. |
 | `bad CPU type in executable` | The `/usr/local/bin` ffmpeg or `timeout` is x86_64. Always go through `./contentos.sh`, which puts `/opt/homebrew/bin` first. |
 | The agent wants to "fix" the quality thresholds | That is a gate it may not touch. `config/quality.yaml` and `config/*.yaml` change only when you ask. |
+| Labelled sheet exits with "cannot draw labels" | The ffmpeg here has no `drawtext` (homebrew 9.0.2 was built without freetype), so `sheet.py` fails closed by design. Fall back to `./contentos.sh preview … --sheet`; it is not a bug to defeat with `--allow-unlabelled`. |
 | It is about to commit | Stop it. No commits, pushes, stashes or resets here unless you ask for them. |
 
 ## 7. What is deliberately not available

@@ -70,11 +70,12 @@ Failed voice, compose or render stages are retried twice (after 15 s and 45 s); 
 
 ## 5. The agent toolkit
 - **Skills** (`.claude/skills/`)
+  - `video-production-orchestrator`: runs a whole video end to end, or audits a finished one — the phase order (P0-P11), the two background rules and the gates. Start here for any complete video (this repo's own).
   - `video-director`: planning (this repo's own).
   - `explainer-motion-craft`: the house motion rules R1 to R6 (smooth settle with no bounce, reveal on the spoken cue, one camera move per scene, no ambient motion, safe zones, short statements at about 2.5 words per second). Authoritative for motion.
   - `explainer-visual-qa`: post-render review.
   - `hyperframes-core`, `hyperframes-animation`, `hyperframes-keyframes`: pinned upstream HyperFrames skills. They are not committed; `python scripts/upstream_skills.py sync` restores them from `config/upstream-skills.lock.json`.
-- **Precedence when guidance conflicts:** the user's brief, then `hyperframes-core`, then `explainer-motion-craft`, then `video-director`, then upstream animation skills, then `references/motion-intent.md` (advisory), with `explainer-visual-qa` applied after rendering.
+- **Precedence when guidance conflicts:** the user's brief, then `hyperframes-core`, then `explainer-motion-craft`, then `video-director` and `video-production-orchestrator` (same level; the orchestrator places `video-director` first, planning before execution), then upstream animation skills, then `references/motion-intent.md` (advisory), with `explainer-visual-qa` applied after rendering.
 - **Capability registry** (`config/capabilities.json`): 93 entries, each `installed`, `available` (needs an opt-in), `candidate` (experimental only, for example p5.brush) or `unavailable` (for example the vibe filters). "Installed" means the file is present and lock-verified, not that it has been render-tested. An agent may name only ids that are in this file; `director.select_capability` picks the simplest usable one and records any substitution.
 - **Platform limits** (`config/platforms.json`): see section 6.
 
@@ -115,8 +116,9 @@ Tests: `~/.contentos/venv/bin/python -m pytest tests` (Python 3.12 or later). On
 ```
 config/            capabilities.json, platforms.json, providers.yaml, quality.yaml, youtube.yaml, policies
 contentos/         CLI, pipeline.py (stages), ledger, queue, QA, worker adapters
-contentos/production/  sceneplan, align, direction (validator), director, platforms, critic, motion_audit, preview
-.claude/skills/    explainer-*, video-director (pinned hyperframes-* are generated)
+contentos/production/  sceneplan, align, direction (validator), director, platforms, critic, motion_audit, preview,
+                       sheet (labelled sheets, sheet/1, shadow), timeline (timeline/1, shadow), visual_gate (rendered-frame gate), core (retries)
+.claude/skills/    video-production-orchestrator, video-director, explainer-* (pinned hyperframes-* are generated)
 docs/              this guide, AGENT_BRIEF.md, factory-v2/ (audits, reports)
 examples/          sample specs
 ~/Desktop/VideoFactory-Workspace   ALL generated work (outside the repo, VIDEO_FACTORY_WORKSPACE)
@@ -139,6 +141,7 @@ No public upload and no paid service without explicit approval; do not change ga
 
 ## 10. What is built and what is not
 Working: the Track A pipeline, Kokoro voice, whisper captions, HyperFrames render, QA, gates, ledger, queue and worker, ContentForge exchange, the capability registry and validator, the director check, platform limits, the contact-sheet and critic tools.
+New and in shadow mode: `production/sheet.py` (timeline-labelled contact sheets, `sheet/1`) and `production/timeline.py` (`timeline/1`). Nothing imports the timeline yet, and the labelled sheet needs an ffmpeg built with `drawtext`: the `/opt/homebrew` build on this Mac has no freetype, so there it fails closed and the plain `preview --sheet` is the fallback.
 Built but not wired into the builder: scene-plan consumption (Track B composition is agent-built).
 Tested only as a dry run: the `video-director` plan for "What Happens When an AI Agent Uses a Tool?" (`workspace/experiments/m2-director-dryrun-001/`, not rendered).
 Not built: a YouTube uploader and OAuth, multi-platform publishing, niche discovery, analytics ingestion, thumbnails, Odia/Hindi voices, automatic skill triggering tests.

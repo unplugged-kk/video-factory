@@ -12,8 +12,10 @@ Run, in order, and keep the raw output:
    frames at phone size and describe what you see, not just what the log said.
 3. If a `timeline/1` file exists for the job:
    `python -m contentos.production.sheet <video> <timeline.json> -o <dir>` for timeline-labelled tiles
-   (new and in shadow mode; it fails closed when it cannot draw labels — do not pass `--allow-unlabelled`
-   without telling me why).
+   (new and in shadow mode; it fails closed when it cannot draw labels). On this Mac expect that failure:
+   the homebrew ffmpeg has no `drawtext`, so report it once and fall back to `preview --sheet` above — do
+   not reach for `--allow-unlabelled` to get past it, and do not treat the fallback sheet as equivalent
+   when the labels are the point of the audit.
 4. Rendered-frame gate for what lint cannot see:
    `python -m contentos.production.visual_gate layers <target>`,
    `... captions <video>`,
