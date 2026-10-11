@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Mac visual-reliability experiment: three 9:16 arms (cut control / css push / shader sdf-iris) built from one
+# Mac visual-reliability experiment: eight 9:16 arms (cut control / css push / shader sdf-iris with captions at z-index 20 / z-index 200 / inside the scenes, plus cut-dark, css-dark and shader-in-dark: the same with a dark caption plate) built from one
 # code-editorial scene set. Run from the repo root on the Mac:   bash workspace/spike-design-library/mac-experiment/run.sh
 #
 # Every run writes a NEW folder (never overwrites earlier evidence). Per arm it records the exact command, render exit code,
 # render seconds and output path, then runs the visual gate on that arm's own output. A failing arm is reported as failed;
-# the exit status is 0 only if all three arms rendered and were gated. Findings (hard cut, black) are results, not errors.
+# the exit status is 0 only if all eight arms rendered and were gated. Findings (hard cut, black) are results, not errors.
 # Compatible with macOS bash 3.2. Installs nothing. Not a cloud tool: results from a non-Mac machine must not be called Mac results.
 set -u
 REPO="$(pwd)"
@@ -26,11 +26,11 @@ OUT="$(mktemp -d "$PKG/results/run-$(date +%Y%m%d-%H%M%S)-XXXXXX")" || exit 2   
   echo "node: $(node -v 2>&1)"; echo "python: $PY $("$PY" -V 2>&1)"; echo "ffmpeg: $(ffmpeg -version 2>&1 | head -1)"
   echo "repo_head: $(git -C "$REPO" rev-parse HEAD 2>&1)"; echo "repo_dirty_files: $(git -C "$REPO" status --short 2>/dev/null | wc -l | tr -d ' ')"
   echo "env HF_PAGE_SIDE_COMPOSITING=${HF_PAGE_SIDE_COMPOSITING-unset} HYPERFRAMES_BROWSER_PATH=${HYPERFRAMES_BROWSER_PATH-unset} HF_DE_PARALLEL_ROUTER=${HF_DE_PARALLEL_ROUTER-unset}"
-  echo "pkg_sha256: $(cat "$PKG"/cut/index.html "$PKG"/css/index.html "$PKG"/shader/index.html | shasum -a 256 | cut -c1-16)"
+  echo "pkg_sha256: $(cat "$PKG"/cut/index.html "$PKG"/css/index.html "$PKG"/shader/index.html "$PKG"/shader-zi/index.html "$PKG"/shader-in/index.html "$PKG"/cut-dark/index.html "$PKG"/css-dark/index.html "$PKG"/shader-in-dark/index.html | shasum -a 256 | cut -c1-16)"
 } > "$OUT/environment.txt"
 CAPWIN="$("$PY" -c "print(','.join('%s:%.3f' % (t, t + 0.001) for t in range(1, 12)))")"
-window_for() { case "$1" in shader) echo "5.7:0.6:shader";; *) echo "5.55:0.45:css";; esac; }
-for arm in cut css shader; do
+window_for() { case "$1" in shader*) echo "5.7:0.6:shader";; *) echo "5.55:0.45:css";; esac; }
+for arm in cut css shader shader-zi shader-in cut-dark css-dark shader-in-dark; do
   D="$PKG/$arm"; V="$OUT/$arm.mp4"; L="$OUT/$arm.render.log"; S="$OUT/$arm.summary.txt"; W="$(window_for $arm)"
   echo "== $arm"
   ( cd "$D" && "$HF" check ) > "$OUT/$arm.check.log" 2>&1; echo $? > "$OUT/$arm.check.rc"
@@ -44,15 +44,18 @@ for arm in cut css shader; do
   "$PY" -m contentos.production.visual_gate log "$L" > "$OUT/$arm.gate-log.json" 2>"$OUT/$arm.gate-log.err"
   "$PY" -m contentos.production.visual_gate transitions "$V" --at "$W" > "$OUT/$arm.gate-transition.json" 2>"$OUT/$arm.gate-transition.err"
   echo "gate transition window $W exit $?" | tee -a "$S"
-  "$PY" -m contentos.production.visual_gate captions "$V" --project "$D" --canvas 1080x1920 --windows "$CAPWIN" > "$OUT/$arm.gate-captions.json" 2>"$OUT/$arm.gate-captions.err"
+  "$PY" -m contentos.production.visual_gate captions "$V" --region 70,1374,870,214 --canvas 1080x1920 --windows "$CAPWIN" > "$OUT/$arm.gate-captions.json" 2>"$OUT/$arm.gate-captions.err"
   TWIN="$("$PY" -c "import sys; s,d,_=sys.argv[1].split(':'); s=float(s); n=int(round(float(d)/0.05)); print(','.join('%.3f:%.4f' % (s+0.05*i, s+0.05*i+0.001) for i in range(n+1)))" "$W")"
-  "$PY" -m contentos.production.visual_gate captions "$V" --project "$D" --canvas 1080x1920 --windows "$TWIN" > "$OUT/$arm.gate-captions-window.json" 2>"$OUT/$arm.gate-captions-window.err"
+  "$PY" -m contentos.production.visual_gate captions "$V" --region 70,1374,870,214 --canvas 1080x1920 --windows "$TWIN" > "$OUT/$arm.gate-captions-window.json" 2>"$OUT/$arm.gate-captions-window.err"
+  POL=dark-on-light; case "$arm" in *-dark) POL=light-on-dark;; esac
+  "$PY" "$PKG/caption_window.py" "$V" "${W%%:*}" "$(echo "$W" | cut -d: -f2)" --polarity "$POL" > "$OUT/$arm.gate-caption-text-window.json" 2>"$OUT/$arm.gate-caption-text-window.err"
+  ffmpeg -v error -y -ss "$("$PY" -c "print(max(0,${W%%:*}-0.1))")" -t 0.8 -i "$V" -vf "fps=10,crop=870:214:70:1374,scale=435:-1,tile=2x4" -frames:v 1 "$OUT/${arm}_caption-strip.png"
   "$PY" -m contentos.production.visual_gate layers "$D" > "$OUT/$arm.gate-layers.json" 2>"$OUT/$arm.gate-layers.err"
-  for t in 2 5.7 5.85 6.0 6.15 9; do ffmpeg -v error -y -ss $t -i "$V" -frames:v 1 -vf scale=360:640 "$OUT/${arm}_$t.png"; done
+  for t in 2 5.7 5.8 5.85 5.9 6.0 6.15 9; do ffmpeg -v error -y -ss $t -i "$V" -frames:v 1 -vf scale=360:640 "$OUT/${arm}_$t.png"; done
 done
 echo; echo "results folder: $OUT"; echo
 "$PY" "$PKG/summarize.py" "$OUT"; status=$?
 echo
 echo "Return to Claude: $OUT/{environment.txt,SUMMARY.txt,SUMMARY.json,*.summary.txt,*.render.log,*.check.log,*.gate-*.json}"
-echo "and the PNG frames (small). Do not edit them. The .mp4 files are not needed."
+echo "and the PNG frames incl. *_caption-strip.png (small). Do not edit them. The .mp4 files are not needed."
 exit $status

@@ -1618,7 +1618,7 @@
      "date": "2026-10-11",
      "aspect": "9:16",
      "run": "mac-experiment",
-     "method": "mac-experiment shader arm: HyperShader sdf-iris 5.7-6.3 s over code-editorial scenes, 1080x1920, 12 s",
+     "method": "mac-experiment shader arm: HyperShader sdf-iris 5.7-6.3 s over code-editorial scenes, 1080x1920, 12 s; three caption arrangements (root z-index 20, root z-index 200, inside the scenes) against cut and css controls",
      "checks": {
       "hyperframes_check": true,
       "no_fallback_in_log": true,
@@ -1633,9 +1633,9 @@
       "intermediate_samples": 3,
       "black_fraction": 0.0
      },
-     "provenance": "Genuine Mac run: workspace/spike-design-library/mac-experiment/results/run-20261011-075423-eC5B9v (environment.txt: Darwin arm64, Apple M5 Pro, macOS 27.0.1, hyperframes 0.8.114, repo HEAD 422751d)",
-     "evidence": "The shader works on the Mac: real iris blend, log 'Page-side compositing enabled', no fallback codes, no black frames, check exit 0. But the caption layer (a root-level #captions above the scenes, z-index 20, continuous across the boundary in the cut/css arms) disappears when the transition starts: dense gate samples show hidden at 5.70 and 5.75 s (visible in the cut and css arms at the same times), and the 5.85 s frame shows no caption (the gate reports visible there because the bright iris counts as ink: a gate limitation). Cause not investigated. Fails the captions_visible requirement for this layout.",
-     "notes": "The 13 other shaders have only the captionless sampler evidence (partial). Whether captions can be kept visible (for example by moving them inside the scenes) is untested."
+     "provenance": "Genuine Mac runs: workspace/spike-design-library/mac-experiment/results/run-20261011-075423-eC5B9v (3 arms) and run-20261011-082039-P0sx7o (5 arms, harness_ok=True, control_valid=True; environment.txt: Darwin arm64, Apple M5 Pro, macOS 27.0.1, hyperframes 0.8.114, node v24.19.0, ffmpeg 9.0.2, repo HEAD 8d4a337, 9 dirty files)",
+     "evidence": "The shader works on the Mac: real iris blend, log 'Page-side compositing enabled', no fallback codes, no black frames, check exit 0. But the caption layer disappears when the transition starts, and the 5-arm run narrows the cause. With a root-level caption layer (z-index 20) the caption region reads 0% light and mean 19-32 (bare backdrop: no plate at all) at 5.70-5.80 s, and shows no glyphs in any of the 12 in-window samples (text-vis 0.368, the one legible sample at 6.0 s aside). Raising that layer to z-index 200, above the canvas HyperShader injects at z-index 100, changes nothing (identical scores), so this is not stacking order. Captions placed inside each scene do survive the transition (ink 1.0, text-vis 0.947), but the bright iris washes the plate out at 5.85 s (glyph score 31 against a floor of 1590: plate present, text illegible). Neither arrangement keeps captions legible across the whole window; the cut and css arms read 1.0 on all three caption measures at the same instants.",
+     "notes": "The 13 other shaders have only the captionless sampler evidence (partial). A shader transition does not composite a root-level caption layer at all, so captions must live inside the scene tree to survive it - and even then the transition midpoint can wash them out for about one sample (50 ms at this sampling rate). Until a shader transition keeps captions legible across its whole window, Mac validation stays with css-transition:push-slide."
     }
    ]
   },
