@@ -36,8 +36,10 @@ for arm in ARMS:
     r["log_codes"] = sorted({f["code"] for f in (lg or {}).get("findings", [])}) if lg is not None else None
     r["captions_visible_ratio"] = (cp or {}).get("visible_ratio") if cp else None
     r["captions_ok"] = (cp or {}).get("ok") if cp else None
+    cw = j(f"{arm}.gate-captions-window.json")
+    r["captions_in_transition_window"] = (cw or {}).get("visible_ratio") if cw else None
     r["layers_ok"] = (ly or {}).get("ok") if ly else None
-    gated = all(x is not None for x in (tr, lg, cp, ly))
+    gated = all(x is not None for x in (tr, lg, cp, ly, cw))
     r["rendered_and_gated"] = r["render_rc"] == 0 and r["output_exists"] and gated
     harness_ok &= r["rendered_and_gated"]
     rows.append(r)
@@ -60,12 +62,17 @@ if sh["rendered_and_gated"]:
                      + (" (log reports a fallback)" if fell_back else ""))
 else:
     notes.append("shader arm did not render/gate: no shader verdict")
+for r in rows:
+    q = r["captions_in_transition_window"]
+    if q is not None and q < 0.9:
+        notes.append(f"{r['arm']} arm: CAPTIONS HIDDEN during the transition window (visible in {q:.0%} of samples; the captions are continuous by construction). "
+                     "The caption ink check can be fooled by bright transition effects, so also look at the frames.")
 res = {"folder": str(out), "harness_ok": harness_ok, "control_valid": control, "arms": rows, "notes": notes}
 (out / "SUMMARY.json").write_text(json.dumps(res, indent=1))
-lines = [f"{'arm':7}{'check':>6}{'render':>7}{'secs':>6}  {'transition':12}{'black':>6}  {'captions':>9}  {'layers':7} log codes"]
+lines = [f"{'arm':7}{'check':>6}{'render':>7}{'secs':>6}  {'transition':12}{'black':>6}  {'captions':>9}  {'in-window':>9}  {'layers':7} log codes"]
 for r in rows:
     lines.append(f"{r['arm']:7}{str(r['check_rc']):>6}{str(r['render_rc']):>7}{str(r['render_seconds']):>6}  {str(r['transition']):12}"
-                 f"{str(r['black_fraction']):>6}  {str(r['captions_visible_ratio']):>9}  {str(r['layers_ok']):7} {','.join(r['log_codes'] or [])}")
+                 f"{str(r['black_fraction']):>6}  {str(r['captions_visible_ratio']):>9}  {str(r['captions_in_transition_window']):>9}  {str(r['layers_ok']):7} {','.join(r['log_codes'] or [])}")
 lines += [""] + notes + ["", f"harness_ok={harness_ok} control_valid={control}"]
 (out / "SUMMARY.txt").write_text("\n".join(lines) + "\n")
 print("\n".join(lines))

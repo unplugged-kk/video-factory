@@ -1614,25 +1614,28 @@
     {
      "environment": "mac-hf0.8.114",
      "level": "rendered",
-     "result": "partial",
+     "result": "fail",
      "date": "2026-10-11",
      "aspect": "9:16",
-     "method": "14-shader sampler, 1080x1920, 15 fps, 0.6 s transitions; frames gated with contentos.production.visual_gate",
+     "run": "mac-experiment",
+     "method": "mac-experiment shader arm: HyperShader sdf-iris 5.7-6.3 s over code-editorial scenes, 1080x1920, 12 s",
      "checks": {
-      "hyperframes_check": null,
+      "hyperframes_check": true,
       "no_fallback_in_log": true,
       "transition_blend": true,
       "not_black": true,
-      "captions_visible": null,
+      "captions_visible": false,
       "output_size_matches_aspect": true,
       "render_time_recorded": true
      },
      "measurements": {
-      "render_seconds": 14.0
+      "render_seconds": 11,
+      "intermediate_samples": 3,
+      "black_fraction": 0.0
      },
-     "provenance": "user-pasted terminal log: darwin arm64, Apple M5 Pro, hardware GPU (ANGLE Metal), hyperframes 0.8.114, 'Page-side compositing enabled', output path/size/duration match workspace/spike-design-library/sampler-mac.mp4. The file itself is not bound to that machine; owner to confirm.",
-     "evidence": "Transition window blended with intermediate frames and 0 black fraction in the Mac sampler; log shows page-side compositing enabled (no opacity-flip fallback). Not validated: the sampler has no captions, no hyperframes check was run, and only this one render exists.",
-     "notes": "Cloud result for the same shader is FAIL (hard cut / black); the difference is environmental."
+     "provenance": "Genuine Mac run: workspace/spike-design-library/mac-experiment/results/run-20261011-075423-eC5B9v (environment.txt: Darwin arm64, Apple M5 Pro, macOS 27.0.1, hyperframes 0.8.114, repo HEAD 422751d)",
+     "evidence": "The shader works on the Mac: real iris blend, log 'Page-side compositing enabled', no fallback codes, no black frames, check exit 0. But the caption layer (a root-level #captions above the scenes, z-index 20, continuous across the boundary in the cut/css arms) disappears when the transition starts: dense gate samples show hidden at 5.70 and 5.75 s (visible in the cut and css arms at the same times), and the 5.85 s frame shows no caption (the gate reports visible there because the bright iris counts as ink: a gate limitation). Cause not investigated. Fails the captions_visible requirement for this layout.",
+     "notes": "The 13 other shaders have only the captionless sampler evidence (partial). Whether captions can be kept visible (for example by moving them inside the scenes) is untested."
     }
    ]
   },
@@ -2604,6 +2607,29 @@
      "measurements": {
       "render_seconds": 105
      }
+    },
+    {
+     "environment": "mac-hf0.8.114",
+     "level": "rendered",
+     "result": "pass",
+     "date": "2026-10-11",
+     "aspect": "9:16",
+     "run": "mac-experiment",
+     "method": "mac-experiment css arm: code-editorial scenes, push 5.55-6.0 s, 1080x1920, 12 s",
+     "checks": {
+      "hyperframes_check": true,
+      "transition_blend": true,
+      "captions_visible": true,
+      "output_size_matches_aspect": true,
+      "render_time_recorded": true
+     },
+     "measurements": {
+      "render_seconds": 6,
+      "intermediate_samples": 3,
+      "black_fraction": 0.0
+     },
+     "provenance": "Genuine Mac run: workspace/spike-design-library/mac-experiment/results/run-20261011-075423-eC5B9v (environment.txt: Darwin arm64, Apple M5 Pro, macOS 27.0.1, hyperframes 0.8.114, repo HEAD 422751d)",
+     "evidence": "hyperframes check exit 0 (19/19 text checks); transition gate blend (3 intermediate samples, 0 black); caption ink visible 10/11 samples, 11/11 samples across 5.0-5.85 s (the 5.9 s gap is the script's); output 1080x1920 30 fps 12 s; render 6 s via drawElement capture. Control arm read hard_cut, so the gate discriminates. Not run: blur-crossfade, other presets, real ep3."
     }
    ]
   },

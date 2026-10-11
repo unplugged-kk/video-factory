@@ -27,7 +27,8 @@ def page(arm):
     sc = "\n".join(f'<section class="scene" id="{i}"{OV} style="z-index:{n+1};background-color:{bg};color:{fg}"><div class="kicker"{OV}>0{n+1} · code editorial</div><div class="h"{OV}>{t}</div><div class="card"{OV}>if (rule) {{ output = fixed; }}<br>else {{ output = learned; }}</div></section>'
                    for n, (i, t, bg, fg) in enumerate(SCENES))
     caps = "\n".join(f'<div class="cap" id="c{n}">{" ".join(w)}</div>' for n, w in enumerate(WORDS))
-    cap_js = "".join(f'tl.set("#c{n}",{{opacity:1}},{n*6+0.3}); tl.set("#c{n}",{{opacity:0}},{n*6+5.9});\n' for n in range(2))
+    # contiguous captions: chunk 0 is on 0.3-6.0 s and chunk 1 6.0-12 s, so any caption gap seen around the 6 s boundary is the renderer's, not the script's
+    cap_js = 'tl.set("#c0",{opacity:1},0.3); tl.set("#c0",{opacity:0},6.0); tl.set("#c1",{opacity:1},6.0); tl.set("#c1",{opacity:0},12.0);\n'
     scripts = '<script src="./gsap.min.js"></script>' + ('<script src="./shader-transitions.js"></script>' if arm == "shader" else "")
     if arm == "shader":
         js = ('var tl = HyperShader.init({bgColor:"#181715",accentColor:"#CC785C",compositionId:"root",scenes:["s1","s2"],'

@@ -45,6 +45,8 @@ for arm in cut css shader; do
   "$PY" -m contentos.production.visual_gate transitions "$V" --at "$W" > "$OUT/$arm.gate-transition.json" 2>"$OUT/$arm.gate-transition.err"
   echo "gate transition window $W exit $?" | tee -a "$S"
   "$PY" -m contentos.production.visual_gate captions "$V" --project "$D" --canvas 1080x1920 --windows "$CAPWIN" > "$OUT/$arm.gate-captions.json" 2>"$OUT/$arm.gate-captions.err"
+  TWIN="$("$PY" -c "import sys; s,d,_=sys.argv[1].split(':'); s=float(s); n=int(round(float(d)/0.05)); print(','.join('%.3f:%.4f' % (s+0.05*i, s+0.05*i+0.001) for i in range(n+1)))" "$W")"
+  "$PY" -m contentos.production.visual_gate captions "$V" --project "$D" --canvas 1080x1920 --windows "$TWIN" > "$OUT/$arm.gate-captions-window.json" 2>"$OUT/$arm.gate-captions-window.err"
   "$PY" -m contentos.production.visual_gate layers "$D" > "$OUT/$arm.gate-layers.json" 2>"$OUT/$arm.gate-layers.err"
   for t in 2 5.7 5.85 6.0 6.15 9; do ffmpeg -v error -y -ss $t -i "$V" -frames:v 1 -vf scale=360:640 "$OUT/${arm}_$t.png"; done
 done

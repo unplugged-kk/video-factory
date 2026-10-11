@@ -84,7 +84,8 @@ def test_failed_in_selected_env_is_hidden_unless_asked(lib):
                                                           top={"shader_transition": 20}, **kw)["shader_transition"]]
     assert "shader:sdf-iris" not in shown(env=CLOUD)                     # failed in cloud
     assert "shader:sdf-iris" in shown(env=CLOUD, include_failed=True)
-    assert "shader:sdf-iris" in shown(env=MAC)                           # untested on the Mac: not hidden, not validated
+    assert "shader:sdf-iris" not in shown(env=MAC)                       # failed the caption check on the Mac too
+    assert "shader:chromatic-split" in shown(env=MAC)                    # only partial evidence on the Mac: not hidden, not validated
 
 
 def test_slow_cost_penalty(lib):
@@ -134,7 +135,7 @@ def test_status_levels_and_environments(lib):
     doc, entries = lib
     val = doc["validation"]
     full = {c: True for c in val["required"]["css_transition"]}
-    base = entries["css-transition:push-slide"]
+    base = entries["css-transition:blur-crossfade"]
     assert designs.status(base, val, CLOUD) == "validated"
     assert designs.status(base, val, MAC) == "unvalidated"                 # cloud evidence never stands in for the Mac
     assert designs.status(dict(base, validations=[_rec(level="structural")]), val, MAC) == "structural"
@@ -202,10 +203,14 @@ def test_cli_exit_codes(tmp_path, capsys):
     assert designs.main(["--seed", str(tmp_path / "missing.json"), "validate"]) == 2
 
 
-def test_shaders_are_partial_on_the_mac_and_failed_in_the_cloud(lib):
-    # Mac sampler evidence exists but lacks captions/check/second render, so it is partial, never validated; cloud stays failed
+def test_mac_evidence_levels(lib):
+    # Mac sampler (captionless) is partial for 13 shaders; the mac-experiment run validated css push-slide and failed sdf-iris on
+    # captions; cloud stays failed for every shader. Nothing is validated that was not measured on the Mac.
     doc, entries = lib
-    for e in entries.values():
+    val = doc["validation"]
+    for eid, e in entries.items():
         if e["kind"] == "shader_transition":
-            assert designs.status(e, doc["validation"], MAC) == "partial"
-            assert designs.status(e, doc["validation"], CLOUD) == "failed"
+            assert designs.status(e, val, CLOUD) == "failed"
+            assert designs.status(e, val, MAC) == ("failed" if eid == "shader:sdf-iris" else "partial")
+    assert designs.status(entries["css-transition:push-slide"], val, MAC) == "validated"
+    assert designs.status(entries["css-transition:blur-crossfade"], val, MAC) == "unvalidated"
