@@ -127,6 +127,20 @@ def test_claim_records_blocks_and_is_idempotent(tmp_path, monkeypatch):
     assert dry["ok"] and "recorded" not in dry and len(json.loads(led.read_text())["entries"]) == 1
 
 
+def test_claim_require_ok_false_records_a_duplicate_look(tmp_path):
+    """The pipeline needs a faithful history, so it records even a failing look - but only when it asks to. The default
+    stays a gate (see the test above): the CLI's notion of a recorded look is still one that passed."""
+    seed, led = tmp_path / "seed.json", tmp_path / "ws" / "led.json"
+    seed.write_text(json.dumps({"entries": [entry("pilot", EP3_CSS)]}))
+
+    gated = visual.claim("ep3", sig(EP3_CSS), seed=seed, path=led)
+    assert not gated["ok"] and not led.exists()                    # unchanged default
+
+    kept = visual.claim("ep3", sig(EP3_CSS), seed=seed, path=led, require_ok=False)
+    assert not kept["ok"] and kept["duplicates"] == ["pilot"]      # the verdict is still reported honestly
+    assert kept.get("recorded") and len(json.loads(led.read_text())["entries"]) == 1
+
+
 def test_concurrent_claims_do_not_lose_entries(tmp_path):
     seed, led = tmp_path / "seed.json", tmp_path / "led.json"
     seed.write_text(json.dumps({"entries": []}))

@@ -6,6 +6,7 @@ import os
 import shutil
 import signal
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -20,6 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILLS = [ROOT / "vendor/youtube-agent-skill/skills", Path("~/.claude/skills").expanduser()]
 ENV = {**os.environ, "HYPERFRAMES_PYTHON": str(providers.VENV_PY)}
 STAGES = ["brief", "script", "voice", "compose", "render", "qa", "package", "export", "publish"]
+LOOK_SCHEMA = "look/1"          # what the export stage records about the look of a video that actually shipped
 
 
 class Blocked(Exception):
@@ -222,6 +224,34 @@ def s_package(ctx):
     return "yt-package/title", [meta]
 
 
+def _record_look(ctx):
+    """Record this video's look in the shipped-look ledger, so Rule B's window reflects what actually shipped.
+
+    Best-effort by design: an export has already cost a render, so a missing composition, an unreadable manifest or an
+    unwritable ledger reports itself rather than failing the export. The look is recorded even when it repeats a recent
+    one (`require_ok=False`), because the ledger is the history of what shipped and a duplicate that shipped is exactly
+    what the next check needs to see; the Rule B verdict is kept in the job's own look.json.
+    """
+    from .intelligence import visual
+    out = {"schema": LOOK_SCHEMA, "content_id": ctx["id"], "series": None, "signature": None,
+           "status": "skipped", "verdict": None, "reason": None}
+    try:
+        out["series"] = (storage.read_manifest(ctx["dir"]) or {}).get("project_id")
+        out["signature"] = visual.signature_of(ctx["dir"])
+        res = visual.claim(ctx["id"], out["signature"], series=out["series"], require_ok=False)
+        out["status"] = "recorded" if res.get("recorded") else "not-recorded"
+        out["verdict"] = {"ok": res.get("ok"), "duplicates": res.get("duplicates"), "refused": res.get("refused")}
+    except Exception as exc:                          # deliberately broad: no look record may ever fail an export
+        out["reason"] = storage.scrub(exc)
+        print(f"{ctx['id']}: look not recorded: {out['reason']}", file=sys.stderr)
+    try:
+        p = ctx["dir"] / "look.json"
+        p.write_text(json.dumps(out, indent=2), encoding="utf-8")
+        return p
+    except OSError:
+        return None                                   # the export itself already succeeded; nothing more to do
+
+
 def s_export(ctx):
     """Validate the final video and hand it to the publishing library (ready/ + sidecar). Idempotent; a video that fails
     validation stays in the workspace and never reaches ready/."""
@@ -231,7 +261,8 @@ def s_export(ctx):
     res = exporter.export_job(ctx["id"], force=bool(ctx.get("force")))
     p = ctx["dir"] / "export-result.json"
     p.write_text(json.dumps(res, indent=2))
-    return "export", [p]
+    look = _record_look(ctx)                         # only after a successful export, and never fatal
+    return "export", ([p, look] if look else [p])
 
 
 def s_publish(ctx):

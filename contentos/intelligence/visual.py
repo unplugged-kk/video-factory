@@ -449,7 +449,14 @@ def rule_b(signature, entries, *, content_id=None, window=WINDOW, shared=()):
 
 
 def claim(content_id, signature, *, series=None, shared=(), window=WINDOW, dry_run=False, seed=SEED, path=None,
-          warnings=(), acknowledge_warnings=False, basis=None):
+          warnings=(), acknowledge_warnings=False, basis=None, require_ok=True):
+    """Record a look in the ledger.
+
+    `require_ok` decides whether Rule B gates the write. The default (True) refuses to record a look that repeats a
+    recent one, which is what the CLI wants: a recorded look is one that passed. Callers that must keep a faithful
+    history instead - the pipeline does, after a successful export - pass require_ok=False, because a duplicate that
+    actually shipped is exactly what the next check needs to see. The verdict is returned either way.
+    """
     storage.check_job_id(content_id)
     path = Path(path) if path else ledger_path()
     with storage.file_lock(path.with_suffix(".lock")):
@@ -461,7 +468,7 @@ def claim(content_id, signature, *, series=None, shared=(), window=WINDOW, dry_r
             res["ok"] = False
             res["refused"] = "signature may not describe this video (see warnings); re-run with --acknowledge-warnings to record anyway"
             return res
-        if res["ok"] and not dry_run:
+        if (res["ok"] or not require_ok) and not dry_run:
             mine = [e for e in _read_entries(path) if e["content_id"] != content_id]
             mine.append({"content_id": content_id, "series": series, "signature": signature, "shared": list(shared),
                          "recorded_at": storage.now_iso(), "source": "claim", **({"basis": basis} if basis else {})})
