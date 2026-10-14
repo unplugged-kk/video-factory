@@ -114,3 +114,37 @@ def test_a_job_that_was_never_exported_is_skipped(env, tmp_path):
     assert rep["checked"] == 0
     for bucket in ("ok", "superseded", "sidecar_missing", "workspace_video_missing", "archived", "never_exported"):
         assert rep[bucket] == []
+
+
+# ---- resume_blocker: the same classification, used to refuse a dishonest resume ----
+
+def test_resume_blocker_allows_a_matching_render(env, tmp_path):
+    ws, pub = env
+    d = job()
+    exported(d, make_video(tmp_path / "v.mp4", seconds=1))
+
+    assert export.resume_blocker(d) is None
+
+
+def test_resume_blocker_refuses_a_stale_render_and_names_both_shas(env, tmp_path):
+    ws, pub = env
+    d = job()
+    exported(d, make_video(tmp_path / "v1.mp4", seconds=1))
+    shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+
+    reason = export.resume_blocker(d)
+    assert reason is not None
+    assert "render changed since it was exported" in reason and "--force" in reason
+    assert export.sha256_file(d / "video.mp4")[:12] in reason      # the diagnostic points at the render in question
+
+
+def test_resume_blocker_reports_an_unreadable_manifest_instead_of_raising(env, tmp_path):
+    ws, pub = env
+    d = job()
+    exported(d, make_video(tmp_path / "v.mp4", seconds=1))
+    (d / "manifest.json").write_text('{"id": "legacy", "title": "not jobmanifest/1"}')
+    before = tree(pub)
+
+    reason = export.resume_blocker(d)
+    assert reason is not None and "cannot be read" in reason
+    assert tree(pub) == before                                     # it decides; it never writes

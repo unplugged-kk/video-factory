@@ -97,18 +97,90 @@ def test_rerun_without_force_refuses_superseded_export(setup, tmp_path):
     assert sc["video_sha256"] != export.sha256_file(d / "video.mp4")  # nothing was replaced
 
 
-def test_a_plain_rerun_skips_export_which_is_why_the_integrity_check_exists(setup, tmp_path):
-    """Pins the gap this slice does NOT close: without --force the export stage resumes, reports success, and leaves a
-    superseded video in ready/ unnoticed. `export.divergence()` is what surfaces it, so changing this skip is a
-    deliberate decision, not an accident."""
+# ---- a resumed export is only "done" when the render still matches what was exported ----
+
+def test_a_matching_render_still_resumes_silently(setup, tmp_path):
+    """Normal resume must be untouched: same render, so the skip is honest."""
+    spec, pub = setup
+    stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
+    pipeline.run(spec, only="export")
+
+    _, report = pipeline.run(spec, only="export")
+    assert report[0][:2] == ("export", "SKIP(resume)")
+
+
+def test_a_stale_render_blocks_the_resume_instead_of_reporting_success(setup, tmp_path):
+    """The gap this closes: a re-render must not be reported as a successful export resume."""
     spec, pub = setup
     d = stage(spec, make_video(tmp_path / "v1.mp4", seconds=1))
     pipeline.run(spec, only="export")
+    first = json.loads(next((pub / "ready").rglob("*.publish.json")).read_text())
     shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
 
     _, report = pipeline.run(spec, only="export")
-    assert report[0][:2] == ("export", "SKIP(resume)")           # no error, yet ready/ still holds the older render
+    assert report[0][0] == "export" and report[0][1].startswith("BLOCKED")
+    assert "render changed since it was exported" in report[0][1]
+    assert "--force" in report[0][1]
+    assert (d / "export-result.json").exists()                    # the sentinel is kept, so no later run self-authorises
+    sc = json.loads(next((pub / "ready").rglob("*.publish.json")).read_text())
+    assert sc["video_sha256"] == first["video_sha256"]            # ready/ still holds the older, exported render
     assert [r["job_id"] for r in export.divergence()["superseded"]] == ["pj"]
+
+    _, report = pipeline.run(spec, only="export", force=True)      # the explicit path still replaces it
+    assert report[0][:2] == ("export", "OK")
+    sc = json.loads(next((pub / "ready").rglob("*.publish.json")).read_text())
+    assert sc["video_sha256"] == export.sha256_file(d / "video.mp4")
+
+
+def test_a_claimed_export_that_still_matches_resumes(setup, tmp_path):
+    """A claim protects replacement without adding a false block: an unchanged render still resumes."""
+    spec, pub = setup
+    stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
+    pipeline.run(spec, only="export")
+    handoff.claim(pub, "pj", "scheduler")
+
+    _, report = pipeline.run(spec, only="export")
+    assert report[0][:2] == ("export", "SKIP(resume)")
+
+
+def test_a_resume_that_cannot_be_verified_is_blocked(setup, tmp_path):
+    """Lost export metadata must block with a diagnostic, never resume as a pass and never re-export."""
+    spec, pub = setup
+    d = stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
+    pipeline.run(spec, only="export")
+    next((pub / "ready").rglob("*.publish.json")).unlink()
+    (pub / ".state" / "exports" / "pj.json").unlink()
+    before = sorted(p.relative_to(pub).as_posix() for p in pub.rglob("*") if p.is_file())
+
+    _, report = pipeline.run(spec, only="export")
+    assert report[0][0] == "export" and report[0][1].startswith("BLOCKED")
+    assert "cannot verify" in report[0][1] and "--force" in report[0][1]
+    assert (d / "export-result.json").exists()
+    assert sorted(p.relative_to(pub).as_posix() for p in pub.rglob("*") if p.is_file()) == before
+
+
+# Not covered here: a manifest that is not jobmanifest/1. `run()` calls `storage.open_job` before the stage loop and that
+# raises StorageError, so a legacy job never reaches the resume guard; its own handling of that input is covered by
+# tests/test_export_divergence.py, which calls resume_blocker directly and asserts a diagnostic rather than a raise.
+# (Out of scope for this change: the pre-existing open_job failure, whose documented remedy is `contentos storage adopt`.)
+
+
+def test_an_archived_job_and_a_job_without_a_video_still_resume(setup, tmp_path):
+    """Neither is a stale export: an archived job was handed off deliberately, and a job with no workspace video has
+    nothing to compare. Blocking either would be noise and would mark the archived job failed."""
+    spec, pub = setup
+    d = stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
+    pipeline.run(spec, only="export")
+    handoff.claim(pub, "pj", "scheduler")
+    handoff.transition(pub, "pj", "published", "scheduler")
+    handoff.archive(pub, "pj")
+
+    _, report = pipeline.run(spec, only="export")
+    assert report[0][:2] == ("export", "SKIP(resume)")            # archived
+
+    (d / "video.mp4").unlink()                                   # nothing to compare
+    _, report = pipeline.run(spec, only="export")
+    assert report[0][:2] == ("export", "SKIP(resume)")
 
 
 def test_forced_rerun_cannot_replace_a_claimed_export(setup, tmp_path):

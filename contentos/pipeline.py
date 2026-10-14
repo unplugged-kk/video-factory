@@ -263,6 +263,12 @@ def artifact(st, spec):
     return "project/mpt-request.json" if st == "compose" and spec.get("render") == "mpt" else ARTIFACT[st]
 
 
+# A stage whose sentinel is not enough on its own: presence means "this stage ran", which is only the same as "the result
+# is still current" for export, whose output can be superseded by a later render. The guard returns None to allow the
+# skip, or the reason it must not be reported as done.
+RESUME_GUARD = {"export": exporter.resume_blocker}
+
+
 def _note_stage(d, st, arts):
     """Record a finished stage in the job manifest (relative paths only). The manifest is a record, never a gate."""
     try:
@@ -310,8 +316,17 @@ def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
             continue
         art = d / artifact(st, spec).replace("%02d", "01")
         if art.exists() and not force and st != "publish":
-            report.append((st, "SKIP(resume)", 0.0))
-            continue
+            guard = RESUME_GUARD.get(st)
+            blocker = guard(ctx["dir"]) if guard else None
+            if blocker is None:
+                report.append((st, "SKIP(resume)", 0.0))
+                continue
+            # The stage did succeed; it is the RESUME that is refused. The sentinel is kept on purpose - the Blocked
+            # handler below unlinks a half-built artifact, and doing that here would let the next plain run export for
+            # real, which is exactly the write being prevented here.
+            ledger.record(rid, cid, st, "-", "BLOCKED", time.time(), error=blocker)
+            report.append((st, f"BLOCKED: {blocker}", 0.0))
+            break
         gate = {"voice": "SCRIPT_APPROVED", "render": "PRODUCTION_APPROVED"}.get(st)
         t0 = time.time()
         ledger.record(rid, cid, st, "-", "RUNNING", t0)   # in-flight marker for the dashboard

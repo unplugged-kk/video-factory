@@ -235,6 +235,48 @@ def recover(*, apply=False, cfg=None, now=None):
     return report
 
 
+def classify(d, m, pub):
+    """Where a job's current render stands against its recorded export. Read-only: writes nothing.
+
+    `d` is the job directory, `m` its manifest and `pub` the publishing root. Returns `(kind, record)`, where kind is one
+    of `ok`, `superseded`, `sidecar_missing`, `workspace_video_missing`, `archived` or `never_exported`, decided in that
+    order. Only `superseded` means a render exists that differs from the one that was exported.
+
+    This is the single source of truth for that comparison: `divergence()` reports on it and `resume_blocker()` refuses a
+    resume on it. What to *do* about a finding stays `_export_locked`'s job.
+    """
+    job = m["job_id"]
+    rec = {"job_id": job, "workspace_video": None, "exported_video": None, "sidecar": None,
+           "workspace_sha256": None, "exported_sha256": None, "exported_at": None}
+    claim = _claim(pub, job)
+    if claim.exists():
+        archived = None
+        with contextlib.suppress(OSError, ValueError):
+            archived = json.loads(claim.read_text(encoding="utf-8")).get("archived_to")
+        if archived:
+            rec["archived_to"] = archived
+            return "archived", rec                             # handed off on purpose: not a stale export
+    prior = _existing(pub, m)
+    if prior is None:
+        return "never_exported", rec                           # nothing recorded anywhere: nothing to compare
+    pv, ps = prior
+    rec["exported_video"] = storage.rel(pv, pub)
+    rec["sidecar"] = storage.rel(ps, pub)
+    sidecar = None
+    with contextlib.suppress(OSError, ValueError):
+        sidecar = json.loads(ps.read_text(encoding="utf-8")) if ps.exists() else None
+    if sidecar is None:
+        return "sidecar_missing", rec                          # gone or unreadable: the sidecar is the "ready" marker
+    rec["exported_sha256"] = sidecar.get("video_sha256")
+    rec["exported_at"] = sidecar.get("exported_at")
+    video = Path(d) / "video.mp4"
+    if not video.is_file():
+        return "workspace_video_missing", rec                  # the export stands on its own; not a mismatch
+    rec["workspace_video"] = storage.rel(video, d)
+    rec["workspace_sha256"] = sha256_file(video)
+    return ("ok" if rec["workspace_sha256"] == rec["exported_sha256"] else "superseded"), rec
+
+
 def divergence(*, cfg=None, jobs=None):
     """Does each exported job still match the video sitting in its workspace? (`export-integrity/1`)
 
@@ -242,10 +284,8 @@ def divergence(*, cfg=None, jobs=None):
     publishing library. It REPORTS a mismatch and never repairs one - replacing an exported video stays an explicit
     `contentos storage export <job> --force`, because only a human can judge whether the new render is the one to ship.
 
-    Each job is classified once, in this order: archived (already handed off, expected), unreadable sidecar,
-    sidecar_missing, workspace_video_missing (normal for an adopted, legacy or cleaned job - not a mismatch),
-    never_exported, then ok or superseded. Only `superseded` means the workspace video differs from the one that was
-    exported.
+    Buckets the jobs by `classify()`: archived, sidecar_missing, workspace_video_missing (normal for an adopted, legacy
+    or cleaned job - not a mismatch), never_exported, ok, or superseded. Only `superseded` is a mismatch.
     """
     cfg = cfg or storage.config()
     pub = storage.publish_root(cfg)
@@ -261,39 +301,46 @@ def divergence(*, cfg=None, jobs=None):
             continue
         if m is None or not (m.get("export") or m.get("status") == "exported"):
             continue
-        job = m["job_id"]
         out["checked"] += 1
-        rec = {"job_id": job, "workspace_video": None, "exported_video": None, "sidecar": None,
-               "workspace_sha256": None, "exported_sha256": None, "exported_at": None}
-        archived = None
-        claim = _claim(pub, job)
-        if claim.exists():
-            with contextlib.suppress(OSError, ValueError):
-                archived = json.loads(claim.read_text(encoding="utf-8")).get("archived_to")
-        if archived:
-            rec["archived_to"] = archived
-            out["archived"].append(rec)
-            continue
-        prior = _existing(pub, m)
-        if prior is None:
-            out["never_exported"].append(rec)                # an export block with no record anywhere: nothing to compare
-            continue
-        pv, ps = prior
-        rec["exported_video"] = storage.rel(pv, pub)
-        rec["sidecar"] = storage.rel(ps, pub)
-        sidecar = None
-        with contextlib.suppress(OSError, ValueError):
-            sidecar = json.loads(ps.read_text(encoding="utf-8")) if ps.exists() else None
-        if sidecar is None:
-            out["sidecar_missing"].append(rec)               # gone, or unreadable: the sidecar is the "ready" marker
-            continue
-        rec["exported_sha256"] = sidecar.get("video_sha256")
-        rec["exported_at"] = sidecar.get("exported_at")
-        video = d / "video.mp4"
-        if not video.is_file():
-            out["workspace_video_missing"].append(rec)       # the export stands on its own; do not call this a mismatch
-            continue
-        rec["workspace_video"] = storage.rel(video, d)
-        rec["workspace_sha256"] = sha256_file(video)
-        (out["ok"] if rec["workspace_sha256"] == rec["exported_sha256"] else out["superseded"]).append(rec)
+        kind, rec = classify(d, m, pub)
+        out[kind].append(rec)
     return out
+
+
+# A resume is honest when there is nothing to compare (no workspace video) or the export was deliberately handed off.
+RESUME_SAFE = ("ok", "archived", "workspace_video_missing")
+
+
+def resume_blocker(job_dir, *, cfg=None):
+    """None when a resumed export may be reported as done, otherwise the reason it must not be.
+
+    A resume that reports success while `ready/` holds an older render is a false success, so the render is checked
+    against the sha the sidecar recorded. Blocking is reported by the caller as a BLOCKED stage (an operator decision),
+    never as a pass; a job that cannot be verified - a missing sidecar, a lost export record, an unreadable manifest -
+    blocks too, with a diagnostic that names the recovery command. Nothing here writes, and it never repairs.
+    """
+    d = Path(job_dir)
+    try:
+        m = storage.read_manifest(d)
+    except storage.StorageError as exc:
+        return (f"export resume refused: {d.name}/manifest.json cannot be read ({exc}); "
+                f"re-export explicitly with 'contentos storage export {d.name} --force'")
+    if m is None:
+        return (f"export resume refused: {d.name} has no manifest.json to verify this render against; "
+                f"re-export explicitly with 'contentos storage export {d.name} --force'")
+    try:
+        pub = storage.publish_root(cfg or storage.config())
+    except storage.StorageError as exc:
+        return (f"export resume refused: the publishing library cannot be resolved ({exc}); "
+                f"nothing was verified, so this render is not reported as exported")
+    kind, rec = classify(d, m, pub)
+    if kind in RESUME_SAFE:
+        return None
+    if kind == "superseded":
+        return (f"export resume refused: the render changed since it was exported "
+                f"(workspace {str(rec['workspace_sha256'])[:12]} != exported {str(rec['exported_sha256'])[:12]}); "
+                f"re-run with --force to replace it, or inspect with 'contentos storage ready --check'")
+    what = {"sidecar_missing": "its .publish.json sidecar is missing or unreadable",
+            "never_exported": "no export record or sidecar was found"}.get(kind, f"it is {kind}")
+    return (f"export resume refused: cannot verify this render against its export record because {what}; "
+            f"re-export explicitly with 'contentos storage export {d.name} --force'")
