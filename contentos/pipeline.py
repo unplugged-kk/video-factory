@@ -295,7 +295,16 @@ def run(spec_path, allow_paid=False, force=False, only=None, approve_private=Fal
         raise ValueError(f"render: {spec['render']!r} is not one of {RENDER_LANES}")
     cid = spec["content_id"]
     storage.preflight(publish=True)                 # clear error if a configured folder is missing or read-only; never falls back to the repo
-    d, _manifest = storage.open_job(cid, spec)      # jobs/YYYY/MM/DD/<content_id>/ plus manifest.json on first use
+    try:
+        d, _manifest = storage.open_job(cid, spec)  # jobs/YYYY/MM/DD/<content_id>/ plus manifest.json on first use
+    except storage.StorageError as exc:
+        # A manifest we cannot read - a legacy contentos-project-manifest/1, say - needs an operator, not a traceback.
+        # Scoped to this one call on purpose: preflight, QA and export StorageErrors must still surface as themselves.
+        # Reported as a blocked row so every caller agrees: the CLI exits non-zero, the worker marks the job blocked
+        # rather than failed, and core.classify() sees a blocked stage, which is not transient, so nothing retries.
+        rid = ledger.new_run_id()
+        ledger.record(rid, cid, "manifest", "-", "BLOCKED", time.time(), error=str(exc))
+        return rid, [("manifest", f"BLOCKED: {exc}", 0.0)]
     with storage.file_lock(d / ".run.lock", blocking=False):     # one run per job; a second run is refused, not queued
         return _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private)
 

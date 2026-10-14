@@ -13,10 +13,12 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from contentos import export, storage, storage_admin  # noqa: E402
+from contentos import export, ledger, pipeline, storage, storage_admin  # noqa: E402
+from contentos.production import core  # noqa: E402
 from storage_helpers import make_video  # noqa: E402
 
 JOB = "pilot-001-agent-tool-use"
@@ -128,3 +130,47 @@ def test_after_adoption_the_job_is_managed_but_still_not_exportable(legacy):
     assert tree(pub / "ready") == ready_before                   # nothing published was touched
     # the only side effect anywhere under the library is the export lock, which export_job takes before it refuses
     assert set(tree(pub)) - set(before) == {f".state/locks/{JOB}.lock"}
+
+
+# ---- how pipeline.run reports it: a blocked row, not a traceback ----
+
+
+def spec_file(tmp_path, **over):
+    sp = tmp_path / "spec.yaml"
+    sp.write_text(yaml.safe_dump({"content_id": JOB, "title": TITLE, "project": "Demo",
+                                  "script": [{"say": "Hi there."}], **over}))
+    return sp
+
+
+def test_run_reports_a_legacy_manifest_as_blocked_instead_of_raising(legacy, tmp_path):
+    """Before this, the StorageError escaped pipeline.run uncaught and reached the CLI as a raw traceback."""
+    d, _ = legacy
+    rid, report = pipeline.run(spec_file(tmp_path), only="export")
+
+    assert rid and len(report) == 1                              # it stops before any stage runs
+    stage, status, _ = report[0]
+    assert stage == "manifest" and status.startswith("BLOCKED")
+    assert "jobmanifest/1" in status and "adopt" in status        # the actionable message survives verbatim
+    assert not (d / "metadata").exists()                         # reporting it never adopts it
+
+    with ledger.db() as c:
+        row = c.execute("select stage, status, error from runs where content_id=? order by rowid desc limit 1",
+                        (JOB,)).fetchone()
+    assert row and row[0] == "manifest" and row[1] == "BLOCKED" and "adopt" in row[2]
+
+
+def test_the_blocked_manifest_row_is_not_retried(legacy, tmp_path):
+    """core.classify() must not call it transient, or the worker would loop on something only an operator can fix."""
+    _, report = pipeline.run(spec_file(tmp_path), only="export")
+
+    assert core.classify(report[0][0], report[0][1]) == "blocked"
+    assert "manifest" not in core.TRANSIENT_STAGES
+
+
+def test_run_still_raises_for_an_unrelated_storage_error(tmp_path, monkeypatch):
+    """The catch is scoped to open_job alone: a preflight failure must surface as itself, not become a BLOCKED row."""
+    monkeypatch.setenv("VIDEO_FACTORY_PUBLISH_DIR", str(tmp_path / "pub"))
+    monkeypatch.setenv("VIDEO_FACTORY_WORKSPACE", str(storage.REPO / "workspace"))   # inside the repo: preflight refuses
+
+    with pytest.raises(storage.StorageError, match="inside the repository"):
+        pipeline.run(spec_file(tmp_path), only="export")
