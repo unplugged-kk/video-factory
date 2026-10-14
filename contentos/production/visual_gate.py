@@ -8,6 +8,7 @@ the source, so success is never inferred from "no error".
   python -m contentos.production.visual_gate layers <project dir | index.html>
   python -m contentos.production.visual_gate captions <video.mp4> --region x,y,w,h --canvas 1080x1920 (--timing timing.json | --windows a:b,...)
   python -m contentos.production.visual_gate transitions <video.mp4> --at start:duration[:kind] [--at ...] [--allow-dip]
+  python -m contentos.production.visual_gate safezone <video.mp4> (--times t,t,... | --timing timing.json) [--canvas 1080x1920] [--zone name:x,y,w,h ...]
 
 Exit codes: 0 ok, 1 finding, 2 unreadable input. Output is JSON on stdout.
 
@@ -184,6 +185,140 @@ def check_captions(video, windows, canvas, region, samples_per_window=1):
             "limits": "detects absence of text-like ink in the region; narration gaps legitimately show no caption, hence a ratio"}
 
 
+# ---- G6: 9:16 safe zones ----------------------------------------------------------------------------------------------
+
+EDGE_JUMP = 0.20                       # a neighbour-to-neighbour luma step this large counts as a hard edge (text, outlines)
+MAX_ZONE_EDGE_FRACTION = 0.01          # more edge pixels than this share of a zone means "content sits in the zone"
+# Fractions of the canvas as (name, x, y, w, h). Conservative HEURISTICS carried over from the motion-ab experiments
+# (top ~150 px, bottom ~350 px, right ~180 px strip below y=1000 on 1080x1920). They are NOT published platform specs;
+# platform UI changes, so override with --zone and verify on a real phone.
+DEFAULT_SAFE_ZONES_9_16 = (
+    ("top", 0.0, 0.0, 1.0, 150 / 1920),
+    ("bottom", 0.0, 1 - 350 / 1920, 1.0, 350 / 1920),
+    ("right", 1 - 180 / 1080, 1000 / 1920, 180 / 1080, (1 - 350 / 1920) - 1000 / 1920),
+)
+
+
+def default_zones(canvas):
+    """Pixel zones [(name, x, y, w, h)] for a canvas. Only defined for portrait (9:16-ish); returns [] otherwise."""
+    cw, ch = canvas
+    if cw >= ch:
+        return []
+    return [(n, int(fx * cw), int(fy * ch), max(1, int(fw * cw)), max(1, int(fh * ch))) for n, fx, fy, fw, fh in DEFAULT_SAFE_ZONES_9_16]
+
+
+_CANVAS_RE = re.compile(r"^\s*(\d+)\s*[xX]\s*(\d+)\s*$")
+_ZONE_NAME_RE = re.compile(r"^[A-Za-z0-9_-]+$")
+_INT_RE = re.compile(r"^-?\d+$")
+
+
+def parse_canvas(text):
+    """'1080x1920' -> (1080, 1920). Positive integers only; anything else is a GateError that says what was expected."""
+    m = _CANVAS_RE.match(str(text))
+    if not m or int(m.group(1)) <= 0 or int(m.group(2)) <= 0:
+        raise GateError(f"--canvas must look like 1080x1920 (positive whole numbers), got {text!r}")
+    return int(m.group(1)), int(m.group(2))
+
+
+def video_size(video):
+    """(width, height) of the first video stream, via ffprobe. GateError when it cannot be read.
+    Coded size: a rotated phone clip whose display size differs will not match and is reported as a mismatch (fail closed)."""
+    cmd = ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "json", str(video)]
+    try:
+        p = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=60)
+        st = json.loads(p.stdout or "{}").get("streams") or []
+        if p.returncode != 0 or not st:
+            raise GateError(f"cannot read video dimensions from {video} ({p.stderr.strip()[:160] or 'no video stream'})")
+        return int(st[0]["width"]), int(st[0]["height"])
+    except (OSError, subprocess.TimeoutExpired, ValueError, KeyError) as exc:
+        raise GateError(f"cannot read video dimensions from {video}: {exc}") from exc
+
+
+def check_canvas_matches_video(video, canvas):
+    """The configured canvas is never replaced by the detected size; a difference is an error, not a pass."""
+    actual = video_size(video)
+    if tuple(canvas) != actual:
+        raise GateError(f"--canvas {canvas[0]}x{canvas[1]} does not match the video's actual size {actual[0]}x{actual[1]}; "
+                        "pass the real size (nothing was measured)")
+    return actual
+
+
+def parse_zone(spec):
+    """'name:x,y,w,h' -> (name, x, y, w, h). Syntax only; bounds are checked against the canvas by validate_zones."""
+    name, sep, box = str(spec).partition(":")
+    if not sep or not _ZONE_NAME_RE.match(name):
+        raise GateError(f"--zone {spec!r}: expected name:x,y,w,h (name of letters, digits, _ or -), e.g. caption:0,1500,1080,300")
+    parts = [v.strip() for v in box.split(",")]
+    if len(parts) != 4:
+        raise GateError(f"--zone {spec!r}: expected exactly 4 numbers x,y,w,h after the name, got {len(parts)}")
+    bad = [v for v in parts if not _INT_RE.match(v)]
+    if bad:
+        raise GateError(f"--zone {spec!r}: x,y,w,h must be whole numbers, got {bad[0]!r}")
+    x, y, w, h = (int(v) for v in parts)
+    return name, x, y, w, h
+
+
+def validate_zones(zones, canvas):
+    """GateError for a zone with a negative origin, a non-positive size, a duplicate name, or an extent outside the canvas."""
+    cw, ch = canvas
+    seen = set()
+    for name, x, y, w, h in zones:
+        if name in seen:
+            raise GateError(f"zone {name!r} is given more than once")
+        seen.add(name)
+        if x < 0 or y < 0:
+            raise GateError(f"zone {name!r}: x and y must not be negative (got {x},{y})")
+        if w <= 0 or h <= 0:
+            raise GateError(f"zone {name!r}: width and height must be positive (got {w}x{h})")
+        if x + w > cw or y + h > ch:
+            raise GateError(f"zone {name!r}: {x},{y},{w},{h} extends outside the {cw}x{ch} canvas")
+
+
+def _edge_fraction(video, t, canvas, zone, max_w=216):
+    cw, ch = canvas
+    _, x, y, zw, zh = zone
+    x, y = max(0, min(x, cw - 1)), max(0, min(y, ch - 1))
+    zw, zh = max(1, min(zw, cw - x)), max(1, min(zh, ch - y))
+    w = max(2, min(zw, max_w))
+    h = max(2, round(zh * w / zw))
+    buf = _ffmpeg_frame(video, t, f"crop={zw}:{zh}:{x}:{y},scale={w}:{h}:flags=area", (w, h))
+    lum = [(0.2126 * buf[i] + 0.7152 * buf[i + 1] + 0.0722 * buf[i + 2]) / 255.0 for i in range(0, len(buf), 3)]
+    edges = 0
+    for r in range(h):
+        for c in range(w):
+            v = lum[r * w + c]
+            if (c + 1 < w and abs(lum[r * w + c + 1] - v) > EDGE_JUMP) or (r + 1 < h and abs(lum[(r + 1) * w + c] - v) > EDGE_JUMP):
+                edges += 1
+    return edges / (w * h)
+
+
+def check_safe_zones(video, times, canvas, zones=None):
+    """Is hard-edged content (text, outlines, icons) sitting in the platform-UI zones at the sampled moments?
+    Smooth gradients and flat backgrounds have no hard edges and do not count. ok = no sample exceeds the threshold.
+    This is a pixel heuristic on a render: it cannot tell a caption from decoration, and the default zones are not platform specs."""
+    cw, ch = canvas
+    if cw <= 0 or ch <= 0:
+        raise GateError(f"canvas must have positive dimensions, got {cw}x{ch}")
+    check_canvas_matches_video(video, canvas)               # before anything else: a wrong canvas must never look like a result
+    zones = default_zones(canvas) if zones is None else zones
+    validate_zones(zones, canvas)
+    if not zones:
+        return {"ok": True, "applicable": False, "zones": [], "samples": [], "canvas": list(canvas),
+                "limits": "no default zones for a landscape canvas; pass --zone to check one"}
+    rows, flagged = [], []
+    for t in times:
+        for z in zones:
+            frac = _edge_fraction(video, t, canvas, z)
+            hit = frac > MAX_ZONE_EDGE_FRACTION
+            rows.append({"t": round(t, 3), "zone": z[0], "edge_fraction": round(frac, 4), "content": hit})
+            if hit:
+                flagged.append({"t": round(t, 3), "zone": z[0]})
+    return {"ok": bool(rows) and not flagged, "applicable": True, "flagged": flagged, "threshold": MAX_ZONE_EDGE_FRACTION,
+            "zones": [{"name": n, "region": [x, y, w, h]} for n, x, y, w, h in zones], "samples": rows, "canvas": list(canvas),
+            "limits": "pixel-edge heuristic on sampled frames only; cannot tell caption from decoration; zones are conservative "
+                      "heuristics, not published platform specs (platform UI changes); thresholds provisional, uncalibrated on real renders"}
+
+
 def _strip_comments(css):
     return re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
 
@@ -345,6 +480,8 @@ def main(argv=None):
     ly = sub.add_parser("layers"); ly.add_argument("target")
     cp = sub.add_parser("captions"); cp.add_argument("video"); cp.add_argument("--region"); cp.add_argument("--canvas", default="1080x1920")
     cp.add_argument("--timing"); cp.add_argument("--windows"); cp.add_argument("--project", help="read the caption region from this project's CSS")
+    sz = sub.add_parser("safezone"); sz.add_argument("video"); sz.add_argument("--canvas", default="1080x1920")
+    sz.add_argument("--times"); sz.add_argument("--timing"); sz.add_argument("--zone", action="append")
     tr = sub.add_parser("transitions"); tr.add_argument("video"); tr.add_argument("--at", action="append", required=True)
     tr.add_argument("--allow-dip", action="store_true"); tr.add_argument("--margin", type=float)
     a = ap.parse_args(argv)
@@ -371,6 +508,18 @@ def main(argv=None):
             else:
                 raise GateError("give --timing or --windows")
             return _out(check_captions(a.video, wins, (cw, ch), region))
+        if a.cmd == "safezone":
+            cw, ch = parse_canvas(a.canvas)
+            if a.times:
+                times = [float(v) for v in a.times.split(",")]
+            elif a.timing:
+                times = [w[0] for w in _windows_from_timing(json.loads(Path(a.timing).read_text()))]
+            else:
+                raise GateError("give --times or --timing")
+            zones = None
+            if a.zone:
+                zones = [parse_zone(spec) for spec in a.zone]
+            return _out(check_safe_zones(a.video, times, (cw, ch), zones))
         if a.cmd == "transitions":
             res = []
             for spec in a.at:
