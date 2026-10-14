@@ -1,0 +1,47 @@
+{
+  "schema": "style/1",
+  "id": "slow-parallax-story",
+  "name": "Slow parallax story",
+  "summary": "Full-bleed textural narrative: one eased depth move per scene reveals layered texture behind the subject, then the frame holds.",
+  "status": "unvalidated",
+  "evidence": [],
+  "reviewed_by": {"name": "Kishore", "date": "2026-10-13"},
+  "axes": {
+    "layout_system": "full-bleed",
+    "motion_grammar": "parallax",
+    "scene_rhythm": "accelerating",
+    "depth_model": "pseudo-3d",
+    "illustration_mode": "textural",
+    "transition_family": "dissolve"
+  },
+  "dials": {"energy": 2, "density": 2, "formality": 3, "warmth": 5, "pace": 2},
+  "motion": {
+    "ease_family": ["power3.out", "power2.inOut"],
+    "ease_sources": [
+      {"ease": "power3.out", "file": ".claude/skills/explainer-motion-craft/SKILL.md"},
+      {"ease": "power2.inOut", "file": ".claude/skills/explainer-motion-craft/SKILL.md"}
+    ],
+    "forbidden": [
+      "continuous parallax drift or idle depth motion between moves (R3, R4)",
+      "bounce, elastic or back overshoot on any entrance (R1)",
+      "more than one depth move per scene (R3)"
+    ],
+    "respects_r1_r6": true
+  },
+  "layout_vocabulary": ["full-bleed texture plate", "foreground subject", "caption band", "depth-layer overlay"],
+  "sound": {"mode": "narration-led", "max_cues_per_minute": 3},
+  "requires": ["renderer:hyperframes"],
+  "frame_checklist": [
+    "The subject stays readable on the first and last frame of the scene",
+    "Captions sit inside the title-safe box at every depth position (R5)",
+    "The depth move starts and ends in a held frame (R3)",
+    "Texture stays quiet enough that no more than one sentence competes with it (R6)",
+    "No layer moves after the scene's hold begins (R4)"
+  ],
+  "best_for": {
+    "content_types": ["historical-explainer", "science-concept"],
+    "avoid": ["product-launch"]
+  },
+  "source_techniques": ["explainer-motion-craft: R3 one-move-then-hold structure (reference only, no code copied)"],
+  "licence_notes": "Original wording; no third-party assets or code."
+}

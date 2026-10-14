@@ -1,0 +1,48 @@
+{
+  "schema": "style/1",
+  "id": "punch-split",
+  "name": "Punch split",
+  "summary": "Fast, punctuated split-screen cards with one icon per claim; each scene enters on a short eased push that finishes before the new content appears.",
+  "status": "unvalidated",
+  "evidence": [],
+  "reviewed_by": {"name": "Kishore", "date": "2026-10-13"},
+  "axes": {
+    "layout_system": "split",
+    "motion_grammar": "eased-glide",
+    "scene_rhythm": "punctuated",
+    "depth_model": "flat",
+    "illustration_mode": "iconographic",
+    "transition_family": "push"
+  },
+  "dials": {"energy": 4, "density": 2, "formality": 2, "warmth": 3, "pace": 4},
+  "motion": {
+    "ease_family": ["power3.out", "power2.inOut"],
+    "ease_sources": [
+      {"ease": "power3.out", "file": ".claude/skills/explainer-motion-craft/SKILL.md"},
+      {"ease": "power2.inOut", "file": ".claude/skills/explainer-motion-craft/SKILL.md"}
+    ],
+    "forbidden": [
+      "bounce, elastic or back overshoot on any entrance (R1)",
+      "decorative loops or breathing scale on icons (R4)",
+      "a hard camera snap at a scene boundary; each scene change is one eased push (R3, Pilot 001 snapped at four scene cuts)",
+      "a stage move outside 0.6-0.9 s (R3)"
+    ],
+    "respects_r1_r6": true
+  },
+  "layout_vocabulary": ["left-right split panel", "single icon with caption", "stat callout", "bold claim line"],
+  "sound": {"mode": "narration-led", "max_cues_per_minute": 6},
+  "requires": ["renderer:hyperframes"],
+  "frame_checklist": [
+    "Each side of the split carries one idea, not two",
+    "The icon and its caption are both readable at phone size",
+    "The bold claim line is six words or fewer (R6)",
+    "The split edge does not cut through any text (R5)",
+    "The push completes and holds before the next scene's content appears (R3)"
+  ],
+  "best_for": {
+    "content_types": ["ai-workflow", "product-launch", "news-opinion"],
+    "avoid": ["science-concept"]
+  },
+  "source_techniques": ["product-launch-motion: structural axes and direction dials (reference only, no code copied)"],
+  "licence_notes": "Original wording; no third-party assets or code."
+}

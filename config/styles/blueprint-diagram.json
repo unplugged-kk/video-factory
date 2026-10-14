@@ -1,0 +1,46 @@
+{
+  "schema": "style/1",
+  "id": "blueprint-diagram",
+  "name": "Blueprint diagram",
+  "summary": "Diagram-first explainer: nodes and connectors draw on at the spoken word on a visible grid, then the frame holds long enough to read.",
+  "status": "unvalidated",
+  "evidence": [],
+  "reviewed_by": {"name": "Kishore", "date": "2026-10-13"},
+  "axes": {
+    "layout_system": "grid",
+    "motion_grammar": "draw-on",
+    "scene_rhythm": "even",
+    "depth_model": "layered",
+    "illustration_mode": "diagrammatic",
+    "transition_family": "wipe"
+  },
+  "dials": {"energy": 2, "density": 4, "formality": 4, "warmth": 2, "pace": 2},
+  "motion": {
+    "ease_family": ["power3.out", "power2.inOut"],
+    "ease_sources": [
+      {"ease": "power3.out", "file": ".claude/skills/explainer-motion-craft/SKILL.md"},
+      {"ease": "power2.inOut", "file": ".claude/skills/explainer-motion-craft/SKILL.md"}
+    ],
+    "forbidden": [
+      "bounce, elastic or back overshoot on any entrance (R1)",
+      "continuous camera drift or looping decorative motion (R3, R4)"
+    ],
+    "respects_r1_r6": true
+  },
+  "layout_vocabulary": ["labelled node", "connector line", "annotation callout", "legend strip"],
+  "sound": {"mode": "narration-led", "max_cues_per_minute": 4},
+  "requires": ["renderer:hyperframes"],
+  "frame_checklist": [
+    "Every node label is readable at phone size without zooming",
+    "Each connector appears only after the word that names it is spoken (R2)",
+    "No node or label crosses the title-safe box edge (R5)",
+    "The frame holds for at least one full read before the next wipe (R3)",
+    "No more than one new callout appears per sentence (R6)"
+  ],
+  "best_for": {
+    "content_types": ["architecture-lesson", "how-to"],
+    "avoid": ["historical-explainer"]
+  },
+  "source_techniques": ["animate: STYLE contract + frame checklist (reference only, no code copied)"],
+  "licence_notes": "Original wording; no third-party assets or code."
+}
