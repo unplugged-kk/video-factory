@@ -22,6 +22,7 @@ import uuid
 from pathlib import Path
 
 from . import finalcheck, storage
+from .production import supplied_audio
 
 SIDECAR_SUFFIX = ".publish.json"
 SIDECAR_SCHEMA_VERSION = 1
@@ -126,6 +127,9 @@ def _export_locked(d, m, pub, mode, force, cfg):
     video = d / "video.mp4"
     if not video.is_file():
         raise ExportRefused(f"{job}: final video is missing; nothing to export")
+    blockers = supplied_audio.publish_blockers(d)           # unknown rights, a malformed record or a hash mismatch: nothing reaches ready/
+    if blockers:
+        raise ExportRefused(f"{job}: not exported, supplied audio blocks publication: " + "; ".join(blockers))
     sha, size = sha256_file(video), video.stat().st_size
     prior = _existing(pub, m)
     prior_sidecar = None

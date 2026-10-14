@@ -13,7 +13,7 @@ import yaml
 
 from . import export as exporter
 from . import hf, ledger, mpt, providers, storage
-from .production import align
+from .production import align, supplied_audio
 from .qa import probe_video, run_qa
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -94,6 +94,9 @@ def s_script(ctx):
 
 
 def s_voice(ctx):
+    if supplied_audio.has_record(ctx["dir"]):       # never silently replace a supplied take with a generated voice
+        raise Blocked("this job holds supplied audio (supplied-audio/supplied-audio.json) but the pipeline cannot use it yet "
+                      "(G3 records provenance and rights only); use a different job id for a generated voice")
     prim, _ = providers.select("tts", ctx["allow_paid"])
     if not prim:
         raise Blocked("no healthy TTS provider (run: contentos doctor)")
@@ -222,6 +225,9 @@ def s_package(ctx):
 def s_export(ctx):
     """Validate the final video and hand it to the publishing library (ready/ + sidecar). Idempotent; a video that fails
     validation stays in the workspace and never reaches ready/."""
+    blockers = supplied_audio.publish_blockers(ctx["dir"])
+    if blockers:                                     # a gate-style stop, not a crash: fix the rights record and re-run export
+        raise Blocked("supplied audio blocks publication: " + "; ".join(blockers))
     res = exporter.export_job(ctx["id"])
     p = ctx["dir"] / "export-result.json"
     p.write_text(json.dumps(res, indent=2))
@@ -234,6 +240,9 @@ def s_publish(ctx):
     if not cfg["enabled"]:
         res.write_text(json.dumps({"status": "DRY_RUN", "reason": "youtube.yaml publish.enabled=false", "would_upload": str(ctx["dir"] / "video.mp4"), "privacy": "private"}, indent=2))
         return "dry-run", [res]
+    blockers = supplied_audio.publish_blockers(ctx["dir"])
+    if blockers:
+        raise Blocked("supplied audio blocks publication: " + "; ".join(blockers))
     if not ledger.approved(ctx["id"], "PUBLISH_APPROVED"):
         raise Blocked("PUBLISH_APPROVED gate not granted: contentos approve <id> PUBLISH_APPROVED")
     prim, _ = providers.select("publish_youtube")
