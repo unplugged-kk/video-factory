@@ -18,7 +18,7 @@ def _job_dirs():
     """Job folders in the external workspace, plus not-yet-migrated projects from the old in-repo location (read-only)."""
     seen = {}
     jobs = storage.jobs_root()
-    for p in sorted(jobs.glob("[0-9][0-9][0-9][0-9]/[0-1][0-9]/*")) if jobs.is_dir() else []:
+    for p in storage.iter_job_dirs(jobs):
         if p.is_dir():
             seen[p.name] = p
     legacy = storage.REPO / "workspace" / "projects"

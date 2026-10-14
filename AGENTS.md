@@ -131,7 +131,7 @@ signature fields. Do not compose over a failing check — change the look. An in
 ## 7. Storage and identity
 
 Generated work lives **outside Git** (see `docs/STORAGE.md`): intermediates in
-`$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<job-id>/` (default `~/Desktop/VideoFactory-Workspace`), validated
+`$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/DD/<job-id>/` (default `~/Desktop/VideoFactory-Workspace`), validated
 finals in `$VIDEO_FACTORY_PUBLISH_DIR/ready/<project>/YYYY/MM/<content>__<job>.mp4` plus a
 `.publish.json` sidecar written last (default `~/Desktop/Video-Publishing`). The job id is the spec's
 `content_id`, which must match `[A-Za-z0-9][A-Za-z0-9._-]{0,127}`. A folder that is missing or unwritable

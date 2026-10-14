@@ -103,7 +103,7 @@ def test_jobs_are_isolated_and_stable(env):
     storage.preflight()
     a, _ = storage.open_job("job-a", {"title": "A", "project": "Proj One"})
     b, _ = storage.open_job("job-b", {"title": "B", "project": "Proj One"})
-    assert a != b and a.parent == b.parent and a.parent.parent.parent == storage.jobs_root()
+    assert a != b and a.parent == b.parent and a.parent.parent.parent.parent == storage.jobs_root()
     (a / "audio").mkdir(); (a / "audio" / "voice.wav").write_bytes(b"a")
     assert not (b / "audio").exists()
     again, m = storage.open_job("job-a", {"title": "changed later"})       # resume keeps the same job and manifest

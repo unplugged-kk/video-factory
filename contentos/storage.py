@@ -2,7 +2,7 @@
 
 Two roots, both OUTSIDE the repository and both configurable:
 
-  workspace   generated work: jobs/YYYY/MM/<job-id>/, the SQLite ledger, research, shared-cache, recovery, reports
+  workspace   generated work: jobs/YYYY/MM/DD/<job-id>/, the SQLite ledger, research, shared-cache, recovery, reports
               VIDEO_FACTORY_WORKSPACE            default ~/Desktop/VideoFactory-Workspace
   publish     the hand-off library for external schedulers: ready/, archive/, .staging/, .state/
               VIDEO_FACTORY_PUBLISH_DIR          default ~/Desktop/Video-Publishing
@@ -283,18 +283,37 @@ def now_iso(now=None):
     return (now or dt.datetime.now(dt.timezone.utc)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def find_job_dir(job_id, jobs=None):
-    """The existing job directory for `job_id` (the earliest if somehow two months hold it), or None."""
-    check_job_id(job_id)
+_DAY = re.compile(r"^(0[1-9]|[12][0-9]|3[01])$")
+
+
+def iter_job_dirs(jobs=None):
+    """Every job directory under jobs/: the current jobs/YYYY/MM/DD/<job-id> layout and the older jobs/YYYY/MM/<job-id>."""
     root = Path(jobs) if jobs else jobs_root()
     if not root.is_dir():
-        return None
-    hits = sorted(p for p in root.glob(f"[0-9][0-9][0-9][0-9]/[0-1][0-9]/{job_id}") if p.is_dir())
+        return []
+    out = []
+    for m in sorted(root.glob("[0-9][0-9][0-9][0-9]/[0-1][0-9]")):
+        if not m.is_dir():
+            continue
+        for c in sorted(m.iterdir()):
+            if not c.is_dir():
+                continue
+            if _DAY.match(c.name) and not (c / "manifest.json").exists():     # a day folder, not a job
+                out += [j for j in sorted(c.iterdir()) if j.is_dir()]
+            else:
+                out.append(c)
+    return out
+
+
+def find_job_dir(job_id, jobs=None):
+    """The existing job directory for `job_id` (the earliest if somehow two days hold it), or None."""
+    check_job_id(job_id)
+    hits = [p for p in iter_job_dirs(jobs) if p.name == job_id]
     return hits[0] if hits else None
 
 
 def job_dir(job_id, create=True, now=None, jobs=None):
-    """The isolated directory for one job: jobs/YYYY/MM/<job-id>. Creates it (atomically) the first time."""
+    """The isolated directory for one job: jobs/YYYY/MM/DD/<job-id> (one folder per day). Creates it (atomically) the first time."""
     check_job_id(job_id)
     root = Path(jobs) if jobs else jobs_root()
     found = find_job_dir(job_id, root)
@@ -303,7 +322,7 @@ def job_dir(job_id, create=True, now=None, jobs=None):
     if not create:
         raise StorageError(f"no job directory for {job_id!r}")
     when = now or dt.datetime.now(dt.timezone.utc)
-    d = root / f"{when.year:04d}" / f"{when.month:02d}" / job_id
+    d = root / f"{when.year:04d}" / f"{when.month:02d}" / f"{when.day:02d}" / job_id
     d.parent.mkdir(parents=True, exist_ok=True)
     with contextlib.suppress(FileExistsError):               # another process may have won the race; that is fine
         d.mkdir()

@@ -290,7 +290,7 @@ def cleanup(*, apply=False, now=None, cfg=None, ws=None):
     refs = _ledger_refs(ws / "ledger.db")
     out = {"applied": apply, "candidates": [], "skipped": [], "bytes": 0}
     jobs = ws / "jobs"
-    for d in sorted(jobs.glob("[0-9][0-9][0-9][0-9]/[0-1][0-9]/*")) if jobs.is_dir() else []:
+    for d in storage.iter_job_dirs(jobs):
         if not d.is_dir():
             continue
         def skip(why, d=d):

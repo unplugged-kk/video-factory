@@ -17,7 +17,7 @@ Git holds code, config, docs and tests only. `*.mp4 *.wav *.mp3 …` and both fo
         │  (all intermediates)                           │ reads ready/, claims, schedules, archives
         ▼                                                ▼
  VideoFactory-Workspace  ── export stage ──►  Video-Publishing/ready/<project>/YYYY/MM/<content>__<job>.mp4
- jobs/YYYY/MM/<job-id>/      validate +                                                  <content>__<job>.publish.json
+ jobs/YYYY/MM/DD/<job-id>/      validate +                                                  <content>__<job>.publish.json
                              stage + atomic promote
 ```
 
