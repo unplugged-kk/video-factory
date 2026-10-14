@@ -1,5 +1,8 @@
-"""The pipeline's export stage: a validated render reaches ready/; a bad one never does; retries add nothing."""
+"""The pipeline's export stage: a validated render reaches ready/; a bad one never does; retries add nothing.
+Also: `--force` must reach export, and two runs of one job must not interleave."""
+import json
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -8,7 +11,8 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from contentos import pipeline, storage  # noqa: E402
+from contentos import export, handoff, pipeline, storage  # noqa: E402
+from contentos.production import supplied_audio  # noqa: E402
 from storage_helpers import make_video  # noqa: E402
 
 
@@ -50,3 +54,110 @@ def test_export_stage_failure_is_recorded_and_ready_stays_empty(setup, tmp_path)
 
 def test_stage_order_has_export_before_publish():
     assert pipeline.STAGES.index("package") < pipeline.STAGES.index("export") < pipeline.STAGES.index("publish")
+
+
+# ---- --force must reach export (it used to dead-end there) and must not go too far ----
+
+def test_forced_rerun_replaces_superseded_export(setup, tmp_path):
+    """A re-render that changes the bytes must be exportable with --force. This is the case that used to fail."""
+    spec, pub = setup
+    d = stage(spec, make_video(tmp_path / "v1.mp4", seconds=1))
+    _, report = pipeline.run(spec, only="export")
+    assert report[0][:2] == ("export", "OK")
+    first = json.loads(next((pub / "ready").rglob("*.publish.json")).read_text())
+
+    shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+    _, report = pipeline.run(spec, only="export", force=True)
+    assert report[0][:2] == ("export", "OK")
+    sidecars = list((pub / "ready").rglob("*.publish.json"))
+    assert len(sidecars) == 1                                        # replaced in place, not duplicated
+    second = json.loads(sidecars[0].read_text())
+    assert second["video_sha256"] == export.sha256_file(d / "video.mp4")
+    assert second["video_sha256"] != first["video_sha256"]
+    assert storage.read_manifest(d)["status"] == "exported"
+
+
+def test_rerun_without_force_refuses_superseded_export(setup, tmp_path):
+    """Without --force the old refusal stands, and the already-exported video is left untouched.
+
+    The export stage's resume sentinel is removed first to reach the stage at all - see the skip test below for why a
+    plain re-run never gets this far.
+    """
+    spec, pub = setup
+    d = stage(spec, make_video(tmp_path / "v1.mp4", seconds=1))
+    pipeline.run(spec, only="export")
+    shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+    (d / "export-result.json").unlink()          # the sentinel the pipeline itself deletes when a stage fails
+
+    _, report = pipeline.run(spec, only="export")
+    assert report[0][1].startswith("FAIL")
+    assert "force" in report[0][1]
+    assert len(list((pub / "ready").rglob("*.mp4"))) == 1
+    sc = json.loads(next((pub / "ready").rglob("*.publish.json")).read_text())
+    assert sc["video_sha256"] != export.sha256_file(d / "video.mp4")  # nothing was replaced
+
+
+def test_a_plain_rerun_skips_export_which_is_why_the_integrity_check_exists(setup, tmp_path):
+    """Pins the gap this slice does NOT close: without --force the export stage resumes, reports success, and leaves a
+    superseded video in ready/ unnoticed. `export.divergence()` is what surfaces it, so changing this skip is a
+    deliberate decision, not an accident."""
+    spec, pub = setup
+    d = stage(spec, make_video(tmp_path / "v1.mp4", seconds=1))
+    pipeline.run(spec, only="export")
+    shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+
+    _, report = pipeline.run(spec, only="export")
+    assert report[0][:2] == ("export", "SKIP(resume)")           # no error, yet ready/ still holds the older render
+    assert [r["job_id"] for r in export.divergence()["superseded"]] == ["pj"]
+
+
+def test_forced_rerun_cannot_replace_a_claimed_export(setup, tmp_path):
+    """force supersedes an unclaimed export only. A scheduler's claim must still refuse."""
+    spec, pub = setup
+    d = stage(spec, make_video(tmp_path / "v1.mp4", seconds=1))
+    pipeline.run(spec, only="export")
+    handoff.claim(pub, "pj", "scheduler")
+    shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+
+    _, report = pipeline.run(spec, only="export", force=True)
+    assert report[0][1].startswith("FAIL")
+    assert "claimed" in report[0][1]
+    sc = json.loads(next((pub / "ready").rglob("*.publish.json")).read_text())
+    assert sc["video_sha256"] != export.sha256_file(d / "video.mp4")
+
+
+def test_forced_rerun_of_identical_video_is_a_no_op(setup, tmp_path):
+    """force must not rewrite an export that is already current."""
+    spec, pub = setup
+    stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
+    pipeline.run(spec, only="export")
+    snapshot = sorted(p.relative_to(pub).as_posix() for p in pub.rglob("*") if p.is_file())
+
+    _, report = pipeline.run(spec, only="export", force=True)
+    assert report[0][:2] == ("export", "OK")
+    assert sorted(p.relative_to(pub).as_posix() for p in pub.rglob("*") if p.is_file()) == snapshot
+
+
+def test_second_run_refuses_while_the_run_lock_is_held(setup, tmp_path):
+    """Two runs of one job must not interleave: the second is refused by name, before any stage runs."""
+    spec, pub = setup
+    d = stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
+    with storage.file_lock(d / ".run.lock"):
+        with pytest.raises(storage.StorageError, match=r"\.run\.lock is held by another process"):
+            pipeline.run(spec, only="export")
+    _, report = pipeline.run(spec, only="export")                    # free again once the holder released it
+    assert report[0][:2] == ("export", "OK")
+
+
+def test_force_does_not_bypass_a_supplied_audio_blocker(setup, tmp_path):
+    """force replaces an export; it must never carry rights-unclear audio into ready/."""
+    spec, pub = setup
+    d = stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
+    take = tmp_path / "take.wav"
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "sine=frequency=440:duration=1", str(take)], check=True)
+    supplied_audio.ingest(take, d, rights="unknown")
+
+    _, report = pipeline.run(spec, only="export", force=True)
+    assert report[0][1].startswith("BLOCKED")
+    assert "supplied audio" in report[0][1]
+    assert list((pub / "ready").rglob("*.mp4")) == []

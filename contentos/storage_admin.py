@@ -305,7 +305,7 @@ def cleanup(*, apply=False, now=None, cfg=None, ws=None):
             skip(".keep marker"); continue
         if refs.get(d.name, {}).get("active"):
             skip("queued, running or blocked in the ledger (pending retry)"); continue
-        if storage.lock_is_held(d / ".manifest.lock"):
+        if storage.lock_is_held(d / ".manifest.lock") or storage.lock_is_held(d / ".run.lock"):
             skip("in use (lock held)"); continue
         if m["status"] == "exported":
             days, stamp = pol["intermediate_days"], (m.get("export") or {}).get("exported_at") or m["updated_at"]

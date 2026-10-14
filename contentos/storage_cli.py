@@ -69,7 +69,25 @@ def cmd_ready(a):
     for p in problems:
         print(f"PROBLEM {p['sidecar']}: {p['problem']}")
     print(f"{len(entries)} video(s), {len(problems)} problem(s)")
-    return 1 if problems else 0
+    superseded = []
+    if a.check:                                          # read-only: compares each workspace video with its sidecar sha
+        rep = export.divergence()
+        for r in rep["superseded"]:
+            superseded.append(r["job_id"])
+            print(f"SUPERSEDED  {r['job_id']}  workspace {str(r['workspace_sha256'])[:12]} != exported "
+                  f"{str(r['exported_sha256'])[:12]}  ({r['exported_video']})")
+        for r in rep["sidecar_missing"]:
+            print(f"NO-SIDECAR  {r['job_id']}  ({r['exported_video']})")
+        for r in rep["workspace_video_missing"]:
+            print(f"NO-VIDEO    {r['job_id']}  ({r['exported_video']})")
+        for name in rep["unreadable_manifest"]:
+            print(f"UNREADABLE  {name}")
+        print(f"integrity: {rep['checked']} exported, {len(rep['ok'])} matching, {len(superseded)} superseded, "
+              f"{len(rep['archived'])} archived, {len(rep['workspace_video_missing'])} without a workspace video")
+        if superseded:
+            print("a superseded job's workspace video differs from what was exported; "
+                  "re-export it with `contentos storage export <job> --force` if the new render is the one to ship")
+    return 1 if (problems or superseded) else 0
 
 
 def cmd_cleanup(a):
@@ -105,6 +123,8 @@ def register(sp):
     p = sub.add_parser("adopt"); p.add_argument("job_id"); p.set_defaults(f=cmd_adopt)
     p = sub.add_parser("export", help="validate a job's final video and export it to ready/")
     p.add_argument("job_id"); p.add_argument("--force", action="store_true"); p.add_argument("--mode", choices=storage.EXPORT_MODES); p.set_defaults(f=cmd_export)
-    p = sub.add_parser("ready", help="list exported videos"); p.add_argument("--project"); p.add_argument("--status"); p.set_defaults(f=cmd_ready)
+    p = sub.add_parser("ready", help="list exported videos"); p.add_argument("--project"); p.add_argument("--status")
+    p.add_argument("--check", action="store_true", help="also report jobs whose workspace video no longer matches what was exported (read-only)")
+    p.set_defaults(f=cmd_ready)
     p = sub.add_parser("cleanup", help="remove expired scratch paths (dry run unless --apply)"); p.add_argument("--apply", action="store_true"); p.set_defaults(f=cmd_cleanup)
     p = sub.add_parser("recover", help="find leftovers of an interrupted export (dry run unless --apply)"); p.add_argument("--apply", action="store_true"); p.set_defaults(f=cmd_recover)

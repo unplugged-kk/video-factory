@@ -178,3 +178,32 @@ def test_repo_stays_clean_of_generated_files(env):
 def test_gitignore_blocks_media(tmp_path):
     r = subprocess.run(["git", "check-ignore", "-q", "workspace/projects/x/video.mp4"], cwd=storage.REPO)
     assert r.returncode == 0
+
+
+def test_file_lock_non_blocking_refuses_a_second_holder(tmp_path):
+    """The run lock needs a loud refusal, not a silent wait: blocking=False raises instead of hanging."""
+    lock = tmp_path / ".run.lock"
+    with storage.file_lock(lock):
+        with pytest.raises(storage.StorageError, match=r"\.run\.lock is held by another process"):
+            with storage.file_lock(lock, blocking=False):
+                pass                                                 # pragma: no cover
+    with storage.file_lock(lock, blocking=False):                     # free again once released
+        pass
+
+
+def test_file_lock_stays_blocking_by_default(tmp_path):
+    """The default must remain blocking or every existing caller changes behaviour."""
+    lock = tmp_path / ".lock"
+    acquired = []
+
+    def second_holder():
+        with storage.file_lock(lock):
+            acquired.append(True)
+
+    with storage.file_lock(lock):
+        t = threading.Thread(target=second_holder)
+        t.start()
+        t.join(timeout=0.3)
+        assert acquired == []                                        # still waiting: it neither raised nor skipped
+    t.join(timeout=5)
+    assert acquired == [True]

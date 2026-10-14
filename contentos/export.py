@@ -26,6 +26,7 @@ from .production import supplied_audio
 
 SIDECAR_SUFFIX = ".publish.json"
 SIDECAR_SCHEMA_VERSION = 1
+INTEGRITY_SCHEMA = "export-integrity/1"
 
 
 class ExportRefused(storage.StorageError):
@@ -232,3 +233,67 @@ def recover(*, apply=False, cfg=None, now=None):
                     q.mkdir(parents=True, exist_ok=True)
                     os.replace(v, q / f"{uuid.uuid4().hex[:8]}-{v.name}")
     return report
+
+
+def divergence(*, cfg=None, jobs=None):
+    """Does each exported job still match the video sitting in its workspace? (`export-integrity/1`)
+
+    Read-only: writes nothing, creates no directory and never calls preflight(), so it is safe to run against the real
+    publishing library. It REPORTS a mismatch and never repairs one - replacing an exported video stays an explicit
+    `contentos storage export <job> --force`, because only a human can judge whether the new render is the one to ship.
+
+    Each job is classified once, in this order: archived (already handed off, expected), unreadable sidecar,
+    sidecar_missing, workspace_video_missing (normal for an adopted, legacy or cleaned job - not a mismatch),
+    never_exported, then ok or superseded. Only `superseded` means the workspace video differs from the one that was
+    exported.
+    """
+    cfg = cfg or storage.config()
+    pub = storage.publish_root(cfg)
+    out = {"schema": INTEGRITY_SCHEMA, "checked": 0, "ok": [], "superseded": [], "sidecar_missing": [],
+           "workspace_video_missing": [], "archived": [], "never_exported": [], "unreadable_manifest": []}
+    if not (pub / ".state").is_dir():                        # nothing has ever been exported into this library
+        return out
+    for d in storage.iter_job_dirs(jobs):
+        try:
+            m = storage.read_manifest(d)
+        except storage.StorageError:
+            out["unreadable_manifest"].append(d.name)
+            continue
+        if m is None or not (m.get("export") or m.get("status") == "exported"):
+            continue
+        job = m["job_id"]
+        out["checked"] += 1
+        rec = {"job_id": job, "workspace_video": None, "exported_video": None, "sidecar": None,
+               "workspace_sha256": None, "exported_sha256": None, "exported_at": None}
+        archived = None
+        claim = _claim(pub, job)
+        if claim.exists():
+            with contextlib.suppress(OSError, ValueError):
+                archived = json.loads(claim.read_text(encoding="utf-8")).get("archived_to")
+        if archived:
+            rec["archived_to"] = archived
+            out["archived"].append(rec)
+            continue
+        prior = _existing(pub, m)
+        if prior is None:
+            out["never_exported"].append(rec)                # an export block with no record anywhere: nothing to compare
+            continue
+        pv, ps = prior
+        rec["exported_video"] = storage.rel(pv, pub)
+        rec["sidecar"] = storage.rel(ps, pub)
+        sidecar = None
+        with contextlib.suppress(OSError, ValueError):
+            sidecar = json.loads(ps.read_text(encoding="utf-8")) if ps.exists() else None
+        if sidecar is None:
+            out["sidecar_missing"].append(rec)               # gone, or unreadable: the sidecar is the "ready" marker
+            continue
+        rec["exported_sha256"] = sidecar.get("video_sha256")
+        rec["exported_at"] = sidecar.get("exported_at")
+        video = d / "video.mp4"
+        if not video.is_file():
+            out["workspace_video_missing"].append(rec)       # the export stands on its own; do not call this a mismatch
+            continue
+        rec["workspace_video"] = storage.rel(video, d)
+        rec["workspace_sha256"] = sha256_file(video)
+        (out["ok"] if rec["workspace_sha256"] == rec["exported_sha256"] else out["superseded"]).append(rec)
+    return out

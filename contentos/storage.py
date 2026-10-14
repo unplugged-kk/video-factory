@@ -242,8 +242,9 @@ def fsync_dir(path):
 
 
 @contextlib.contextmanager
-def file_lock(path):
-    """Exclusive advisory lock held for the with-block (blocking). POSIX only; on other systems it is a no-op."""
+def file_lock(path, *, blocking=True):
+    """Exclusive advisory lock held for the with-block (blocking). With blocking=False, raise StorageError instead of
+    waiting when another process holds it. POSIX only; on other systems it is a no-op."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -252,7 +253,10 @@ def file_lock(path):
         yield
         return
     with open(path, "a+") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
+        try:
+            fcntl.flock(f, fcntl.LOCK_EX if blocking else fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:                       # only the non-blocking mode can raise this
+            raise StorageError(f"{path.name} is held by another process") from exc
         try:
             yield
         finally:

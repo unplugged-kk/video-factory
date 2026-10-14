@@ -228,7 +228,7 @@ def s_export(ctx):
     blockers = supplied_audio.publish_blockers(ctx["dir"])
     if blockers:                                     # a gate-style stop, not a crash: fix the rights record and re-run export
         raise Blocked("supplied audio blocks publication: " + "; ".join(blockers))
-    res = exporter.export_job(ctx["id"])
+    res = exporter.export_job(ctx["id"], force=bool(ctx.get("force")))
     p = ctx["dir"] / "export-result.json"
     p.write_text(json.dumps(res, indent=2))
     return "export", [p]
@@ -289,11 +289,17 @@ def run(spec_path, allow_paid=False, force=False, only=None, approve_private=Fal
         raise ValueError(f"render: {spec['render']!r} is not one of {RENDER_LANES}")
     cid = spec["content_id"]
     storage.preflight(publish=True)                 # clear error if a configured folder is missing or read-only; never falls back to the repo
-    d, _manifest = storage.open_job(cid, spec)      # jobs/YYYY/MM/<content_id>/ plus manifest.json on first use
+    d, _manifest = storage.open_job(cid, spec)      # jobs/YYYY/MM/DD/<content_id>/ plus manifest.json on first use
+    with storage.file_lock(d / ".run.lock", blocking=False):     # one run per job; a second run is refused, not queued
+        return _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private)
+
+
+def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
+    """Run the stages in order. Split out of run() so the per-job lock can wrap the loop without re-indenting it."""
     if _manifest["status"] != "exported":           # a resumed, already exported job stays exported
         storage.update_manifest(d, status="running", failure=None)
     W, H = {"9:16": (1080, 1920), "16:9": (1920, 1080)}[spec.get("format", "9:16")]
-    ctx = {"id": cid, "dir": d, "spec": spec, "allow_paid": allow_paid, "res": (W, H)}
+    ctx = {"id": cid, "dir": d, "spec": spec, "allow_paid": allow_paid, "res": (W, H), "force": bool(force)}
     if approve_private:  # explicit test shortcut; private/dry-run only
         for g in ("RESEARCH_APPROVED", "SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
             ledger.approve(cid, g, by="cli --approve-private")
