@@ -162,9 +162,9 @@ def s_compose(ctx):
     _scene_plan = _feat.get("scene_plan", spec)(ctx, spec)
     ctx['_scene_plan'] = _scene_plan
     t, scenes, audios, anim = 0.0, [], [], []
+    # Hook 5: caption/headline reveal override (Lane E). Returns {} when feature off.
+    _cap_override = _feat.get("captions_hook", spec)(ctx, spec)
     for i, ln in enumerate(spec["script"], 1):
-        # Hook 5: caption/headline reveal override (Lane E). Returns {} when feature off.
-        _cap_override = _feat.get("captions_hook", spec)(ctx, spec)
         wav = ctx["dir"] / "audio" / f"{i:02d}.wav"
         shutil.copy(wav, proj / f"assets/voice/{i:02d}.wav")
         d = round(dur(wav) + 0.35, 2)
@@ -174,9 +174,17 @@ def s_compose(ctx):
         cap = "".join(f'<span id="w{i}_{k}">{html.escape(w)}</span> ' for k, (w, _, _) in enumerate(wl))
         for k, (_, ws, we) in enumerate(wl):
             anim.append(f'tl.set("#w{i}_{k}",{{color:"#fbbf24"}},{t+ws:.2f});tl.set("#w{i}_{k}",{{color:"#fff"}},{t+we:.2f});')
+        tag_text = ln.get("tag", f"{i}/{len(spec['script'])}")
+        headline_text = ln["headline"]
+        if _cap_override.get("clean_tags"):
+            is_hook = (i == 1)
+            is_cta = (i == len(spec["script"]))
+            from .features.captions_hook import clean_tag_and_headline
+            tag_text, headline_text = clean_tag_and_headline(tag_text, headline_text, is_hook, is_cta)
+        tag_html = f'<div class="tag">{html.escape(tag_text)}</div>' if tag_text else ''
         scene_html = (f'<div class="scene clip" id="s{i}" data-start="{t:.2f}" data-duration="{d}">'
-                      f'<div class="head"><div class="tag">{html.escape(ln.get("tag", f"{i}/{len(spec["script"])}"))}</div>'
-                      f'<h1 id="h{i}">{html.escape(ln["headline"])}</h1></div><p class="cap">{cap}</p></div>')
+                      f'<div class="head">{tag_html}'
+                      f'<h1 id="h{i}">{html.escape(headline_text)}</h1></div><p class="cap">{cap}</p></div>')
         # Hook 3: per-scene backdrop/transition injection (Lane C). Pass-through when off.
         scene_html, _ = _feat.get("visual_layer", spec)(ctx, i, scene_html, [], spec)
         scenes.append(scene_html)
@@ -186,12 +194,13 @@ def s_compose(ctx):
                     f'tl.to("#s{i}",{{opacity:0,duration:.25}},{t+d-.25:.2f});')
         t += d
     total = round(t, 2)
+    bottom_padding = int(H * _cap_override["safezone_bottom_padding"]) if _cap_override.get("safezone_bottom_padding") else int(H * 0.16)
     (proj / "hyperframes.json").write_text(json.dumps({"width": W, "height": H, "fps": 30, "duration": total}))
     (proj / "index.html").write_text(f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><title>{html.escape(spec['title'])}</title>
 <script src="./gsap.min.js"></script>
 <style>*{{margin:0;box-sizing:border-box}}body{{width:{W}px;height:{H}px;overflow:hidden;background:#090a0f;font-family:-apple-system,"Helvetica Neue",sans-serif;color:#fff}}
 #root{{position:relative;width:{W}px;height:{H}px;background:radial-gradient(circle at 50% 20%,#1a1e36,#08090e)}}
-.scene{{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr) auto;row-gap:40px;padding:120px 70px {int(H*0.16)}px;text-align:center;opacity:0}}
+.scene{{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr) auto;row-gap:40px;padding:120px 70px {bottom_padding}px;text-align:center;opacity:0}}
 .head{{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}}
 .tag{{font:700 34px ui-monospace,Menlo,monospace;letter-spacing:3px;color:#a5b4fc;margin-bottom:36px}}
 h1{{font-size:{int(U*0.085)}px;font-weight:900;line-height:1.1;letter-spacing:-1px}}
