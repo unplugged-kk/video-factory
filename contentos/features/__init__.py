@@ -2,7 +2,7 @@
 
 Imports all feature modules so they register their hooks into contentos.features.registry.
 """
-from . import audio_bed, captions_hook, extra_gates, registry, scene_plan, style_card
+from . import audio_bed, captions_hook, extra_gates, registry, scene_plan, style_card, visual_layer
 
 __all__ = [
     "audio_bed",
@@ -11,4 +11,5 @@ __all__ = [
     "registry",
     "scene_plan",
     "style_card",
+    "visual_layer",
 ]
