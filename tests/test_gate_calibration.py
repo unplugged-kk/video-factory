@@ -8,7 +8,7 @@ clips with ffmpeg at test time (nothing is committed; media is gitignored) and r
   * contentos.finalcheck.validate_video   the export-time wrapper
   * contentos.production.visual_gate      captions, transitions, safezone, layers, log
 
-No gate code and no threshold is changed here. Where a gate does NOT fail on a clip that is plainly bad, or does something
+Gate code was fixed in lane L8 (gatefix); fixed gaps are test_fixed_*. Where a gate does NOT fail on a clip that is plainly bad, or does something
 surprising, the test is named `test_gap_*` and asserts what the gate ACTUALLY does today (a characterization), with a comment
 saying what a trustworthy gate would do. If a gate is later fixed, that test fails on purpose and should be flipped.
 
@@ -208,36 +208,35 @@ def test_qa_empty_file_fails_render_integrity(tmp_path):
 
 # ---- qa.run_qa: gaps (behaviour that is not what a trustworthy gate would do) ------------------------------------------
 
-def test_gap_silent_audio_track_passes_audio_track_and_only_warns_loudness(qa_clips):
-    """A track of pure silence is 'present': audio_track PASS. loudness is WARN-only (about -70 LUFS), and clipping is
-    ABSENT (ffmpeg prints 'Peak: -inf dBFS', which the regex does not match). Nothing FAILS, so a silent video is accepted."""
+def test_fixed_silent_audio_track_fails_loudness_and_has_clipping_row(qa_clips):
+    """A track of pure silence is present (audio_track PASS) but must FAIL loudness (about -70 LUFS, at or under -60) and the
+    clipping row must exist (ffmpeg prints 'Peak: -inf dBFS'). Loudness for audible audio stays WARN-only."""
     rows = qa.run_qa(qa_clips["silent_audio"])
     d = _by_check(rows)
-    _rec("qa.audio_track", "silent_audio", "FAIL (audible audio required)", d["audio_track"][0], "GAP: silent track accepted")
-    _rec("qa.loudness", "silent_audio", "FAIL", d["loudness"][0], "GAP: WARN-only")
+    _rec("qa.loudness", "silent_audio", "FAIL", d["loudness"][0], "fixed: silent track fails")
     assert d["audio_track"][0] == "PASS"
-    assert d["loudness"][0] == "WARN"
-    assert "clipping" not in d
-    assert "FAIL" not in {s for _, s, _ in rows}
+    assert d["loudness"][0] == "FAIL" and "silent" in d["loudness"][1]
+    assert d["clipping"][0] == "PASS"
+    fc = finalcheck.validate_video(qa_clips["silent_audio"])
+    assert fc["status"] == "failed" and _fc(fc)["loudness"] == "FAIL"
 
 
-def test_gap_frozen_until_end_of_file_is_not_reported(qa_clips):
-    """A picture frozen from some point to the END of the file (an end-hold) is invisible to frozen_frames: freezedetect
-    prints freeze_start but only prints freeze_duration when the freeze ends, and qa.py matches only freeze_duration.
-    A trustworthy gate would WARN here (and the mid-file freeze above does WARN)."""
+def test_fixed_frozen_until_end_of_file_is_reported(qa_clips):
+    """A freeze that runs to the END of the file has freeze_start but no freeze_duration; frozen_frames now counts it (WARN)."""
     rows = qa.run_qa(qa_clips["frozen_tail_4s"])
     got = _status("frozen_tail_4s", rows, "frozen_frames")
-    _rec("qa.frozen_frames", "frozen_tail_4s", "WARN", got, "GAP: freeze that runs to end of file is not reported")
-    assert got == "PASS"
+    _rec("qa.frozen_frames", "frozen_tail_4s", "WARN", got, "fixed")
+    assert got == "WARN"
+    assert _status("good", qa.run_qa(qa_clips["good"]), "frozen_frames") == "PASS"
 
 
-def test_gap_audio_only_file_crashes_run_qa(tmp_path):
-    """No video stream: run_qa indexes v['width'] on None. A trustworthy gate would return a FAIL row."""
+def test_fixed_audio_only_file_fails_render_integrity(tmp_path):
+    """No video stream: a clean render_integrity FAIL row, never a TypeError."""
     p = tmp_path / "audio_only.m4a"
     _ff(["-f", "lavfi", "-i", "sine=f=440:d=1", "-c:a", "aac", str(p)])
-    with pytest.raises(TypeError):
-        qa.run_qa(p)
-    _rec("qa.run_qa", "audio_only_no_video_stream", "FAIL row", "TypeError (uncaught)", "GAP")
+    rows = qa.run_qa(p)
+    assert rows[0][:2] == ("render_integrity", "FAIL") and "no video stream" in rows[0][2]
+    _rec("qa.run_qa", "audio_only_no_video_stream", "FAIL row", rows[0][1], "fixed")
 
 
 # ---- finalcheck.validate_video ----------------------------------------------------------------------------------------
@@ -296,14 +295,13 @@ def test_finalcheck_unknown_format_fails_closed(qa_clips):
     assert r["status"] == "failed" and _fc(r)["tooling"] == "FAIL"
 
 
-def test_gap_finalcheck_audio_only_file_raises(tmp_path):
-    """validate_video promises 'never raises for a bad video', but catches only (OSError, KeyError, ValueError); the
-    TypeError from run_qa on a file with no video stream escapes."""
+def test_fixed_finalcheck_audio_only_file_fails_cleanly(tmp_path):
+    """validate_video never raises for a bad video: a file with no video stream gives a failed result."""
     p = tmp_path / "audio_only.m4a"
     _ff(["-f", "lavfi", "-i", "sine=f=440:d=1", "-c:a", "aac", str(p)])
-    with pytest.raises(TypeError):
-        finalcheck.validate_video(p)
-    _rec("finalcheck.validate_video", "audio_only_no_video_stream", "failed result", "TypeError (uncaught)", "GAP")
+    r = finalcheck.validate_video(p)
+    assert r["status"] == "failed" and _fc(r)["render_integrity"] == "FAIL"
+    _rec("finalcheck.validate_video", "audio_only_no_video_stream", "failed result", r["status"], "fixed")
 
 
 # ======================================================================================================================
@@ -373,11 +371,12 @@ def test_captions_hidden_for_one_of_four_windows_still_passes_by_design(cap_clip
     assert r["visible_ratio"] == 0.75 and r["ok"]
 
 
-def test_gap_captions_absent_over_busy_background_passes(cap_clips):
-    """The gate counts ANY hard-edged ink in the region. A busy background with NO captions at all looks like captions."""
+def test_fixed_captions_absent_over_busy_background_fails(cap_clips):
+    """A busy background with NO captions deviates from the median almost everywhere; ink above MAX_TEXT_FRACTION is texture,
+    not caption text, so the gate fails. (The single-hidden-window tolerance, 3 of 4 windows, is intentional and unchanged.)"""
     r = _caps(cap_clips["busy_bg_no_captions"])
-    _rec("visual_gate.captions", "busy_bg_no_captions", False, r["ok"], f"GAP visible_ratio={r['visible_ratio']}")
-    assert r["ok"] is True
+    _rec("visual_gate.captions", "busy_bg_no_captions", False, r["ok"], f"fixed visible_ratio={r['visible_ratio']}")
+    assert r["ok"] is False
 
 
 def test_captions_no_windows_fails_closed():
@@ -447,16 +446,14 @@ def test_transition_identical_neighbours_is_inconclusive_and_not_ok(tr_clips):
     assert r["verdict"] == "inconclusive" and not r["ok"]
 
 
-def test_gap_transition_single_black_frame_inside_a_blend_is_tolerated(tr_clips):
-    """A single full-black frame (0.1 s at 10 fps) in the middle of a 1 s blend. One of the 7 samples lands on it and is marked
-    black, but black_fraction (1/9) stays under MAX_BLACK_FRACTION (0.30), so the verdict is still blend and ok=True. A
-    trustworthy 'no black frame in a transition' gate would FAIL. A flash that falls between samples (spacing = window/8) is
-    not seen at all."""
+def test_fixed_transition_single_black_frame_inside_a_blend_is_a_black_gap(tr_clips):
+    """A single full-black frame (0.1 s at 10 fps) inside a 1 s blend lands on one sample; any black sample now makes the
+    verdict black. (A flash that falls between samples is still not seen; documented in the result.)"""
     r = vg.check_transition(tr_clips["blend_with_black_flash"], 1.0, 1.0)
     blacks = sum(s["black"] for s in r["samples"])
-    _rec("visual_gate.transitions", "blend_with_black_frame(1 frame)", "black", r["verdict"],
-         f"GAP: {blacks} sample(s) saw black, black_fraction={r['black_fraction']} < 0.30")
-    assert r["verdict"] == "blend" and r["ok"] and blacks == 1
+    _rec("visual_gate.transitions", "blend_with_black_frame(1 frame)", "black", r["verdict"], "fixed")
+    assert r["verdict"] == "black" and not r["ok"] and blacks == 1
+    assert vg.check_transition(tr_clips["blend_with_black_flash"], 1.0, 1.0, allow_dip=True)["verdict"] == "blend"
 
 
 def test_transition_cli_exit_codes(tr_clips, capsys):
@@ -514,6 +511,8 @@ def test_safezone_only_sees_the_moments_it_samples(sz_clips):
     assert r["ok"] is False
 
 
+# INTENTIONALLY NOT FIXED: the edge threshold EDGE_JUMP is a documented provisional design value; catching faint content
+# would need a threshold change, which is out of scope. Characterization test kept.
 def test_gap_safezone_low_contrast_content_in_zone_is_not_flagged(sz_clips):
     """Content with a luma step under EDGE_JUMP (0.2) is not 'content' to this gate. A faint caption/logo in the zone passes."""
     r = vg.check_safe_zones(sz_clips["low_contrast_bottom"], TIMES, CAN)
@@ -521,10 +520,13 @@ def test_gap_safezone_low_contrast_content_in_zone_is_not_flagged(sz_clips):
     assert r["ok"] is True
 
 
-def test_gap_safezone_landscape_is_vacuously_ok_even_with_content_everywhere(sz_clips):
+def test_fixed_safezone_landscape_is_explicitly_not_applicable(sz_clips):
+    """Nothing was checked on a landscape canvas: the result says so (status not_applicable, vacuous, checked False). `ok`
+    stays True only because tests/test_safe_zone.py (outside this lane's allow-list) pins ok+applicable False."""
     r = vg.check_safe_zones(sz_clips["landscape"], TIMES, (960, 540))
-    _rec("visual_gate.safezone", "landscape_with_content", "n/a", f"ok={r['ok']} applicable={r['applicable']}", "gate not applicable; ok=True")
-    assert r["ok"] is True and r["applicable"] is False
+    _rec("visual_gate.safezone", "landscape_with_content", "not applicable", f"ok={r['ok']} applicable={r['applicable']}", "fixed")
+    assert r["applicable"] is False and r["status"] == "not_applicable" and r["vacuous"] is True and r["checked"] is False
+    assert r["samples"] == [] and r["zones"] == []
 
 
 def test_safezone_wrong_canvas_is_an_error_not_a_result(sz_clips):
@@ -564,28 +566,32 @@ def test_layers_declared_intent_is_not_an_error_but_requires_a_rendered_check():
     assert r["ok"] and r["rendered_check_required"] and r["findings"][0]["severity"] == "declared"
 
 
-@pytest.mark.parametrize("bg", ["black", "navy", "linear-gradient(black, navy)", "hsl(220, 40%, 10%)"])
-def test_gap_layers_opaque_background_not_written_as_hex_or_rgb_is_missed(bg):
-    """_opaque() recognises only #hex, rgb( and rgba alpha~1. A named colour, a gradient of named colours, or hsl() is an
-    opaque scene that hides captions, yet the static check says ok."""
+@pytest.mark.parametrize("bg", ["black", "navy", "linear-gradient(black, navy)", "hsl(220, 40%, 10%)", "hsla(220, 40%, 10%, 1)",
+                                "linear-gradient(to right, transparent, #000)", "#000f", "rgb(0 0 0 / 100%)"])
+def test_fixed_layers_opaque_background_in_any_css_colour_syntax_is_caught(bg):
+    """Named colours, hsl(), gradients (conservative: opaque if ANY stop is opaque) and 4/8-digit hex are recognised."""
     css = ".scene{background:%s} #captions{z-index:5}" % bg
     r = _layers(css, SCENE_INLINE_Z20)
-    _rec("visual_gate.layers", f"opaque_scene_above_captions[background:{bg}]", False, r["ok"], "GAP: colour syntax not recognised")
-    assert r["ok"] is True
+    _rec("visual_gate.layers", f"opaque_scene_above_captions[background:{bg}]", False, r["ok"], "fixed")
+    assert r["ok"] is False
 
 
-def test_gap_layers_css_z_index_is_ignored_once_html_is_given():
-    """The same bad layering written as CSS z-index (the usual way) is reported ok when the html is passed too: for a scene
-    element found in the html, check_caption_layering uses the INLINE z-index (None -> 0) and never falls back to the CSS
-    rule's z-index (inline.get(sid, ...) finds the key with value None). Only inline style="z-index:N" is compared. The CLI
-    always passes the html, so CSS-only z-index bugs are missed. Without the html (css only) the same CSS is caught."""
+@pytest.mark.parametrize("bg", ["transparent", "none", "rgba(0,0,0,0.5)", "hsla(220, 40%, 10%, 0.4)",
+                                "linear-gradient(transparent, rgba(0,0,0,.3))", "rgb(0 0 0 / 50%)", "#0008"])
+def test_layers_translucent_or_absent_background_is_not_opaque(bg):
+    css = ".scene{background:%s} #captions{z-index:5}" % bg
+    assert _layers(css, SCENE_INLINE_Z20)["ok"] is True
+
+
+def test_fixed_layers_css_z_index_is_honoured_once_html_is_given():
+    """CSS z-index counts when the html scene has no inline z-index; an inline z-index still wins over the CSS rule."""
     css = ".scene{background:#101820;z-index:20} #captions{z-index:5}"
     with_html = _layers(css, '<div class="scene" id="s-a"></div><div id="captions"></div>')
     css_only = _layers("#s-a{background:#101820;z-index:20} #captions{z-index:5}", "")
-    _rec("visual_gate.layers", "opaque_scene_above_captions(css z-index, html given)", False, with_html["ok"], "GAP: CSS z-index ignored when html passed")
-    _rec("visual_gate.layers", "opaque_scene_above_captions(css only)", False, css_only["ok"])
-    assert with_html["ok"] is True
-    assert css_only["ok"] is False
+    _rec("visual_gate.layers", "opaque_scene_above_captions(css z-index, html given)", False, with_html["ok"], "fixed")
+    assert with_html["ok"] is False and css_only["ok"] is False
+    low_inline = _layers(css, '<div class="scene" id="s-a" style="z-index:1"></div><div id="captions"></div>')
+    assert low_inline["ok"] is True
 
 
 def test_layers_no_caption_rule_is_info_only():
@@ -609,13 +615,12 @@ def test_layers_cli_on_project_dir(tmp_path):
     assert vg.main(["layers", str(tmp_path / "missing")]) == 2
 
 
-def test_gap_layers_cli_drops_the_first_css_rule_of_a_style_block(tmp_path):
-    """The CLI uses the whole html file as the css text, so the first rule's selector becomes '<style>#captions' and no longer
-    matches. With #captions as the first rule the caption layer is not found and a real violation is reported as ok."""
+def test_fixed_layers_cli_keeps_the_first_css_rule_of_a_style_block(tmp_path):
+    """The first rule of a <style> block (here #captions) is parsed; a real violation exits 1."""
     (tmp_path / "index.html").write_text(_page("#captions{z-index:1} .scene{background:#000}", 9))
     rc = vg.main(["layers", str(tmp_path)])
-    _rec("visual_gate.layers", "cli: #captions first rule in <style>, opaque scene above", 1, rc, "GAP: first rule lost -> exit 0")
-    assert rc == 0
+    _rec("visual_gate.layers", "cli: #captions first rule in <style>, opaque scene above", 1, rc, "fixed")
+    assert rc == 1
 
 
 BAD_LOG = '{"hasShaderTransitions": true}\nWARN falling back to opacity-flip\nStreaming encoder exited unexpectedly\n'
@@ -636,10 +641,12 @@ def test_log_gate_fails_on_shader_fallback_and_encoder_exit_and_passes_clean_log
     assert vg.main(["log", str(p)]) == 0
 
 
-def test_gap_log_shader_fallback_ignored_when_log_does_not_say_shaders_are_used():
-    """The same fallback line is dropped unless the log itself says hasShaderTransitions:true or the caller passes uses_shaders.
-    A log without that marker (older HyperFrames, trimmed log) gives ok=True on a fallback."""
+def test_fixed_log_shader_fallback_detected_without_the_shader_marker():
+    """A fallback line is itself proof shaders were requested: reported without hasShaderTransitions:true. Generic
+    shader-compile noise is still gated on the marker."""
     f = vg.scan_render_log("WARN falling back to opacity-flip\n")
-    _rec("visual_gate.log", "fallback_without_marker", "error finding", f, "GAP: silent unless marker or --shader")
-    assert f == []
-    assert vg.scan_render_log("WARN falling back to opacity-flip\n", uses_shaders=True)[0]["severity"] == "error"
+    _rec("visual_gate.log", "fallback_without_marker", "error finding", f and f[0]["code"], "fixed")
+    assert [x["code"] for x in f] == ["shader_fallback_opacity_flip"] and f[0]["severity"] == "error"
+    assert vg.scan_render_log("failed to compile\n") == []
+    assert vg.scan_render_log("WARN falling back to opacity-flip\n", uses_shaders=False) == []      # explicit caller override wins
+    assert vg.main(["log", "/dev/null"]) == 0
