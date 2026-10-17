@@ -195,12 +195,13 @@ def s_compose(ctx):
         t += d
     total = round(t, 2)
     bottom_padding = int(H * _cap_override["safezone_bottom_padding"]) if _cap_override.get("safezone_bottom_padding") else int(H * 0.16)
+    side_padding = _cap_override.get("safezone_side_padding", 70)
     (proj / "hyperframes.json").write_text(json.dumps({"width": W, "height": H, "fps": 30, "duration": total}))
     (proj / "index.html").write_text(f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><title>{html.escape(spec['title'])}</title>
 <script src="./gsap.min.js"></script>
 <style>*{{margin:0;box-sizing:border-box}}body{{width:{W}px;height:{H}px;overflow:hidden;background:#090a0f;font-family:-apple-system,"Helvetica Neue",sans-serif;color:#fff}}
 #root{{position:relative;width:{W}px;height:{H}px;background:radial-gradient(circle at 50% 20%,#1a1e36,#08090e)}}
-.scene{{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr) auto;row-gap:40px;padding:120px 70px {bottom_padding}px;text-align:center;opacity:0}}
+.scene{{position:absolute;inset:0;display:grid;grid-template-rows:minmax(0,1fr) auto;row-gap:40px;padding:120px {side_padding}px {bottom_padding}px;text-align:center;opacity:0}}
 .head{{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}}
 .tag{{font:700 34px ui-monospace,Menlo,monospace;letter-spacing:3px;color:#a5b4fc;margin-bottom:36px}}
 h1{{font-size:{int(U*0.085)}px;font-weight:900;line-height:1.1;letter-spacing:-1px}}

@@ -45,6 +45,7 @@ def captions_hook_fn(ctx: dict, spec: dict) -> dict:
         "enabled": True,
         "clean_tags": True,
         "safezone_bottom_padding": 0.24,  # Move captions well above 16-20% bottom danger zone
+        "safezone_side_padding": 190,     # Keep text safely inside the 180px right-hand button zone
         "two_tone_hook": True,
         "cta_pill": True,
     }
