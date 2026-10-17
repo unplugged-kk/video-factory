@@ -1,3 +1,14 @@
-"""Feature flags for Milestone 2. Each feature is opt-in via spec['features'][name].
-All features are off by default; the pipeline behaves identically to M1 when no
-features key is present in the spec."""
+"""Feature flags and modules for Milestone 2.
+
+Imports all feature modules so they register their hooks into contentos.features.registry.
+"""
+from . import audio_bed, captions_hook, extra_gates, registry, scene_plan, style_card
+
+__all__ = [
+    "audio_bed",
+    "captions_hook",
+    "extra_gates",
+    "registry",
+    "scene_plan",
+    "style_card",
+]
