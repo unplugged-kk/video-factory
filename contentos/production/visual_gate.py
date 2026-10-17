@@ -33,6 +33,7 @@ MAX_BLACK_FRACTION = 0.30
 MIN_ENDPOINT_DISTANCE = 0.02           # below this the neighbours are the same picture; nothing to tell
 TEXT_DEVIATION = 0.18                  # a pixel this far from the region median luma counts as "text" ink
 MIN_TEXT_FRACTION = 0.01               # fraction of region pixels that must be ink for captions to count as visible
+MAX_TEXT_FRACTION = 0.60               # MORE ink than this is texture (a busy picture), not caption text: text is sparse
 MIN_VISIBLE_RATIO = 0.70               # share of sampled caption moments where captions must be visible
 
 
@@ -84,6 +85,28 @@ def _dist(a, b):
 
 # ---- KF-004: transitions and render log ---------------------------------------------------------------------------
 
+DENSE_FPS = 60                         # dense scan of a transition window: up to this many frames per second of window...
+DENSE_MAX_FRAMES = 240                 # ...and never more than this many frames per window (bounds cost: one ffmpeg call, 32x32 gray-ish thumbs)
+_DENSE_PX = 32
+
+
+def dense_black_frames(video, start, duration):
+    """Mean luma of (nearly) every frame inside [start, start+duration], from ONE ffmpeg decode of the window scaled to
+    32x32. Rate = min(DENSE_FPS, DENSE_MAX_FRAMES/duration) frames/s, so cost is bounded (<=240 tiny frames) however long
+    the window is. Returns [] when the window cannot be decoded (the spot-check samples still run)."""
+    if duration <= 0:
+        return []
+    fps = min(DENSE_FPS, DENSE_MAX_FRAMES / duration)
+    cmd = ["ffmpeg", "-v", "error", "-ss", f"{max(start, 0):.3f}", "-t", f"{duration:.3f}", "-i", str(video),
+           "-vf", f"fps={fps:.4f},scale={_DENSE_PX}:{_DENSE_PX}:flags=area", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
+    try:
+        p = subprocess.run(cmd, capture_output=True, check=False, timeout=120)
+    except (OSError, subprocess.TimeoutExpired):
+        return []
+    n = _DENSE_PX * _DENSE_PX * 3
+    return [_luma(p.stdout[i:i + n]) for i in range(0, len(p.stdout) - n + 1, n)]
+
+
 def check_transition(video, start, duration, kind="css", samples=7, allow_dip=False, margin=None):
     """Sample inside [start, start+duration] and compare with steady frames taken `margin` seconds outside the window
     (default half the window, at least 0.1s), so a blackout that begins at the window edge cannot hide as "steady".
@@ -108,12 +131,17 @@ def check_transition(video, start, duration, kind="css", samples=7, allow_dip=Fa
         da, db, ls = _dist(s, a), _dist(s, b), _luma(s)
         rows.append({"t": round(t, 3), "d_from_before": round(da, 4), "d_from_after": round(db, 4), "luma": round(ls, 4),
                      "black": is_black(ls), "intermediate": min(da, db) > HARD_CUT_RATIO * max(ab, 1e-9)})
+    dense = dense_black_frames(video, start, duration)
+    dense_black = sum(1 for v in dense if is_black(v))
     ends_black = int(is_black(la)) + int(is_black(lb))
     black_frac = (sum(r["black"] for r in rows) + ends_black) / (len(rows) + 2)
     inter = sum(r["intermediate"] and not r["black"] for r in rows)
     if ab < MIN_ENDPOINT_DISTANCE or (la < BLACK_LUMA and lb < BLACK_LUMA):
         verdict = "inconclusive"
-    elif black_frac > MAX_BLACK_FRACTION and not allow_dip:
+    elif (black_frac > MAX_BLACK_FRACTION or any(r["black"] for r in rows) or dense_black) and not allow_dip:
+        # ANY black frame inside the window is a black gap (a single black frame in a blend is a visible flash). Besides the
+        # `samples` spot checks, the dense scan looks at (nearly) every frame of the window, so a 2-3 frame flash between
+        # spot checks is caught. Only a flash shorter than the dense scan spacing (1/DENSE_FPS s) can still be missed.
         verdict = "black"
     elif inter >= MIN_INTERMEDIATE:
         verdict = "blend"
@@ -122,6 +150,7 @@ def check_transition(video, start, duration, kind="css", samples=7, allow_dip=Fa
     return {"kind": kind, "start": start, "duration": duration, "verdict": verdict, "ok": verdict == "blend",
             "endpoint_distance": round(ab, 4), "neighbour_luma": [round(la, 4), round(lb, 4)], "margin": round(margin, 3),
             "black_fraction": round(black_frac, 3), "intermediate_samples": inter, "samples": rows,
+            "dense_frames_scanned": len(dense), "dense_black_frames": dense_black,
             "limits": "detects hard cuts/black/no-op only; does not judge whether the transition looks good"}
 
 
@@ -143,13 +172,17 @@ _LOG_RULES = (
 
 def scan_render_log(text, uses_shaders=None):
     """Findings from a hyperframes render log. `uses_shaders` defaults to what the log itself says."""
+    auto = uses_shaders is None                     # an explicit uses_shaders=False from the caller still suppresses shader rules
     if uses_shaders is None:
         uses_shaders = bool(re.search(r'"hasShaderTransitions":\s*true', text))
     out = []
     for pat, code, sev, msg in _LOG_RULES:
         if re.search(pat, text):
             shader_only = code.startswith("shader_") or code == "page_side_compositing_unavailable"
-            if shader_only and not uses_shaders:
+            # A fallback / unknown-shader line is itself proof that shaders were requested, so it is reported even when the
+            # log lacks the hasShaderTransitions marker (older HyperFrames, trimmed logs). The other shader_* rules stay gated.
+            self_evident = auto and code in ("shader_fallback_opacity_flip", "shader_unknown")
+            if shader_only and not uses_shaders and not self_evident:
                 continue
             out.append({"code": code, "severity": sev, "message": msg})
     return out
@@ -176,18 +209,24 @@ def check_captions(video, windows, canvas, region, samples_per_window=1):
             lum = region_luma(video, t, canvas, region)
             med = sorted(lum)[len(lum) // 2]
             frac = sum(abs(v - med) > TEXT_DEVIATION for v in lum) / len(lum)
-            ok = frac >= MIN_TEXT_FRACTION
+            # Busy background with no captions deviates from the median almost everywhere (measured 0.37-0.81 on testsrc2;
+            # box-text captions measure ~0.23), so an upper bound keeps texture from passing as captions.
+            ok = MIN_TEXT_FRACTION <= frac <= MAX_TEXT_FRACTION
             visible += ok
             rows.append({"t": round(t, 3), "ink_fraction": round(frac, 4), "visible": ok})
     ratio = visible / len(rows) if rows else 0.0
     return {"ok": bool(rows) and ratio >= MIN_VISIBLE_RATIO, "visible_ratio": round(ratio, 3), "required": MIN_VISIBLE_RATIO,
             "samples": rows, "region": list(region), "canvas": list(canvas),
-            "limits": "detects absence of text-like ink in the region; narration gaps legitimately show no caption, hence a ratio"}
+            "max_ink_fraction": MAX_TEXT_FRACTION,
+            "limits": "detects absence of text-like ink in the region (ink above max_ink_fraction counts as texture, not text); narration gaps legitimately show no caption, hence a ratio"}
 
 
 # ---- G6: 9:16 safe zones ----------------------------------------------------------------------------------------------
 
-EDGE_JUMP = 0.20                       # a neighbour-to-neighbour luma step this large counts as a hard edge (text, outlines)
+EDGE_JUMP = 0.08                       # a neighbour-to-neighbour luma step this large counts as a hard edge (text, outlines). Was 0.20, which
+                                       # missed e.g. dark-grey text (luma 0.22) on a near-black background (step 0.13). Measured on the two real
+                                       # known-good/-bad renders: ceiling worst zone edge fraction 0.0035 at 0.08 (limit 0.01; 0.0074 at 0.06),
+                                       # so 0.08 keeps ~3x headroom. Steps below ~0.08 (barely visible) are still not seen.
 MAX_ZONE_EDGE_FRACTION = 0.01          # more edge pixels than this share of a zone means "content sits in the zone"
 # Fractions of the canvas as (name, x, y, w, h). Conservative HEURISTICS carried over from the motion-ab experiments
 # (top ~150 px, bottom ~350 px, right ~180 px strip below y=1000 on 1080x1920). They are NOT published platform specs;
@@ -303,7 +342,10 @@ def check_safe_zones(video, times, canvas, zones=None):
     zones = default_zones(canvas) if zones is None else zones
     validate_zones(zones, canvas)
     if not zones:
-        return {"ok": True, "applicable": False, "zones": [], "samples": [], "canvas": list(canvas),
+        # Nothing was checked, so this must never read as a pass: ok False, status "not_applicable", vacuous True, checked
+        # False. The CLI exits 3 for it (distinct from 1 = content found, 2 = error); see _out.
+        return {"ok": False, "applicable": False, "status": "not_applicable", "vacuous": True, "checked": False, "zones": [], "samples": [], "canvas": list(canvas),
+                "reason": "no default safe zones for this canvas; the gate did not look at the picture",
                 "limits": "no default zones for a landscape canvas; pass --zone to check one"}
     rows, flagged = [], []
     for t in times:
@@ -324,6 +366,7 @@ def _strip_comments(css):
 
 
 def _rules(css):
+    css = re.sub(r"</?style\b[^>]*>", " ", css, flags=re.I)      # a whole html file passed as css: do not glue <style> onto the first selector
     for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", _strip_comments(css)):
         yield [s.strip() for s in m.group(1).split(",")], m.group(2)
 
@@ -333,12 +376,48 @@ def _prop(body, name):
     return m.group(1).strip() if m else None
 
 
+_NAMED_COLOURS = frozenset("""aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood
+cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgreen
+darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray
+darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia
+gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki lavender
+lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgreen lightgrey lightpink
+lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon
+mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise
+mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid
+palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown
+royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen
+steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen""".split())
+_ALPHA_OPAQUE = 0.99
+
+
+def _alpha(arg_text):
+    """Alpha of a css colour function's argument text: 4th comma part, or the part after '/', else 1 (opaque)."""
+    parts = re.split(r"\s*/\s*|\s*,\s*", arg_text.strip()) if ("/" in arg_text or "," in arg_text) else arg_text.split()
+    if len(parts) < 4 and "/" not in arg_text:
+        return 1.0
+    a = parts[-1].strip()
+    try:
+        return float(a[:-1]) / 100 if a.endswith("%") else float(a)
+    except ValueError:
+        return 1.0
+
+
 def _opaque(value):
-    """True when the background value contains a solid colour (6/3-digit hex, rgb(), or rgba with alpha ~1)."""
-    v = (value or "").lower()
-    if re.search(r"#[0-9a-f]{6}\b|#[0-9a-f]{3}\b", v) or "rgb(" in v:
-        return True
-    return any(float(x) >= 0.99 for x in re.findall(r"rgba\([^)]*,\s*([\d.]+)\s*\)", v))
+    """Conservative: True when the background value contains ANY fully opaque colour. Recognised: #rgb/#rrggbb (and
+    #rgba/#rrggbbaa with alpha ~1), rgb()/rgba()/hsl()/hsla() with alpha ~1, and CSS named colours (not `transparent`).
+    A gradient (or multiple backgrounds) counts as opaque if any stop is opaque: a gradient with one opaque stop can still
+    hide captions, and a false "opaque" only asks for a higher caption z-index, while a missed one hides captions silently."""
+    v = re.sub(r"url\([^)]*\)", " ", (value or "").lower())
+    for m in re.finditer(r"#([0-9a-f]+)\b", v):
+        h = m.group(1)
+        if len(h) in (3, 6) or (len(h) == 4 and h[3] == "f") or (len(h) == 8 and h[6:] == "ff"):
+            return True
+    for m in re.finditer(r"\b(?:rgba?|hsla?)\(([^)]*)\)", v):
+        if _alpha(m.group(1)) >= _ALPHA_OPAQUE:
+            return True
+    outside = re.sub(r"\b(?:rgba?|hsla?)\([^)]*\)", " ", v)
+    return any(w in _NAMED_COLOURS for w in re.findall(r"[a-z]+", outside))
 
 
 CAPTION_SEL = re.compile(r"^(#captions?|\.captions?|#caption-layer|\.caption-layer|#cap\b)")
@@ -388,7 +467,9 @@ def check_caption_layering(css, html=""):
     for sid in scene_ids:
         info = scenes.get(sid, {"z": None, "opaque": False})
         opaque = info["opaque"] or default_scene["opaque"]
-        z = inline.get(sid, info["z"] if info["z"] is not None else default_scene["z"])
+        css_z = info["z"] if info["z"] is not None else default_scene["z"]
+        z = inline.get(sid)                                  # inline style wins; an html scene WITHOUT inline z-index uses the CSS rule's
+        z = css_z if z is None else z
         if opaque:
             opaque_z.append((sid, 0 if z is None else z))
     findings = []
@@ -447,7 +528,8 @@ def _find_html(target):
 def _read_css_html(target):
     p = _find_html(target)
     html = p.read_text(encoding="utf-8", errors="replace")
-    css = html
+    blocks = re.findall(r"<style\b[^>]*>(.*?)</style>", html, flags=re.S | re.I)
+    css = "\n".join(blocks) if blocks else html            # style blocks only: JS braces in <script> must not parse as css rules
     for href in re.findall(r'<link[^>]+href=["\']([^"\'#?]+\.css)', html):
         if "://" not in href and (p.parent / href).is_file():
             css += "\n" + (p.parent / href).read_text(encoding="utf-8", errors="replace")
@@ -470,6 +552,8 @@ def _windows_from_timing(doc, per_scene=2):
 
 def _out(res):
     print(json.dumps(res, indent=1))
+    if res.get("status") == "not_applicable":
+        return 3                                   # nothing was checked: not a pass (0), not a finding (1), not an error (2)
     return 0 if res.get("ok", True) else 1
 
 

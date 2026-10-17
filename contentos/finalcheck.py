@@ -37,7 +37,7 @@ def validate_video(path, fmt="9:16", *, require_audio=True):
     try:
         info = qa.probe_video(path)
         rows = qa.run_qa(path, fmt)
-    except (OSError, KeyError, ValueError) as exc:           # no ffprobe/ffmpeg, or a format the QA config does not know
+    except (OSError, KeyError, ValueError, TypeError) as exc:  # no ffprobe/ffmpeg, or a format the QA config does not know
         checks.append(_row("tooling", "FAIL", f"cannot validate: {exc}"))
         return result
     for check, status, detail in rows:
