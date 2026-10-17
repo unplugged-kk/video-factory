@@ -85,6 +85,28 @@ def _dist(a, b):
 
 # ---- KF-004: transitions and render log ---------------------------------------------------------------------------
 
+DENSE_FPS = 60                         # dense scan of a transition window: up to this many frames per second of window...
+DENSE_MAX_FRAMES = 240                 # ...and never more than this many frames per window (bounds cost: one ffmpeg call, 32x32 gray-ish thumbs)
+_DENSE_PX = 32
+
+
+def dense_black_frames(video, start, duration):
+    """Mean luma of (nearly) every frame inside [start, start+duration], from ONE ffmpeg decode of the window scaled to
+    32x32. Rate = min(DENSE_FPS, DENSE_MAX_FRAMES/duration) frames/s, so cost is bounded (<=240 tiny frames) however long
+    the window is. Returns [] when the window cannot be decoded (the spot-check samples still run)."""
+    if duration <= 0:
+        return []
+    fps = min(DENSE_FPS, DENSE_MAX_FRAMES / duration)
+    cmd = ["ffmpeg", "-v", "error", "-ss", f"{max(start, 0):.3f}", "-t", f"{duration:.3f}", "-i", str(video),
+           "-vf", f"fps={fps:.4f},scale={_DENSE_PX}:{_DENSE_PX}:flags=area", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
+    try:
+        p = subprocess.run(cmd, capture_output=True, check=False, timeout=120)
+    except (OSError, subprocess.TimeoutExpired):
+        return []
+    n = _DENSE_PX * _DENSE_PX * 3
+    return [_luma(p.stdout[i:i + n]) for i in range(0, len(p.stdout) - n + 1, n)]
+
+
 def check_transition(video, start, duration, kind="css", samples=7, allow_dip=False, margin=None):
     """Sample inside [start, start+duration] and compare with steady frames taken `margin` seconds outside the window
     (default half the window, at least 0.1s), so a blackout that begins at the window edge cannot hide as "steady".
@@ -109,14 +131,17 @@ def check_transition(video, start, duration, kind="css", samples=7, allow_dip=Fa
         da, db, ls = _dist(s, a), _dist(s, b), _luma(s)
         rows.append({"t": round(t, 3), "d_from_before": round(da, 4), "d_from_after": round(db, 4), "luma": round(ls, 4),
                      "black": is_black(ls), "intermediate": min(da, db) > HARD_CUT_RATIO * max(ab, 1e-9)})
+    dense = dense_black_frames(video, start, duration)
+    dense_black = sum(1 for v in dense if is_black(v))
     ends_black = int(is_black(la)) + int(is_black(lb))
     black_frac = (sum(r["black"] for r in rows) + ends_black) / (len(rows) + 2)
     inter = sum(r["intermediate"] and not r["black"] for r in rows)
     if ab < MIN_ENDPOINT_DISTANCE or (la < BLACK_LUMA and lb < BLACK_LUMA):
         verdict = "inconclusive"
-    elif (black_frac > MAX_BLACK_FRACTION or any(r["black"] for r in rows)) and not allow_dip:
-        # ANY sampled black frame inside the window is a black gap (a single black frame in a blend is a visible flash).
-        # Only flashes that fall between the samples (spacing = window/(samples+1)) can still be missed.
+    elif (black_frac > MAX_BLACK_FRACTION or any(r["black"] for r in rows) or dense_black) and not allow_dip:
+        # ANY black frame inside the window is a black gap (a single black frame in a blend is a visible flash). Besides the
+        # `samples` spot checks, the dense scan looks at (nearly) every frame of the window, so a 2-3 frame flash between
+        # spot checks is caught. Only a flash shorter than the dense scan spacing (1/DENSE_FPS s) can still be missed.
         verdict = "black"
     elif inter >= MIN_INTERMEDIATE:
         verdict = "blend"
@@ -125,6 +150,7 @@ def check_transition(video, start, duration, kind="css", samples=7, allow_dip=Fa
     return {"kind": kind, "start": start, "duration": duration, "verdict": verdict, "ok": verdict == "blend",
             "endpoint_distance": round(ab, 4), "neighbour_luma": [round(la, 4), round(lb, 4)], "margin": round(margin, 3),
             "black_fraction": round(black_frac, 3), "intermediate_samples": inter, "samples": rows,
+            "dense_frames_scanned": len(dense), "dense_black_frames": dense_black,
             "limits": "detects hard cuts/black/no-op only; does not judge whether the transition looks good"}
 
 
@@ -197,7 +223,10 @@ def check_captions(video, windows, canvas, region, samples_per_window=1):
 
 # ---- G6: 9:16 safe zones ----------------------------------------------------------------------------------------------
 
-EDGE_JUMP = 0.20                       # a neighbour-to-neighbour luma step this large counts as a hard edge (text, outlines)
+EDGE_JUMP = 0.08                       # a neighbour-to-neighbour luma step this large counts as a hard edge (text, outlines). Was 0.20, which
+                                       # missed e.g. dark-grey text (luma 0.22) on a near-black background (step 0.13). Measured on the two real
+                                       # known-good/-bad renders: ceiling worst zone edge fraction 0.0035 at 0.08 (limit 0.01; 0.0074 at 0.06),
+                                       # so 0.08 keeps ~3x headroom. Steps below ~0.08 (barely visible) are still not seen.
 MAX_ZONE_EDGE_FRACTION = 0.01          # more edge pixels than this share of a zone means "content sits in the zone"
 # Fractions of the canvas as (name, x, y, w, h). Conservative HEURISTICS carried over from the motion-ab experiments
 # (top ~150 px, bottom ~350 px, right ~180 px strip below y=1000 on 1080x1920). They are NOT published platform specs;
@@ -313,10 +342,9 @@ def check_safe_zones(video, times, canvas, zones=None):
     zones = default_zones(canvas) if zones is None else zones
     validate_zones(zones, canvas)
     if not zones:
-        # Nothing was checked. `ok` stays True for backward compatibility (tests/test_safe_zone.py pins it and may not be
-        # edited in this lane), but the result now says so explicitly: status "not_applicable", vacuous True, checked False.
-        # Callers must treat applicable=False / vacuous=True as "no evidence", never as a pass.
-        return {"ok": True, "applicable": False, "status": "not_applicable", "vacuous": True, "checked": False, "zones": [], "samples": [], "canvas": list(canvas),
+        # Nothing was checked, so this must never read as a pass: ok False, status "not_applicable", vacuous True, checked
+        # False. The CLI exits 3 for it (distinct from 1 = content found, 2 = error); see _out.
+        return {"ok": False, "applicable": False, "status": "not_applicable", "vacuous": True, "checked": False, "zones": [], "samples": [], "canvas": list(canvas),
                 "reason": "no default safe zones for this canvas; the gate did not look at the picture",
                 "limits": "no default zones for a landscape canvas; pass --zone to check one"}
     rows, flagged = [], []
@@ -524,6 +552,8 @@ def _windows_from_timing(doc, per_scene=2):
 
 def _out(res):
     print(json.dumps(res, indent=1))
+    if res.get("status") == "not_applicable":
+        return 3                                   # nothing was checked: not a pass (0), not a finding (1), not an error (2)
     return 0 if res.get("ok", True) else 1
 
 

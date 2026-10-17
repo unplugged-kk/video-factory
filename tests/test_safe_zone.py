@@ -54,7 +54,8 @@ def test_content_in_each_zone_is_flagged(clips, name):
 
 def test_landscape_video_with_matching_canvas_has_no_default_zones(clips):
     r = g.check_safe_zones(clips["landscape"], [1.0], (H, W))                 # a real 480x270 clip, canvas 480x270
-    assert r["ok"] and r["applicable"] is False
+    assert r["ok"] is False and r["applicable"] is False and r["status"] == "not_applicable"      # nothing checked is not a pass
+    assert g.main(["safezone", str(clips["landscape"]), "--canvas", f"{H}x{W}", "--times", "1.0"]) == 3
 
 
 def test_custom_zone_overrides_defaults(clips):
@@ -184,5 +185,5 @@ def test_cli_invalid_zones_exit_2_without_tracebacks(clips, capsys):
 
 
 def test_calibration_constants_are_unchanged():
-    assert g.MAX_ZONE_EDGE_FRACTION == 0.01 and g.EDGE_JUMP == 0.20
+    assert g.MAX_ZONE_EDGE_FRACTION == 0.01 and g.EDGE_JUMP == 0.08
     assert g.default_zones((1080, 1920)) == [("top", 0, 0, 1080, 150), ("bottom", 0, 1570, 1080, 350), ("right", 900, 1000, 180, 570)]
