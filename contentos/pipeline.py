@@ -149,6 +149,9 @@ def _mpt(fn, ctx):
 
 
 def s_compose(ctx):
+    if ctx["spec"].get("render") == "remotion":
+        from .renderers import get_renderer
+        return get_renderer("remotion").compose(ctx)
     if ctx["spec"].get("render") == "mpt":
         return _mpt(mpt.compose, ctx)
     spec, W, H = ctx["spec"], *map(int, ctx["res"])
@@ -215,6 +218,9 @@ window.__timelines=window.__timelines||{{}};window.__timelines["root"]=tl;</scri
 
 
 def s_render(ctx):
+    if ctx["spec"].get("render") == "remotion":
+        from .renderers import get_renderer
+        return get_renderer("remotion").render(ctx)
     if ctx["spec"].get("render") == "mpt":
         return _mpt(mpt.render, ctx)
     mp4 = ctx["dir"] / "video.mp4"
@@ -311,12 +317,17 @@ FN = {"brief": s_brief, "script": s_script, "voice": s_voice, "compose": s_compo
       "qa": s_qa, "package": s_package, "export": s_export, "publish": s_publish}
 ARTIFACT = {"brief": "content.json", "script": "script-lint.json", "voice": "audio/%02d.wav", "compose": "project/index.html",
             "render": "video.mp4", "qa": "qa.json", "package": "metadata.yaml", "export": "export-result.json", "publish": "publish-result.json"}
-RENDER_LANES = ("hyperframes", "mpt")
+RENDER_LANES = ("hyperframes", "remotion", "mpt")
 
 
 def artifact(st, spec):
     """Resume sentinel for a stage. The mpt lane has no index.html; its reviewable compose output is the request."""
-    return "project/mpt-request.json" if st == "compose" and spec.get("render") == "mpt" else ARTIFACT[st]
+    if st == "compose":
+        if spec.get("render") == "remotion":
+            return "project_remotion/src/Video.tsx"
+        if spec.get("render") == "mpt":
+            return "project/mpt-request.json"
+    return ARTIFACT[st]
 
 
 # A stage whose sentinel is not enough on its own: presence means "this stage ran", which is only the same as "the result

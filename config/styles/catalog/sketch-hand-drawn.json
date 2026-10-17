@@ -1,0 +1,46 @@
+{
+  "schema": "style/1",
+  "id": "sketch-hand-drawn",
+  "name": "Sketch hand drawn",
+  "summary": "Organic hand-drawn visual storytelling: chalk/pencil container lines draw on around key concepts, supported by organic accents and human craft.",
+  "status": "unvalidated",
+  "evidence": [],
+  "reviewed_by": {"name": "Kishore", "date": "2026-10-17"},
+  "axes": {
+    "layout_system": "centered-stage",
+    "motion_grammar": "draw-on",
+    "scene_rhythm": "punctuated",
+    "depth_model": "flat",
+    "illustration_mode": "textural",
+    "transition_family": "morph"
+  },
+  "dials": {"energy": 3, "density": 3, "formality": 1, "warmth": 5, "pace": 3},
+  "motion": {
+    "ease_family": ["power3.out", "power2.inOut"],
+    "ease_sources": [
+      {"ease": "power3.out", "file": ".claude/skills/explainer-motion-craft/SKILL.md"},
+      {"ease": "power2.inOut", "file": ".claude/skills/explainer-motion-craft/SKILL.md"}
+    ],
+    "forbidden": [
+      "bounce, elastic or back overshoot on any entrance (R1)",
+      "stiff geometric grids without organic stroke modulation",
+      "abrupt scene cuts without morph continuity"
+    ],
+    "respects_r1_r6": true
+  },
+  "layout_vocabulary": ["sketched box", "organic underline", "hand-drawn arrow", "highlight oval"],
+  "sound": {"mode": "narration-led", "max_cues_per_minute": 3},
+  "requires": ["renderer:hyperframes"],
+  "frame_checklist": [
+    "Every container exhibits stroke taper and organic rough curvature",
+    "Draw-on paths complete precisely as the spoken anchor word sounds",
+    "Safezone margins maintain minimum 460px bottom and 190px right padding",
+    "Text labels retain high legibility despite organic border aesthetic"
+  ],
+  "best_for": {
+    "content_types": ["how-to", "historical-explainer", "science-concept"],
+    "avoid": ["product-launch"]
+  },
+  "source_techniques": ["lottie-motion: hand-drawn organic strokes", "SVG stroke-dashoffset draw-on"],
+  "licence_notes": "Original procedural SVG pathing; zero copyrighted stock assets."
+}

@@ -1,0 +1,38 @@
+content_id: m3-sample-01-hf-sketch
+title: "How Autonomous Agents Maintain State"
+thumb_text: "AGENT MEMORY"
+description: "How modern agentic architectures persist state and recover from execution faults."
+tags: [ai agents, state persistence, memory]
+format: "9:16"
+kind: short
+language: en
+platform_targets: [youtube]
+voice: af_heart
+render: hyperframes
+features:
+  style_card:
+    chosen: "sketch-hand-drawn"
+  scene_plan: true
+  visual_layer: true
+  audio_bed: true
+  captions_hook: true
+  qa_extra: true
+script:
+  - say: "Every autonomous agent needs durable memory."
+    headline: "Agents Need Memory"
+    tag: HOOK
+  - say: "When a session resets, conversational context vanishes. Without a disk-backed ledger, decisions are lost."
+    headline: "Context Vanishes"
+    tag: STEP 1
+  - say: "Modern architectures use append-only event logs, storing tool calls, inputs, and environment observations."
+    headline: "Append-Only Event Logs"
+    tag: STEP 2
+  - say: "On wakeup, the agent drains new events from disk, reconciling reality before dispatching tasks."
+    headline: "Reconcile Reality"
+    tag: STEP 3
+  - say: "This eliminates guesswork and ensures uninterrupted multi-day execution."
+    headline: "Durable Autonomy"
+    tag: RECAP
+  - say: "Follow for deep dives into production agent systems."
+    headline: "Follow For More"
+    tag: CTA

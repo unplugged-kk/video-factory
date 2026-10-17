@@ -1,0 +1,38 @@
+content_id: m3-sample-03-hf-spatial
+title: "Navigating Multi-Dimensional Latent Space"
+thumb_text: "LATENT SPACE"
+description: "Visualizing high-dimensional embeddings and geometric vector retrieval."
+tags: [latent space, vector embeddings, geometry]
+format: "9:16"
+kind: short
+language: en
+platform_targets: [youtube]
+voice: af_heart
+render: hyperframes
+features:
+  style_card:
+    chosen: "spatial-generative"
+  scene_plan: true
+  visual_layer: true
+  audio_bed: true
+  captions_hook: true
+  qa_extra: true
+script:
+  - say: "Words are points in a thousand dimensional space."
+    headline: "Words In Dimension"
+    tag: HOOK
+  - say: "When an embedding model encodes text, it places related concepts near each other."
+    headline: "Conceptual Proximity"
+    tag: STEP 1
+  - say: "Vector databases index these positions using approximate nearest neighbors."
+    headline: "Nearest Neighbor Index"
+    tag: STEP 2
+  - say: "Search becomes spatial calculation rather than brittle keyword matching."
+    headline: "Spatial Calculation"
+    tag: STEP 3
+  - say: "Geometry unlocks semantic understanding across languages and modalities."
+    headline: "Semantic Geometry"
+    tag: RECAP
+  - say: "Subscribe for more visual explorations of machine learning concepts."
+    headline: "Subscribe For More"
+    tag: CTA

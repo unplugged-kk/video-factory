@@ -1,0 +1,46 @@
+{
+  "schema": "style/1",
+  "id": "hybrid-craft",
+  "name": "Hybrid craft",
+  "summary": "Multi-technique synthesis: combines kinetic headline typography, structured metric comparison cards, and expressive split-screen motion choreography.",
+  "status": "unvalidated",
+  "evidence": [],
+  "reviewed_by": {"name": "Kishore", "date": "2026-10-17"},
+  "axes": {
+    "layout_system": "split",
+    "motion_grammar": "type-driven",
+    "scene_rhythm": "accelerating",
+    "depth_model": "layered",
+    "illustration_mode": "typographic",
+    "transition_family": "push"
+  },
+  "dials": {"energy": 4, "density": 4, "formality": 3, "warmth": 3, "pace": 4},
+  "motion": {
+    "ease_family": ["power3.out", "power2.inOut"],
+    "ease_sources": [
+      {"ease": "power3.out", "file": ".claude/skills/explainer-motion-craft/SKILL.md"},
+      {"ease": "power2.inOut", "file": ".claude/skills/explainer-motion-craft/SKILL.md"}
+    ],
+    "forbidden": [
+      "bounce, elastic or back overshoot on any entrance (R1)",
+      "conflicting animation directions between type and data layers",
+      "more than three distinct container cards per split scene"
+    ],
+    "respects_r1_r6": true
+  },
+  "layout_vocabulary": ["split header card", "metric pill", "kinetic phrase tag", "context badge"],
+  "sound": {"mode": "narration-led", "max_cues_per_minute": 5},
+  "requires": ["renderer:hyperframes"],
+  "frame_checklist": [
+    "Left and right (or top and bottom) split cards maintain balanced visual weight",
+    "Type reveal coordinates with metric reveal without overlapping audio cues",
+    "Both safezone side padding (190px right) and bottom padding (460px) preserved",
+    "Push transition shifts whole split structure synchronously"
+  ],
+  "best_for": {
+    "content_types": ["ai-workflow", "product-launch", "architecture-lesson"],
+    "avoid": ["historical-explainer"]
+  },
+  "source_techniques": ["integrated multi-layer motion design workflows"],
+  "licence_notes": "Original multi-layer design patterns; no proprietary assets."
+}

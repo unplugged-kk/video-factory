@@ -57,12 +57,55 @@ def visual_layer_hook(
     )
     enriched_html = scene_html.replace(old_tag_start, new_tag_start, 1)
 
-    # Add a visual decorative card layer for structure (closing gap 1 and 4)
+    # Style-card family awareness for container craft
+    style_id = (ctx.get("style_card") or {}).get("chosen") or spec.get("style") or ""
+
+    if "sketch" in style_id:
+        card_style = (
+            "border:2px dashed rgba(255,255,255,0.22);border-radius:255px 15px 225px 15px/15px 225px 15px 255px;"
+            "background:rgba(255,255,255,0.015);box-shadow:inset 0 0 20px rgba(255,255,255,0.03);"
+        )
+    elif "product" in style_id:
+        card_style = (
+            "border:1px solid rgba(255,255,255,0.18);border-radius:24px;"
+            "background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01));"
+            "box-shadow:0 30px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3);"
+            "transform:perspective(1000px) rotateX(2deg);"
+        )
+    elif "kinetic" in style_id:
+        card_style = (
+            "border-left:6px solid #fbbf24;border-radius:0 12px 12px 0;"
+            "background:rgba(0,0,0,0.4);border-top:1px solid rgba(255,255,255,0.08);"
+            "border-right:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08);"
+        )
+    elif "data" in style_id:
+        card_style = (
+            "border:1px solid rgba(165,180,252,0.25);border-radius:14px;"
+            "background:rgba(15,23,42,0.6);box-shadow:0 12px 30px rgba(0,0,0,0.4);"
+        )
+    elif "spatial" in style_id:
+        card_style = (
+            "border:1px solid rgba(147,197,253,0.15);border-radius:30px;"
+            "background:radial-gradient(circle at 50% 0%, rgba(59,130,246,0.1), transparent 70%);"
+            "box-shadow:0 0 40px rgba(59,130,246,0.08);"
+        )
+    elif "hybrid" in style_id:
+        card_style = (
+            "border:1px solid rgba(255,255,255,0.12);border-radius:18px;"
+            "background:linear-gradient(180deg, rgba(30,41,59,0.5), rgba(15,23,42,0.7));"
+            "box-shadow:0 20px 40px rgba(0,0,0,0.4);"
+        )
+    else:
+        card_style = (
+            "border:1px solid rgba(255,255,255,0.08);border-radius:16px;"
+            "background:rgba(255,255,255,0.02);"
+        )
+
+    # Add a visual decorative card layer for structure
     card_html = (
         f'<div class="visual-decor" id="decor{scene_idx}" '
         f'style="position:absolute;top:15%;left:10%;width:80%;height:32%;'
-        f'border:1px solid rgba(255,255,255,0.08);border-radius:16px;'
-        f'background:rgba(255,255,255,0.02);pointer-events:none;z-index:0;"></div>'
+        f'{card_style}pointer-events:none;z-index:0;"></div>'
     )
     # Inject decorative card right after opening scene div
     if new_tag_start in enriched_html:

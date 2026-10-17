@@ -1,0 +1,38 @@
+content_id: m3-sample-06-remotion-hybrid
+title: "Autonomous Video Pipeline Architecture"
+thumb_text: "VIDEO FACTORY"
+description: "How Video Factory automates research, scriptwriting, voice synthesis, multi-renderer compilation, and QA."
+tags: [video factory, contentos, autonomous media]
+format: "9:16"
+kind: short
+language: en
+platform_targets: [youtube]
+voice: af_heart
+render: remotion
+features:
+  style_card:
+    chosen: "hybrid-craft"
+  scene_plan: true
+  visual_layer: true
+  audio_bed: true
+  captions_hook: true
+  qa_extra: true
+script:
+  - say: "Can video production be fully automated with zero human intervention?"
+    headline: "Automating Video"
+    tag: HOOK
+  - say: "Video Factory unifies ContentForge research, Kokoro voice synthesis, and multi-renderer engines."
+    headline: "Unified Architecture"
+    tag: STEP 1
+  - say: "HyperFrames and Remotion compile rich motion graphics with strict safezone guarantees."
+    headline: "Multi-Renderer Engine"
+    tag: STEP 2
+  - say: "Nine deterministic QA gates inspect every rendered frame before publishing approval."
+    headline: "Nine Quality Gates"
+    tag: STEP 3
+  - say: "Consistent visual excellence delivered at the speed of code."
+    headline: "Visual Excellence"
+    tag: RECAP
+  - say: "Star the project on GitHub to follow our autonomous roadmap."
+    headline: "Star On GitHub"
+    tag: CTA
