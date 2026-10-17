@@ -403,6 +403,10 @@ def tr_clips(tmp_path_factory):
     c["blend_with_black_flash"] = _vg_clip(
         d / "flash.mp4", [_col("red", 2), _col("blue", 2)],
         fc="[0][1]xfade=transition=fade:duration=1.0:offset=1.0,drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='between(t,1.39,1.41)'", dur=3)
+    # 3-frame (0.1 s at 30 fps) black flash at t=1.16..1.26, between spot-check samples 1.125 and 1.25 of a 1 s window
+    c["blend_with_black_flash_30fps"] = _vg_clip(
+        d / "flash30.mp4", [_col("red", 2).replace("r=10", "r=30"), _col("blue", 2).replace("r=10", "r=30")],
+        fc="[0][1]xfade=transition=fade:duration=1.0:offset=1.0,drawbox=x=0:y=0:w=iw:h=ih:color=black:t=fill:enable='between(t,1.16,1.255)'", dur=3, fps=30)
     return c
 
 
@@ -456,6 +460,18 @@ def test_fixed_transition_single_black_frame_inside_a_blend_is_a_black_gap(tr_cl
     assert vg.check_transition(tr_clips["blend_with_black_flash"], 1.0, 1.0, allow_dip=True)["verdict"] == "blend"
 
 
+def test_fixed_transition_short_black_flash_between_spot_checks_is_caught(tr_clips):
+    """A 3-frame flash that falls between the 7 spot-check samples (spacing 0.125 s) is caught by the dense scan, which
+    decodes the whole window once (<=60 frames/s, <=240 frames per window)."""
+    r = vg.check_transition(tr_clips["blend_with_black_flash_30fps"], 1.0, 1.0)
+    _rec("visual_gate.transitions", "blend_with_3frame_black_between_samples", "black", r["verdict"], "fixed")
+    assert not any(s["black"] for s in r["samples"])            # the spot checks alone really do miss it
+    assert r["dense_black_frames"] >= 2 and r["dense_frames_scanned"] >= 55
+    assert r["verdict"] == "black" and not r["ok"]
+    assert vg.check_transition(tr_clips["blend_with_black_flash_30fps"], 1.0, 1.0, allow_dip=True)["verdict"] == "blend"
+    assert vg.check_transition(tr_clips["blend"], 1.0, 0.5)["dense_black_frames"] == 0
+
+
 def test_transition_cli_exit_codes(tr_clips, capsys):
     assert vg.main(["transitions", str(tr_clips["blend"]), "--at", "1.0:0.5"]) == 0
     assert vg.main(["transitions", str(tr_clips["hard_cut"]), "--at", "1.25:0.5"]) == 1
@@ -482,6 +498,10 @@ def sz_clips(tmp_path_factory):
     c["right"] = _vg_clip(d / "right.mp4", [SZ_BG], CENTRE + "," + _bars(455, 520, 0, 40, n=6, w=60, h=30))
     c["late_content_bottom"] = _vg_clip(d / "late.mp4", [SZ_BG], CENTRE + "," + _bars(60, 830, 70).replace(":t=fill", ":t=fill:enable='gte(t,3)'"))
     c["low_contrast_bottom"] = _vg_clip(d / "lowc.mp4", [SZ_BG], CENTRE + "," + _bars(60, 830, 70).replace("color=white", "color=0x28386c"))
+    DARK = "color=c=0x101820:s=540x960:r=10:d=4"
+    c["dark_grey_bottom"] = _vg_clip(d / "dgrey.mp4", [DARK], CENTRE.replace("white", "0x383838") + "," + _bars(60, 830, 70).replace("color=white", "color=0x383838"))
+    c["dark_plain"] = _vg_clip(d / "dplain.mp4", [DARK], CENTRE.replace("white", "0x383838"))
+    c["dark_gradient"] = _vg_clip(d / "dgrad.mp4", ["gradients=s=540x960:r=10:c0=0x000000:c1=0x303030:x0=0:y0=0:x1=0:y1=960:d=4"], CENTRE.replace("white", "0x383838"))
     c["landscape"] = _vg_clip(d / "land.mp4", ["color=c=0x203060:s=960x540:r=10:d=4"], "drawbox=x=40:y=480:w=800:h=40:color=white:t=fill")
     return c
 
@@ -511,22 +531,40 @@ def test_safezone_only_sees_the_moments_it_samples(sz_clips):
     assert r["ok"] is False
 
 
-# INTENTIONALLY NOT FIXED: the edge threshold EDGE_JUMP is a documented provisional design value; catching faint content
-# would need a threshold change, which is out of scope. Characterization test kept.
-def test_gap_safezone_low_contrast_content_in_zone_is_not_flagged(sz_clips):
-    """Content with a luma step under EDGE_JUMP (0.2) is not 'content' to this gate. A faint caption/logo in the zone passes."""
-    r = vg.check_safe_zones(sz_clips["low_contrast_bottom"], TIMES, CAN)
-    _rec("visual_gate.safezone", "low_contrast_in_bottom", False, r["ok"], "GAP: faint content under luma step 0.2 not seen")
+def test_fixed_safezone_dark_grey_content_on_dark_background_is_flagged(sz_clips):
+    """Dark-grey bars (luma ~0.22) on a near-black background (~0.09): a luma step of ~0.13, invisible to the old EDGE_JUMP
+    of 0.20, clearly visible on a phone. EDGE_JUMP is now 0.08."""
+    r = vg.check_safe_zones(sz_clips["dark_grey_bottom"], TIMES, CAN)
+    _rec("visual_gate.safezone", "dark_grey_in_bottom", "flagged bottom", [f["zone"] for f in r["flagged"]], "fixed")
+    assert not r["ok"] and {f["zone"] for f in r["flagged"]} == {"bottom"}
+
+
+@pytest.mark.parametrize("name", ["dark_plain", "dark_gradient"])
+def test_safezone_dark_backgrounds_without_content_still_pass(sz_clips, name):
+    """The lower threshold must not turn flat dark backgrounds or a smooth dark gradient (centre box only) into content."""
+    r = vg.check_safe_zones(sz_clips[name], TIMES, CAN)
+    _rec("visual_gate.safezone", name, True, r["ok"])
+    assert r["ok"] and not r["flagged"]
+
+
+# REMAINING LIMIT (documented, not a bug): a luma step below EDGE_JUMP (0.08) is barely visible and is not seen.
+def test_gap_safezone_nearly_invisible_content_is_not_flagged(sz_clips):
+    r = vg.check_safe_zones(sz_clips["low_contrast_bottom"], TIMES, CAN)       # 0x28386c bars on 0x203060: step ~0.03
+    _rec("visual_gate.safezone", "nearly_invisible_in_bottom", False, r["ok"], "LIMIT: luma step < 0.08 not seen")
     assert r["ok"] is True
 
 
-def test_fixed_safezone_landscape_is_explicitly_not_applicable(sz_clips):
-    """Nothing was checked on a landscape canvas: the result says so (status not_applicable, vacuous, checked False). `ok`
-    stays True only because tests/test_safe_zone.py (outside this lane's allow-list) pins ok+applicable False."""
+def test_fixed_safezone_landscape_is_not_a_pass(sz_clips, capsys):
+    """Nothing was checked on a landscape canvas: ok is False, status not_applicable, vacuous, checked False. The CLI exits 3
+    (0 = clean, 1 = content in zone, 2 = error, 3 = nothing checked)."""
     r = vg.check_safe_zones(sz_clips["landscape"], TIMES, (960, 540))
-    _rec("visual_gate.safezone", "landscape_with_content", "not applicable", f"ok={r['ok']} applicable={r['applicable']}", "fixed")
-    assert r["applicable"] is False and r["status"] == "not_applicable" and r["vacuous"] is True and r["checked"] is False
+    _rec("visual_gate.safezone", "landscape_with_content", "not a pass", f"ok={r['ok']} status={r['status']}", "fixed")
+    assert r["ok"] is False and r["applicable"] is False and r["status"] == "not_applicable" and r["vacuous"] is True and r["checked"] is False
     assert r["samples"] == [] and r["zones"] == []
+    assert vg.main(["safezone", str(sz_clips["landscape"]), "--canvas", "960x540", "--times", "1,2"]) == 3
+    # an explicit --zone makes it applicable and it really looks at the picture
+    assert vg.main(["safezone", str(sz_clips["landscape"]), "--canvas", "960x540", "--times", "1,2", "--zone", "low:0,470,960,60"]) == 1
+    capsys.readouterr()
 
 
 def test_safezone_wrong_canvas_is_an_error_not_a_result(sz_clips):
@@ -650,3 +688,30 @@ def test_fixed_log_shader_fallback_detected_without_the_shader_marker():
     assert vg.scan_render_log("failed to compile\n") == []
     assert vg.scan_render_log("WARN falling back to opacity-flip\n", uses_shaders=False) == []      # explicit caller override wins
     assert vg.main(["log", "/dev/null"]) == 0
+
+
+# ---- captions: real frames from the known-good renders ---------------------------------------------------------------------
+
+from pathlib import Path
+
+_CEILING = Path.home() / "git/video-factory/workspace/projects/pilot-001-agent-tool-use/renders/pilot-001-portrait-master.mp4"
+_BASELINE = Path.home() / "Desktop/VideoFactory-Lanes/baseline/workspace/jobs/2026/10/17/m1-baseline-001/video.mp4"
+# mid-caption moments (hook scene excluded: it has no caption by design) taken from each render's scene timing
+_CEILING_T = [7.54, 12.01, 17.6, 20.79, 24.84, 27.18, 31.57, 34.91, 38.81, 40.87, 44.27, 46.69]
+_BASELINE_T = [7.54, 12.21, 18.06, 21.41, 25.65, 28.09, 32.86, 36.56, 40.42, 42.18, 44.32, 45.5]
+
+
+@pytest.mark.parametrize("path,times,region", [
+    (_CEILING, _CEILING_T, (64, 1400, 836, 170)),          # the ceiling render's #captions rule
+    (_BASELINE, _BASELINE_T, (0, 1400, 1080, 520)),        # baseline captions flow in the lower third: generous region
+])
+def test_real_caption_frames_pass_and_stay_well_under_max_ink(path, times, region):
+    """MAX_TEXT_FRACTION (0.60) was calibrated on synthetic clips; real caption regions (extracted with ffmpeg here) must pass.
+    Measured max ink fraction: ceiling 0.1534, baseline 0.1698. Skipped when the renders are not on this machine."""
+    if not path.exists():
+        pytest.skip(f"real render not present: {path}")
+    r = vg.check_captions(path, [(t, t) for t in times], (1080, 1920), region)
+    mx = max(s["ink_fraction"] for s in r["samples"])
+    _rec("visual_gate.captions", f"real_frames:{path.name}", True, r["ok"], f"max_ink_fraction={mx}")
+    assert r["ok"] and r["visible_ratio"] == 1.0
+    assert mx < vg.MAX_TEXT_FRACTION * 0.5            # headroom: real captions use well under half the bound
