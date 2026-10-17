@@ -27,8 +27,16 @@ def style_card_hook(ctx: dict, spec: dict) -> None:
 
     # 1. Load available style cards
     cards, problems = styles.load_all()
+    # If a specific style is requested, also search the expanded catalog
+    requested = None
+    if isinstance(feat_cfg, dict):
+        requested = feat_cfg.get("chosen")
+    elif isinstance(feat_cfg, str) and feat_cfg not in ("true", "1"):
+        requested = feat_cfg
+    requested = requested or spec.get("style")
+
     catalog_dir = styles.STYLES_DIR / "catalog"
-    if catalog_dir.is_dir():
+    if requested and catalog_dir.is_dir():
         cat_cards, cat_probs = styles.load_all(styles_dir=catalog_dir)
         cards.extend(cat_cards)
         problems.extend(cat_probs)
