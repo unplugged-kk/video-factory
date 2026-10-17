@@ -16,6 +16,7 @@ from . import export as exporter
 from . import hf, ledger, mpt, providers, storage
 from .production import align, supplied_audio
 from .qa import probe_video, run_qa
+from .features import registry as _feat
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILLS = [ROOT / "vendor/youtube-agent-skill/skills", Path("~/.claude/skills").expanduser()]
@@ -152,11 +153,18 @@ def s_compose(ctx):
         return _mpt(mpt.compose, ctx)
     spec, W, H = ctx["spec"], *map(int, ctx["res"])
     U = min(W, H)                                    # type scales with the short side, so 16:9 is not set in 1920-wide type
+    # Hook 1: style/decision-record resolution (Lane A). No-op when feature off.
+    _feat.get("style_card", spec)(ctx, spec)
     proj = ctx["dir"] / "project"
     (proj / "assets/voice").mkdir(parents=True, exist_ok=True)
     shutil.copy(ROOT / "contentos/templates/gsap.min.js", proj / "gsap.min.js")
+    # Hook 2: scene-plan consumption (Lane B). Returns [] (pass-through) when feature off.
+    _scene_plan = _feat.get("scene_plan", spec)(ctx, spec)
+    ctx['_scene_plan'] = _scene_plan
     t, scenes, audios, anim = 0.0, [], [], []
     for i, ln in enumerate(spec["script"], 1):
+        # Hook 5: caption/headline reveal override (Lane E). Returns {} when feature off.
+        _cap_override = _feat.get("captions_hook", spec)(ctx, spec)
         wav = ctx["dir"] / "audio" / f"{i:02d}.wav"
         shutil.copy(wav, proj / f"assets/voice/{i:02d}.wav")
         d = round(dur(wav) + 0.35, 2)
@@ -166,9 +174,12 @@ def s_compose(ctx):
         cap = "".join(f'<span id="w{i}_{k}">{html.escape(w)}</span> ' for k, (w, _, _) in enumerate(wl))
         for k, (_, ws, we) in enumerate(wl):
             anim.append(f'tl.set("#w{i}_{k}",{{color:"#fbbf24"}},{t+ws:.2f});tl.set("#w{i}_{k}",{{color:"#fff"}},{t+we:.2f});')
-        scenes.append(f'<div class="scene clip" id="s{i}" data-start="{t:.2f}" data-duration="{d}">'
-                      f'<div class="head"><div class="tag">{html.escape(ln.get("tag", f"{i}/{len(spec['script'])}"))}</div>'
+        scene_html = (f'<div class="scene clip" id="s{i}" data-start="{t:.2f}" data-duration="{d}">'
+                      f'<div class="head"><div class="tag">{html.escape(ln.get("tag", f"{i}/{len(spec["script"])}"))}</div>'
                       f'<h1 id="h{i}">{html.escape(ln["headline"])}</h1></div><p class="cap">{cap}</p></div>')
+        # Hook 3: per-scene backdrop/transition injection (Lane C). Pass-through when off.
+        scene_html, _ = _feat.get("visual_layer", spec)(ctx, i, scene_html, [], spec)
+        scenes.append(scene_html)
         audios.append(f'<audio id="a{i}" src="./assets/voice/{i:02d}.wav" data-start="{t:.2f}" data-duration="{d}" class="clip"></audio>')
         anim.append(f'tl.fromTo("#s{i}",{{opacity:0}},{{opacity:1,duration:.3}},{t:.2f});'
                     f'tl.fromTo("#h{i}",{{y:60,opacity:0}},{{y:0,opacity:1,duration:.5,ease:"power3.out"}},{t+.1:.2f});'
@@ -202,11 +213,15 @@ def s_render(ctx):
     if isinstance(hf_q, str) and hf_q.strip():
         cmd.extend(["-q", hf_q.strip()])
     sh(cmd, cwd=ctx["dir"] / "project", timeout=RENDER_TIMEOUT)
+    # Hook 4: post-render audio stage (Lane D). Pass-through returns mp4 unchanged.
+    mp4 = _feat.get("audio_bed", ctx["spec"])(ctx, mp4, ctx["spec"])
     return "hyperframes", [mp4]
 
 
 def s_qa(ctx):
     res = run_qa(ctx["dir"] / "video.mp4", ctx["spec"].get("format", "9:16"))
+    # Hook 6: extra gates (Lane F). Returns [] when feature off.
+    res = list(res) + _feat.get("qa_extra", ctx["spec"])(ctx, ctx["dir"] / "video.mp4", ctx["spec"])
     p = ctx["dir"] / "qa.json"
     p.write_text(json.dumps([{"check": c, "status": s, "detail": d} for c, s, d in res], indent=2))
     fails = [c for c, s, _ in res if s == "FAIL"]
