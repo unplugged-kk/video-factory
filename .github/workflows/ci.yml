@@ -24,6 +24,7 @@ jobs:
         run: |
           python -m pip install pytest pyyaml numpy
           brew install ffmpeg
+          npm ci
       # Pinned upstream skills are deliberately not synced: tests that need them skip and print why.
       # Tests write to a scratch workspace, never to a real one.
       - name: pytest
