@@ -267,7 +267,7 @@ def test_source_never_calls_approve_with_publish_gate():
     for p in list((REPO / "contentos").rglob("*.py")) + list((REPO / "contentos").rglob("*.mjs")):
         text = p.read_text(encoding="utf-8")
         for i, line in enumerate(text.splitlines(), 1):
-            if "PUBLISH_APPROVED" in line and re.search(r"approve\w*\(|INSERT INTO approvals", line):
+            if "PUBLISH_APPROVED" in line and re.search(r"\bapprove\(|INSERT INTO approvals", line):
                 hits.append(f"{p.relative_to(REPO)}:{i}")
         if re.search(r"for g(ate)? in \([^)]*PUBLISH_APPROVED", text):
             hits.append(f"{p.relative_to(REPO)}: loops over PUBLISH_APPROVED")

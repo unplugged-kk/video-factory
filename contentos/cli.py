@@ -88,9 +88,32 @@ def cmd_preview(a):
     return 0
 
 
+def _subject_digest(content_id, gate, spec_arg):
+    """Digest of the artifact an approval covers, read from disk now, or None when it cannot be determined (the gate is
+    then unbound). The spec comes from --spec, else from the one the job's last run recorded in its manifest."""
+    if gate not in ("SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
+        return None
+    import yaml
+    from pathlib import Path
+    from . import pipeline, storage
+    d = storage.find_job_dir(content_id)
+    try:
+        spec_path = spec_arg or ((storage.read_manifest(d) or {}).get("source_spec") if d else None)
+        spec = yaml.safe_load(Path(spec_path).read_text()) if spec_path else None
+        if gate == "SCRIPT_APPROVED":
+            return pipeline.script_digest(spec) if spec else None
+        return pipeline.production_digest(d, spec) if spec and d else None
+    except (OSError, storage.StorageError, yaml.YAMLError, KeyError, TypeError):
+        return None
+
+
 def cmd_approve(a):
-    ledger.approve(a.content_id, a.gate, note=a.note)
-    print(f"approved {a.gate} for {a.content_id}")
+    digest = _subject_digest(a.content_id, a.gate, getattr(a, "spec", None))
+    ledger.approve(a.content_id, a.gate, note=a.note, subject_sha256=digest)
+    print(f"approved {a.gate} for {a.content_id}" + (f" (bound to {digest})" if digest else ""))
+    if digest is None and a.gate in ("SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
+        print(f"warning: {a.gate} was recorded unbound (no spec or artifact found to digest); later edits will not be detected. "
+              f"Pass --spec SPEC.yaml to bind it.", file=sys.stderr)
 
 
 def cmd_status(a):
@@ -189,7 +212,7 @@ def main():
     pr.add_argument("--approve-private", action="store_true"); pr.set_defaults(f=cmd_production)
     q = sp.add_parser("qa"); q.add_argument("video"); q.add_argument("--format", default="9:16"); q.set_defaults(f=cmd_qa)
     pv = sp.add_parser("preview", help="preview frames from a project dir (pre-render) or an .mp4 (post-render)"); pv.add_argument("target"); pv.add_argument("--at", required=True, help="comma-separated seconds"); pv.add_argument("--out", required=True); pv.add_argument("--sheet", action="store_true"); pv.add_argument("--cols", type=int, default=6); pv.set_defaults(f=cmd_preview)
-    ap = sp.add_parser("approve"); ap.add_argument("content_id"); ap.add_argument("gate"); ap.add_argument("--note", default=""); ap.set_defaults(f=cmd_approve)
+    ap = sp.add_parser("approve"); ap.add_argument("content_id"); ap.add_argument("gate"); ap.add_argument("--note", default=""); ap.add_argument("--spec", help="spec YAML the approval covers (default: the one this job last ran with)"); ap.set_defaults(f=cmd_approve)
     j = sp.add_parser("jev"); j.add_argument("action", choices=["status", "triage"]); j.add_argument("topics", nargs="*"); j.set_defaults(f=cmd_jev)
     l = sp.add_parser("learn"); l.add_argument("loop", choices=["providers", "cost", "calibration", "platforms", "packaging"]); l.set_defaults(f=cmd_learn)
     rc = sp.add_parser("recommend"); rc.add_argument("content_id"); rc.add_argument("--jev", action="store_true"); rc.set_defaults(f=cmd_recommend)
