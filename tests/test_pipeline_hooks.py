@@ -69,7 +69,7 @@ M1_AUDIO = FIXTURES / "audio"
     not BASELINE_YAML.exists() or not M1_AUDIO.exists() or not GOLDEN_FILE.exists(),
     reason="vendored M1 baseline fixtures missing under tests/fixtures/baseline",
 )
-def test_compose_golden_features_off():
+def test_compose_golden_features_off(monkeypatch):
     """With all features off, s_compose must produce an index.html byte-identical to the M1 artifact.
 
     Normalisation applied: NONE. If this test fails with a sha256 mismatch, check whether
@@ -79,6 +79,14 @@ def test_compose_golden_features_off():
     spec = yaml.safe_load(BASELINE_YAML.read_text())
     # Ensure features key is absent (baseline spec does not have it)
     assert "features" not in spec, "baseline spec must not have a features key"
+
+    # Replay the recorded ASR output instead of running live whisper (needs a model download and is not
+    # byte-stable across machines); the vendored transcript.json files are what the golden was built from.
+    def _recorded_words(wav, workdir):
+        tx = M1_AUDIO / Path(workdir).name / "transcript.json"
+        return [(w["text"], w["start"], w["end"]) for w in json.loads(tx.read_text())]
+
+    monkeypatch.setattr("contentos.pipeline.words_for", _recorded_words)
 
     with tempfile.TemporaryDirectory() as td:
         ctx = _make_ctx(spec, Path(td), M1_AUDIO)
