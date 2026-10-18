@@ -8,8 +8,10 @@ from pathlib import Path
 import pytest
 
 from contentos.renderers import get_renderer
+from _pinned_skills import needs_remotion  # noqa: E402
 
 
+@needs_remotion
 def test_remotion_render_e2e():
     r = get_renderer("remotion")
     spec = {

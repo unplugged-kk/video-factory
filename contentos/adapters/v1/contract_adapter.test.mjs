@@ -7,7 +7,7 @@ import test from "node:test";
 import { adaptV1Contract } from "./contract_adapter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const samplePath = join(here, "../../../done/cfvg-9000271/CONTRACT.json");
+const samplePath = join(here, "fixtures/legacy-voiceless.contract.json");
 
 const base = {
   contractVersion: "video-factory.contract.v1",

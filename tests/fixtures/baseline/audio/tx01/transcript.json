@@ -1,0 +1,62 @@
+[
+  {
+    "text": "Your",
+    "start": 0.06,
+    "end": 0.3,
+    "id": "w0"
+  },
+  {
+    "text": "AI",
+    "start": 0.3,
+    "end": 0.45,
+    "id": "w1"
+  },
+  {
+    "text": "model",
+    "start": 0.45,
+    "end": 0.83,
+    "id": "w2"
+  },
+  {
+    "text": "never",
+    "start": 0.83,
+    "end": 1.21,
+    "id": "w3"
+  },
+  {
+    "text": "runs",
+    "start": 1.21,
+    "end": 1.51,
+    "id": "w4"
+  },
+  {
+    "text": "a",
+    "start": 1.51,
+    "end": 1.58,
+    "id": "w5"
+  },
+  {
+    "text": "tool.",
+    "start": 1.58,
+    "end": 2.14,
+    "id": "w6"
+  },
+  {
+    "text": "It",
+    "start": 2.2,
+    "end": 2.33,
+    "id": "w7"
+  },
+  {
+    "text": "only",
+    "start": 2.39,
+    "end": 2.77,
+    "id": "w8"
+  },
+  {
+    "text": "asks.",
+    "start": 2.77,
+    "end": 3.24,
+    "id": "w9"
+  }
+]

@@ -10,6 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from contentos.production import direction as dr  # noqa: E402
 from contentos.production import director as dd  # noqa: E402
 
+from _pinned_skills import needs_pinned_skills  # noqa: E402
+
 REPO = Path(__file__).resolve().parent.parent
 FIX = Path(__file__).resolve().parent / "fixtures"
 PLAN_FIX = FIX / "m2-dryrun-scene-plan.json"
@@ -132,10 +134,12 @@ def test_empty_preference_list_is_an_error(tmp_path):
 
 # ---- the dry-run plan ---------------------------------------------------------------------------------------------
 
+@needs_pinned_skills
 def test_dry_run_plan_passes_m1_validator(plan, real_reg):
     assert dr.validate_plan(plan, real_reg, mode="production") == []
 
 
+@needs_pinned_skills
 def test_dry_run_check_is_ok(plan, real_reg, script):
     r = dd.check(plan, real_reg, script)
     assert r["ok"], r

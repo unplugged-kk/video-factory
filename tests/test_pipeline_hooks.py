@@ -23,18 +23,17 @@ import yaml
 from contentos.features import registry as _feat
 from contentos.pipeline import s_compose, words_for, dur
 
+from _pinned_skills import needs_hyperframes_bin  # noqa: E402
 
-BASELINE_YAML = Path(
-    "~/Desktop/VideoFactory-Lanes/evidence/m1/baseline/m1-baseline-001.yaml"
-).expanduser()
+
+FIXTURES = Path(__file__).parent / "fixtures" / "baseline"
+
+BASELINE_YAML = FIXTURES / "m1-baseline-001.yaml"
 
 GOLDEN_SHA256 = "b0ac447378bb5cef7a77d97fde7a59c83b5fc96e6cb0cdb983670434dc9e3cd2"
 
 # The actual golden file for comparison (read-only M1 artifact)
-GOLDEN_FILE = Path(
-    "~/Desktop/VideoFactory-Lanes/baseline/workspace/jobs/2026/10/17/"
-    "m1-baseline-001/project/index.html"
-).expanduser()
+GOLDEN_FILE = FIXTURES / "golden-index.html"
 
 
 def _make_ctx(spec, tmp_dir: Path, audio_src: Path):
@@ -62,16 +61,15 @@ def _make_ctx(spec, tmp_dir: Path, audio_src: Path):
     }
 
 
-M1_AUDIO = Path(
-    "~/Desktop/VideoFactory-Lanes/baseline/workspace/jobs/2026/10/17/m1-baseline-001/audio"
-).expanduser()
+M1_AUDIO = FIXTURES / "audio"
 
 
+@needs_hyperframes_bin
 @pytest.mark.skipif(
     not BASELINE_YAML.exists() or not M1_AUDIO.exists() or not GOLDEN_FILE.exists(),
-    reason="M1 baseline artifacts not present on this machine",
+    reason="vendored M1 baseline fixtures missing under tests/fixtures/baseline",
 )
-def test_compose_golden_features_off():
+def test_compose_golden_features_off(monkeypatch):
     """With all features off, s_compose must produce an index.html byte-identical to the M1 artifact.
 
     Normalisation applied: NONE. If this test fails with a sha256 mismatch, check whether
@@ -81,6 +79,14 @@ def test_compose_golden_features_off():
     spec = yaml.safe_load(BASELINE_YAML.read_text())
     # Ensure features key is absent (baseline spec does not have it)
     assert "features" not in spec, "baseline spec must not have a features key"
+
+    # Replay the recorded ASR output instead of running live whisper (needs a model download and is not
+    # byte-stable across machines); the vendored transcript.json files are what the golden was built from.
+    def _recorded_words(wav, workdir):
+        tx = M1_AUDIO / Path(workdir).name / "transcript.json"
+        return [(w["text"], w["start"], w["end"]) for w in json.loads(tx.read_text())]
+
+    monkeypatch.setattr("contentos.pipeline.words_for", _recorded_words)
 
     with tempfile.TemporaryDirectory() as td:
         ctx = _make_ctx(spec, Path(td), M1_AUDIO)
