@@ -466,3 +466,34 @@ def adopt(d):
     m["note"] = "adopted from a legacy project; legacy manifest kept in metadata/legacy-manifest.json"
     write_manifest(d, m)
     return m
+
+
+def adopt_external(d, *, title=None, project=None, project_name=None, now=None):
+    """Register a hand-built (Track B) job: write a new manifest.json and nothing else in `d`. Returns (manifest, created).
+    Idempotent: an existing Track B manifest is returned untouched. A legacy or Track A manifest is refused, never rewritten.
+    The folder must already be a job folder under jobs/ and hold the finished video.mp4."""
+    from . import finalcheck                                 # finalcheck imports storage
+    d = Path(d).resolve()
+    job_id = d.name
+    check_job_id(job_id)
+    found = find_job_dir(job_id)
+    if found is None or found.resolve() != d:
+        raise StorageError(f"{d} is not a job folder under {jobs_root()}; move or copy it into jobs/YYYY/MM/DD/ first")
+    existing = read_manifest(d)                              # a legacy manifest raises here and points at `storage adopt`
+    if existing is not None:
+        if existing.get("track") == "B":
+            return existing, False
+        raise StorageError(f"{job_id} already has a Track A job manifest; it is not converted to Track B")
+    video = d / "video.mp4"
+    if not video.is_file():
+        raise StorageError(f"{d} has no video.mp4 to register")
+    m = new_manifest(job_id, project_id=slugify(project, "unassigned") if project else "unassigned", project_name=project_name,
+                     content_id=slugify(title or job_id, slugify(job_id)), title=title, renderer="hand-built",
+                     aspect_ratio="9:16", require_audio=config()["validation"]["require_audio"], now=now)
+    m["track"] = "B"
+    m["note"] = "hand-built job registered after the fact; script and production approvals must be granted before export"
+    m["final_output"] = "video.mp4"
+    m["validation"] = finalcheck.validate_video(video, m["aspect_ratio"], require_audio=m["require_audio"])
+    # ponytail: check-then-write, so two simultaneous registrations could both write; each writes the same content
+    write_manifest(d, m)
+    return m, True

@@ -1,5 +1,6 @@
 """Artifact-first pipeline. Every stage writes a durable file under <workspace>/jobs/YYYY/MM/<content_id>/
 (the workspace is outside the repository; see contentos/storage.py) and one ledger row. Re-running skips stages whose artifact already exists (resume)."""
+import hashlib
 import html
 import json
 import os
@@ -320,6 +321,56 @@ ARTIFACT = {"brief": "content.json", "script": "script-lint.json", "voice": "aud
 RENDER_LANES = ("hyperframes", "remotion", "mpt")
 
 
+GATE_OF = {"voice": "SCRIPT_APPROVED", "render": "PRODUCTION_APPROVED"}
+CONTRACT = "video-factory.contract.v1"
+
+
+def _digest(parts):
+    return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()
+
+
+def script_digest(spec):
+    """What SCRIPT_APPROVED covers: the title and every line's spoken text, exactly as the voice stage will read it."""
+    return _digest([json.dumps({"title": spec.get("title"), "script": [{"say": ln["say"], "tts": ln.get("tts")} for ln in spec["script"]]},
+                               sort_keys=True, ensure_ascii=False)])
+
+
+def production_digest(d, spec):
+    """What PRODUCTION_APPROVED covers: the composed project plus every audio take. None until the composition exists."""
+    d = Path(d)
+    comp = d / artifact("compose", spec)
+    if not comp.is_file():
+        return None
+    parts = [f"composition {artifact('compose', spec)} {exporter.sha256_file(comp)}"]
+    parts += [f"audio {w.name} {exporter.sha256_file(w)}" for w in sorted((d / "audio").glob("*.wav"))]
+    return _digest(parts)
+
+
+def gate_digest(gate, d, spec):
+    return script_digest(spec) if gate == "SCRIPT_APPROVED" else production_digest(d, spec) if gate == "PRODUCTION_APPROVED" else None
+
+
+def _check_gate(cid, gate, d, spec):
+    """Raise Blocked unless `gate` is granted for the content as it is now. Unbound (legacy) grants pass with a warning."""
+    cur = gate_digest(gate, d, spec)
+    state, bound = ledger.check_gate(cid, gate, cur)
+    if state == "none":
+        raise Blocked(f"gate {gate} not granted: contentos approve {cid} {gate}")
+    if state == "mismatch":
+        raise Blocked(f"gate {gate} was approved for different content: approved digest {', '.join(bound)}, current digest {cur or 'unavailable'}; "
+                      f"review the change and re-approve: contentos approve {cid} {gate}")
+    if state == "unbound":
+        print(f"warning: {gate} for {cid} is an unbound approval (no content digest), so edits made since cannot be detected; "
+              f"re-approve to bind it: contentos approve {cid} {gate}", file=sys.stderr)
+
+
+def _authorized_by():
+    """The identity that authorised a ContentForge job, set by factory_worker.mjs. One short printable line, or None."""
+    raw = os.environ.get("CONTENTOS_FACTORY_AUTHORIZED_BY", "")
+    ident = " ".join("".join(ch if ch.isprintable() else " " for ch in raw).split())[:120]
+    return ident or None
+
+
 def artifact(st, spec):
     """Resume sentinel for a stage. The mpt lane has no index.html; its reviewable compose output is the request."""
     if st == "compose":
@@ -356,6 +407,16 @@ def _note_failure(d, st, exc):
         pass
 
 
+def _note_spec(d, m, spec_path):
+    """Remember which spec drives this job so `contentos approve` can bind an approval to the content it reviewed."""
+    src = str(Path(spec_path).resolve())
+    if m.get("source_spec") != src:
+        try:
+            storage.update_manifest(d, source_spec=src)
+        except (OSError, storage.StorageError):
+            pass
+
+
 def run(spec_path, allow_paid=False, force=False, only=None, approve_private=False):
     spec = yaml.safe_load(Path(spec_path).read_text())
     if spec.get("render", "hyperframes") not in RENDER_LANES:
@@ -373,6 +434,7 @@ def run(spec_path, allow_paid=False, force=False, only=None, approve_private=Fal
         ledger.record(rid, cid, "manifest", "-", "BLOCKED", time.time(), error=str(exc))
         return rid, [("manifest", f"BLOCKED: {exc}", 0.0)]
     with storage.file_lock(d / ".run.lock", blocking=False):     # one run per job; a second run is refused, not queued
+        _note_spec(d, _manifest, spec_path)
         return _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private)
 
 
@@ -382,9 +444,12 @@ def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
         storage.update_manifest(d, status="running", failure=None)
     W, H = {"9:16": (1080, 1920), "16:9": (1920, 1080)}[spec.get("format", "9:16")]
     ctx = {"id": cid, "dir": d, "spec": spec, "allow_paid": allow_paid, "res": (W, H), "force": bool(force)}
+    ident = _authorized_by()
+    grant = {"by": "cli --approve-private" + (f" authorized-by={ident}" if ident else ""),
+             "note": f"contract={CONTRACT} job={cid}" if ident else ""}
     if approve_private:  # explicit test shortcut; private/dry-run only
         for g in ("RESEARCH_APPROVED", "SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
-            ledger.approve(cid, g, by="cli --approve-private")
+            ledger.approve(cid, g, **grant, subject_sha256=script_digest(spec) if g == "SCRIPT_APPROVED" else None)
     rid = ledger.new_run_id()
     report = []
     for st in STAGES:
@@ -394,6 +459,11 @@ def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
         if art.exists() and not force and st != "publish":
             guard = RESUME_GUARD.get(st)
             blocker = guard(ctx["dir"]) if guard else None
+            if blocker is None and GATE_OF.get(st) == "SCRIPT_APPROVED":
+                # a resume must not hide a script edited after approval; only digest-bound approvals can object, so old jobs resume as before
+                state, bound = ledger.check_gate(cid, "SCRIPT_APPROVED", script_digest(spec))
+                if state == "mismatch":
+                    blocker = f"gate SCRIPT_APPROVED was approved for different content: approved digest {', '.join(bound)}, current digest {script_digest(spec)}; review the change and re-approve: contentos approve {cid} SCRIPT_APPROVED"
             if blocker is None:
                 report.append((st, "SKIP(resume)", 0.0))
                 continue
@@ -403,12 +473,16 @@ def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
             ledger.record(rid, cid, st, "-", "BLOCKED", time.time(), error=blocker)
             report.append((st, f"BLOCKED: {blocker}", 0.0))
             break
-        gate = {"voice": "SCRIPT_APPROVED", "render": "PRODUCTION_APPROVED"}.get(st)
+        gate = GATE_OF.get(st)
         t0 = time.time()
         ledger.record(rid, cid, st, "-", "RUNNING", t0)   # in-flight marker for the dashboard
         try:
-            if gate and not ledger.approved(cid, gate):
-                raise Blocked(f"gate {gate} not granted: contentos approve {cid} {gate}")
+            if gate:
+                if approve_private and gate == "PRODUCTION_APPROVED":   # the composition did not exist when the private grant was made; bind it now
+                    cur = production_digest(d, spec)
+                    if cur and ledger.check_gate(cid, gate, cur)[0] != "ok":
+                        ledger.approve(cid, gate, **grant, subject_sha256=cur)
+                _check_gate(cid, gate, d, spec)
             prov, arts = FN[st](ctx)
             ledger.record(rid, cid, st, prov, "OK", t0, arts)
             _note_stage(d, st, arts)

@@ -63,7 +63,7 @@ Failed voice, compose or render stages are retried twice (after 15 s and 45 s); 
    python -m contentos.production.director check PLAN.json --script SCRIPT.txt --kind short
    ```
    `check` runs the registry validator, story coherence rules (hook first, recap or call to action last, not every scene animated), anchor checks (every scene start and cue phrase must be in the script) and the platform length budget.
-6. **Approve the script (gate 1).** A human grants SCRIPT_APPROVED: `./contentos.sh approve <content_id> SCRIPT_APPROVED`.
+6. **Approve the script (gate 1).** A human grants SCRIPT_APPROVED: `./contentos.sh approve <content_id> SCRIPT_APPROVED`. A hand-built job is first registered with `./contentos.sh job register <job-folder> --track B` (writes only `manifest.json`); `storage export` then refuses it until both SCRIPT_APPROVED and PRODUCTION_APPROVED are in the ledger.
 7. **Voice and word timings.** Kokoro voice-over, then whisper timings aligned to the script (`contentos/production/align.py` keeps the script's own spelling and reports a word error rate).
 8. **Resolve the plan to real times.** `sceneplan.resolve()` turns word anchors into seconds from the aligned audio, so one plan drives both 16:9 and 9:16.
 9. **Compose.** Build a HyperFrames composition (one paused, seek-safe GSAP timeline) following `hyperframes-core` and `explainer-motion-craft`. Lint it with the HyperFrames CLI.
@@ -104,7 +104,7 @@ Check commands: `platforms list | budget | check`, with `--platforms`, `--tier y
 ```
 ./contentos.sh doctor                                   # what is installed
 ./contentos.sh pipeline run SPEC.yaml                   # stops at the gates
-./contentos.sh approve <content_id> SCRIPT_APPROVED     # grant a gate (PRODUCTION_APPROVED the same way)
+./contentos.sh approve <content_id> SCRIPT_APPROVED     # grant a gate (PRODUCTION_APPROVED the same way); binds to the spec's digest, --spec SPEC.yaml to choose it. Editing the script or composed project afterwards needs a fresh approval
 ./contentos.sh pipeline run SPEC.yaml --approve-private # grants research, script, production gates; never publish
 ./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/<id>/video.mp4
 ./contentos.sh preview VIDEO --at 2,10,30 --out DIR --sheet

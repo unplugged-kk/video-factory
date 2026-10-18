@@ -152,6 +152,7 @@ Video-Publishing/
 
 ```
 ./contentos.sh storage paths --check | inventory | migrate [--apply] | adopt <id> | export <id> [--force] [--mode flat]
+./contentos.sh job register <job-folder> --track B   # hand-built job: manifest only; export needs SCRIPT_APPROVED + PRODUCTION_APPROVED
 ./contentos.sh storage ready [--project P] [--status S] | cleanup [--apply] | recover [--apply]
 ./contentos.sh pipeline run examples/youtube-short.yaml        # now ends with the export stage
 ```
