@@ -1,0 +1,68 @@
+[
+  {
+    "text": "Ask,",
+    "start": 0.02,
+    "end": 0.48,
+    "id": "w0"
+  },
+  {
+    "text": "run,",
+    "start": 0.48,
+    "end": 0.96,
+    "id": "w1"
+  },
+  {
+    "text": "observe,",
+    "start": 0.96,
+    "end": 1.84,
+    "id": "w2"
+  },
+  {
+    "text": "decide.",
+    "start": 1.84,
+    "end": 2.48,
+    "id": "w3"
+  },
+  {
+    "text": "That",
+    "start": 2.5,
+    "end": 2.68,
+    "id": "w4"
+  },
+  {
+    "text": "loop",
+    "start": 2.75,
+    "end": 2.94,
+    "id": "w5"
+  },
+  {
+    "text": "is",
+    "start": 2.94,
+    "end": 3.05,
+    "id": "w6"
+  },
+  {
+    "text": "what",
+    "start": 3.05,
+    "end": 3.28,
+    "id": "w7"
+  },
+  {
+    "text": "makes",
+    "start": 3.28,
+    "end": 3.57,
+    "id": "w8"
+  },
+  {
+    "text": "an",
+    "start": 3.57,
+    "end": 3.68,
+    "id": "w9"
+  },
+  {
+    "text": "agent.",
+    "start": 3.68,
+    "end": 4.15,
+    "id": "w10"
+  }
+]

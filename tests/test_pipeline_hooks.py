@@ -24,17 +24,14 @@ from contentos.features import registry as _feat
 from contentos.pipeline import s_compose, words_for, dur
 
 
-BASELINE_YAML = Path(
-    "~/Desktop/VideoFactory-Lanes/evidence/m1/baseline/m1-baseline-001.yaml"
-).expanduser()
+FIXTURES = Path(__file__).parent / "fixtures" / "baseline"
+
+BASELINE_YAML = FIXTURES / "m1-baseline-001.yaml"
 
 GOLDEN_SHA256 = "b0ac447378bb5cef7a77d97fde7a59c83b5fc96e6cb0cdb983670434dc9e3cd2"
 
 # The actual golden file for comparison (read-only M1 artifact)
-GOLDEN_FILE = Path(
-    "~/Desktop/VideoFactory-Lanes/baseline/workspace/jobs/2026/10/17/"
-    "m1-baseline-001/project/index.html"
-).expanduser()
+GOLDEN_FILE = FIXTURES / "golden-index.html"
 
 
 def _make_ctx(spec, tmp_dir: Path, audio_src: Path):
@@ -62,14 +59,12 @@ def _make_ctx(spec, tmp_dir: Path, audio_src: Path):
     }
 
 
-M1_AUDIO = Path(
-    "~/Desktop/VideoFactory-Lanes/baseline/workspace/jobs/2026/10/17/m1-baseline-001/audio"
-).expanduser()
+M1_AUDIO = FIXTURES / "audio"
 
 
 @pytest.mark.skipif(
     not BASELINE_YAML.exists() or not M1_AUDIO.exists() or not GOLDEN_FILE.exists(),
-    reason="M1 baseline artifacts not present on this machine",
+    reason="vendored M1 baseline fixtures missing under tests/fixtures/baseline",
 )
 def test_compose_golden_features_off():
     """With all features off, s_compose must produce an index.html byte-identical to the M1 artifact.

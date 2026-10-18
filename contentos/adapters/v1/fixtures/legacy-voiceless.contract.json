@@ -1,0 +1,16 @@
+{
+  "contractVersion": "video-factory.contract.v1",
+  "jobId": "cfvg-9000271",
+  "title": "Phase 27.1 authenticity card",
+  "format": "9:16",
+  "brief": "Local Video Factory render from ContentForge adapter.",
+  "script": "ContentForge owns the graph. Video Factory renders the video.",
+  "storyboard": null,
+  "voice": {
+    "enabled": false
+  },
+  "render": {
+    "quality": "draft"
+  },
+  "durationMs": 2000
+}

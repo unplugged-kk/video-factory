@@ -1,0 +1,104 @@
+[
+  {
+    "text": "In",
+    "start": 0.03,
+    "end": 0.13,
+    "id": "w0"
+  },
+  {
+    "text": "a",
+    "start": 0.13,
+    "end": 0.16,
+    "id": "w1"
+  },
+  {
+    "text": "typical",
+    "start": 0.21,
+    "end": 0.62,
+    "id": "w2"
+  },
+  {
+    "text": "setup,",
+    "start": 0.66,
+    "end": 1.12,
+    "id": "w3"
+  },
+  {
+    "text": "your",
+    "start": 1.14,
+    "end": 1.36,
+    "id": "w4"
+  },
+  {
+    "text": "application",
+    "start": 1.44,
+    "end": 2.2,
+    "id": "w5"
+  },
+  {
+    "text": "runs",
+    "start": 2.26,
+    "end": 2.45,
+    "id": "w6"
+  },
+  {
+    "text": "it.",
+    "start": 2.57,
+    "end": 2.96,
+    "id": "w7"
+  },
+  {
+    "text": "It",
+    "start": 2.99,
+    "end": 3.1,
+    "id": "w8"
+  },
+  {
+    "text": "hits",
+    "start": 3.1,
+    "end": 3.36,
+    "id": "w9"
+  },
+  {
+    "text": "the",
+    "start": 3.42,
+    "end": 3.58,
+    "id": "w10"
+  },
+  {
+    "text": "API,",
+    "start": 3.63,
+    "end": 3.89,
+    "id": "w11"
+  },
+  {
+    "text": "the",
+    "start": 4.1,
+    "end": 4.19,
+    "id": "w12"
+  },
+  {
+    "text": "database,",
+    "start": 4.19,
+    "end": 4.91,
+    "id": "w13"
+  },
+  {
+    "text": "or",
+    "start": 4.91,
+    "end": 5.05,
+    "id": "w14"
+  },
+  {
+    "text": "the",
+    "start": 5.05,
+    "end": 5.26,
+    "id": "w15"
+  },
+  {
+    "text": "shell.",
+    "start": 5.26,
+    "end": 5.9,
+    "id": "w16"
+  }
+]

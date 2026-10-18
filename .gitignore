@@ -38,3 +38,6 @@ node_modules/
 *.m4a
 VideoFactory-Workspace/
 Video-Publishing/
+
+# W0 hermetic fixtures: the wavs are golden test inputs, not generated media
+!tests/fixtures/baseline/audio/*.wav

@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pytest
 
+from _pinned_skills import needs_pinned_skills  # noqa: E402
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from contentos.intelligence import catalogue  # noqa: E402
 
@@ -110,6 +112,7 @@ def test_a_purpose_nothing_serves_returns_nothing():
     assert catalogue.query(catalogue.load(overlay={}), purposes=["nonexistent"]) == []
 
 
+@needs_pinned_skills
 def test_new_files_do_not_disturb_the_validated_registry():
     r = subprocess.run([sys.executable, "-m", "contentos.production.direction", "registry"], cwd=REPO, capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr

@@ -1,0 +1,39 @@
+# Milestone 1 baseline spec (Track A). Script = Pilot 001 narration, verbatim, split by paragraph (one scene per line).
+# DRAFT for owner review at SCRIPT_APPROVED. Headlines/tags are new on-screen text (Track A needs them); the spoken words are unchanged.
+content_id: m1-baseline-001
+title: "What Happens When an AI Agent Uses a Tool?"
+thumb_text: "AGENT TOOLS"
+description: "The model never runs a tool; it only asks. Illustrative example (weather in Austin). Sources are in the Pilot 001 research notes."
+tags: [ai agents, tool use, llm]
+format: "9:16"
+kind: short
+language: en
+platform_targets: [youtube]
+voice: af_heart
+render: hyperframes
+sources:
+  - {claim: "The model emits a structured request; your code runs it", url: "https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works"}
+  - {claim: "A tool call is a name plus arguments, matched to its result by an ID", url: "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"}
+  - {claim: "The model sees tool name, description and input schema", url: "https://modelcontextprotocol.io/specification/2025-06-18/server/tools"}
+script:
+  - say: "Your AI model never runs a tool. It only asks."
+    headline: "The model only asks"
+    tag: HOOK
+  - say: "Here's the loop. You give an agent a goal, like: should I bring a jacket in Austin? Alongside it, the model sees a list of tools, each with a name, a description, and the arguments it accepts."
+    headline: "A goal and a list of tools"
+    tag: STEP 1
+  - say: "The model picks one, and writes a structured request: the tool's name, plus arguments. That's all it produces. A description of a call."
+    headline: "It writes a request"
+    tag: STEP 2
+  - say: "In a typical setup, your application runs it. It hits the API, the database, or the shell."
+    headline: "Your app runs it"
+    tag: STEP 3
+  - say: "The result goes back to the model, matched to the request by an ID. The model reads it, then decides: call another tool, or give a final answer."
+    headline: "The result goes back"
+    tag: STEP 4
+  - say: "Ask. Run. Observe. Decide. That loop is what makes an agent."
+    headline: "Ask. Run. Observe. Decide."
+    tag: RECAP
+  - say: "Next up: what happens when a tool call fails."
+    headline: "Next: when a call fails"
+    tag: CTA
