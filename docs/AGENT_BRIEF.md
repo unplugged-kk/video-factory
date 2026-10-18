@@ -14,7 +14,11 @@ Everything else the agent needs is in this repo; this file tells it where to loo
 
 ## 2. What the factory is
 Local-first pipeline on an Apple Silicon Mac: `brief > script > voice > compose > render > qa > package > publish`.
-- Voice: Kokoro (local, English). Captions: whisper.cpp (English-only model). Render: HyperFrames (HTML to MP4) by default; `mpt` lane for stock b-roll.
+- Voice: Kokoro (local, English). Captions: whisper.cpp (English-only model).
+- Render: Unified multi-renderer architecture (see `docs/RENDERERS.md`):
+  - `hyperframes` (default): HTML/GSAP compositions to MP4.
+  - `remotion`: React/TypeScript compositions with spring physics, kinetic typography, and fluid active-word reveals.
+  - `mpt`: MoneyPrinterTurbo lane for stock b-roll clips.
 - Every stage writes to `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<content_id>/` (outside the repo; see docs/STORAGE.md; finals are exported by the `export` stage to `$VIDEO_FACTORY_PUBLISH_DIR/ready/`) and resumes if the artifact exists. Ledger is SQLite.
 - Entry point: `./contentos.sh` (put `/opt/homebrew/bin` first; the stale x86 ffmpeg in /usr/local/bin fails).
 
@@ -24,7 +28,7 @@ Local-first pipeline on an Apple Silicon Mac: `brief > script > voice > compose 
 3. Plan with the `video-director` skill (`.claude/skills/video-director`): audience, one takeaway, hook, arc, scene-by-scene treatment, using only capabilities listed in `config/capabilities.json`.
 4. Write the spec YAML in `workspace/factory-specs/<content_id>.yaml` (template in section 4; examples in `examples/`). ~2.5 words per second of narration.
 5. Show me the script and title. **GATE 1: wait for SCRIPT_APPROVED** before voice.
-6. Voice, compose. For animation quality use `explainer-motion-craft` and `hyperframes-core` skills.
+6. Voice, compose. For animation quality use `explainer-motion-craft`, `hyperframes-core`, or `docs/RENDERERS.md`.
 7. **GATE 2: wait for PRODUCTION_APPROVED** before render.
 8. `./contentos.sh pipeline run <spec> --approve-private` only after I approve (omit the flag to park at the gate).
 9. QA: `./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/<id>/video.mp4`, then visual check with the `explainer-visual-qa` skill (look at frames at phone size).
@@ -39,7 +43,12 @@ description: "One or two sentences. Sources: ..."
 tags: [tag1, tag2]
 format: "9:16"          # or "16:9"
 voice: af_heart
-render: hyperframes     # or mpt (needs docker compose up -d, or mpt.source: local)
+render: hyperframes     # or "remotion" (React/Springs) or "mpt" (B-roll clips)
+style: kinetic-typography # optional catalog style: sketch-hand-drawn, product-launch,
+                         # kinetic-typography, data-storyteller, spatial-generative, hybrid-craft
+# features:              # optional feature flags
+#   style_card:
+#     chosen: product-launch
 sources:
   - {claim: "what it supports", url: "https://..."}
 script:
