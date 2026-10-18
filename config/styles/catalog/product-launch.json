@@ -1,0 +1,46 @@
+{
+  "schema": "style/1",
+  "id": "product-launch",
+  "name": "Product launch",
+  "summary": "High-craft launch aesthetic: floating stacked dark-mode cards with 3D perspective tilt, glossy edge glow, and spring physics push transitions.",
+  "status": "unvalidated",
+  "evidence": [],
+  "reviewed_by": {"name": "Kishore", "date": "2026-10-17"},
+  "axes": {
+    "layout_system": "stacked-cards",
+    "motion_grammar": "eased-glide",
+    "scene_rhythm": "accelerating",
+    "depth_model": "pseudo-3d",
+    "illustration_mode": "iconographic",
+    "transition_family": "push"
+  },
+  "dials": {"energy": 4, "density": 3, "formality": 4, "warmth": 2, "pace": 4},
+  "motion": {
+    "ease_family": ["power3.out", "power2.inOut"],
+    "ease_sources": [
+      {"ease": "power3.out", "file": ".claude/skills/explainer-motion-craft/SKILL.md"},
+      {"ease": "power2.inOut", "file": ".claude/skills/explainer-motion-craft/SKILL.md"}
+    ],
+    "forbidden": [
+      "bounce, elastic or back overshoot on any entrance (R1)",
+      "cluttered low-contrast text over glossy background elements",
+      "more than two simultaneous animated visual focal points"
+    ],
+    "respects_r1_r6": true
+  },
+  "layout_vocabulary": ["floating 3D card", "spec pill", "edge rim glow", "metrics badge"],
+  "sound": {"mode": "narration-led", "max_cues_per_minute": 5},
+  "requires": ["renderer:hyperframes"],
+  "frame_checklist": [
+    "Foreground card perspective tilt remains under 15 degrees for legibility",
+    "Card entrance glide arrives smoothly before caption reveal initiates",
+    "Strict compliance with safezone bottom padding (>= 460px) and side bounds",
+    "Subtle specular highlight sweeps across card surface on take landing"
+  ],
+  "best_for": {
+    "content_types": ["product-launch", "ai-workflow"],
+    "avoid": ["historical-explainer"]
+  },
+  "source_techniques": ["AbubakrChan/product-launch-motion: perspective card layering and rim light"],
+  "licence_notes": "Original CSS 3D transforms and SVG gradients; no commercial sample media."
+}

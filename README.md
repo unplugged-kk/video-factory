@@ -32,17 +32,31 @@ artifact under `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<content_id>/` (outside th
 deletes its own artifact so resume never trusts half-built output.
 
 ## Render lanes
-`render:` in a spec picks the lane. The script, voice, gates and QA are always contentos'; a lane only makes the picture.
+`render:` in a spec picks the lane. The script, voice, gates and QA are always contentos'; a lane only makes the picture. Detailed guide: [docs/RENDERERS.md](docs/RENDERERS.md).
 
 | `render:` | Use for | Needs |
 |---|---|---|
-| `hyperframes` (default) | text/data explainers, branded word-highlight captions, fully local | nothing |
+| `hyperframes` (default) | text/data explainers, HTML/GSAP timelines, branded word-highlight captions, fully local | nothing |
+| `remotion` | React + TypeScript spring animations, fluid component motion, active word reveals | local Remotion CLI (`~/.contentos/remotion`) |
 | `mpt` | faceless shorts that need real b-roll: MoneyPrinterTurbo sources free stock clips, cuts them to OUR Kokoro voice, burns subtitles | `docker compose up -d`; a free Pexels/Pixabay/Coverr key in `vendor/MoneyPrinterTurbo/config.toml`, or `mpt.source: local` |
 | OpenMontage | cinematic, animated, long-form, avatars | agent-driven, not an API: not wired. Hand off by hand, then `pipeline run <spec> --only qa` on a `video.mp4` placed in the project dir |
+
+`remotion` details: `compose` builds a standalone React/Remotion project with spring physics and word-level caption timing, adhering strictly to safezone bounds (460px bottom, 190px right). `render` runs `@remotion/cli` headless rendering locally.
 
 `mpt` details: `compose` writes a reviewable `project/mpt-request.json` (the render gate reviews it); `render` runs MPT's CLI inside its container,
 copies `final-1.mp4` to `video.mp4` and writes `assets-rights.json`. Paid MPT sources and background music are never passed. Add `broll:` to script lines
 for stock-search phrases. See `examples/mpt-black-holes.yaml`.
+
+## Motion design catalog & style cards
+Visual style cards define structural design languages across 6 visual families in `config/styles/catalog/` (all pairwise distinct on &ge; 3 structural axes):
+- `sketch-hand-drawn`: organic hand-drawn container borders, draw-on accents, morph transitions.
+- `product-launch`: 3D perspective tilt cards, edge rim glow, glossy dark-mode styling.
+- `kinetic-typography`: massive display headlines, staggered reveals, high contrast monochrome.
+- `data-storyteller`: structured quantitative metric cards, monotonic counters, wipe transitions.
+- `spatial-generative`: deep atmospheric space, floating geometry, parallax coordinate depth.
+- `hybrid-craft`: choreographed split layout combining kinetic type and structured comparison cards.
+
+Select a style in your spec via `features.style_card.chosen: "<style-id>"` or `style: "<style-id>"`. See [docs/RENDERERS.md](docs/RENDERERS.md) for full options.
 
 ## ContentForge exchange (v1 worker)
 `./contentos.sh factory-worker` runs the production jobs ContentForge drops into a shared folder. That folder is the **exchange root**:

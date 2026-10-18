@@ -1,0 +1,38 @@
+content_id: m3-sample-04-remotion-kinetic
+title: "Why Streaming Tokens Change Everything"
+thumb_text: "STREAMING TOKENS"
+description: "How streaming token generation reduces perceived latency to zero in modern AI apps."
+tags: [streaming tokens, llm latency, remotion]
+format: "9:16"
+kind: short
+language: en
+platform_targets: [youtube]
+voice: af_heart
+render: remotion
+features:
+  style_card:
+    chosen: "kinetic-typography"
+  scene_plan: true
+  visual_layer: true
+  audio_bed: true
+  captions_hook: true
+  qa_extra: true
+script:
+  - say: "Waiting three seconds for an AI response feels broken."
+    headline: "Waiting Feels Broken"
+    tag: HOOK
+  - say: "Human perception notices delays over one hundred milliseconds immediately."
+    headline: "One Hundred Milliseconds"
+    tag: STEP 1
+  - say: "Streaming sends tokens as they are sampled, delivering the first word in thirty milliseconds."
+    headline: "Thirty Milliseconds"
+    tag: STEP 2
+  - say: "The brain starts reading while the model is still computing the rest of the sentence."
+    headline: "Read While Computing"
+    tag: STEP 3
+  - say: "Zero perceived delay turns batch processing into a seamless conversation."
+    headline: "Zero Perceived Delay"
+    tag: RECAP
+  - say: "Build real-time AI experiences that delight your users."
+    headline: "Build Real-Time AI"
+    tag: CTA

@@ -1,0 +1,38 @@
+content_id: m3-sample-02-hf-product
+title: "The Next Generation Agent Protocol"
+thumb_text: "NEXT GEN AGENTS"
+description: "Announcing the unified agent protocol for high-performance distributed AI workflows."
+tags: [agent protocol, ai product, distributed systems]
+format: "9:16"
+kind: short
+language: en
+platform_targets: [youtube]
+voice: af_heart
+render: hyperframes
+features:
+  style_card:
+    chosen: "product-launch"
+  scene_plan: true
+  visual_layer: true
+  audio_bed: true
+  captions_hook: true
+  qa_extra: true
+script:
+  - say: "Introducing the next generation autonomous agent protocol."
+    headline: "The New Agent Protocol"
+    tag: HOOK
+  - say: "Built from scratch for microsecond tool routing and deterministic verification."
+    headline: "Microsecond Routing"
+    tag: STEP 1
+  - say: "Native capability negotiation connects heterogeneous agents across process boundaries."
+    headline: "Native Negotiation"
+    tag: STEP 2
+  - say: "Multi-provider rendering pipelines generate broadcast-grade visual output autonomously."
+    headline: "Multi-Provider Render"
+    tag: STEP 3
+  - say: "Unrivaled speed, precision, and complete reproducible evidence."
+    headline: "Speed and Precision"
+    tag: RECAP
+  - say: "Explore the open specifications on GitHub today."
+    headline: "Open On GitHub"
+    tag: CTA

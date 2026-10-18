@@ -1,0 +1,46 @@
+{
+  "schema": "style/1",
+  "id": "data-storyteller",
+  "name": "Data storyteller",
+  "summary": "Precision quantitative storytelling: multi-column data cards, animated metric counters, comparative progress meters, and crisp wipe transitions.",
+  "status": "unvalidated",
+  "evidence": [],
+  "reviewed_by": {"name": "Kishore", "date": "2026-10-17"},
+  "axes": {
+    "layout_system": "stacked-cards",
+    "motion_grammar": "snap-cut",
+    "scene_rhythm": "punctuated",
+    "depth_model": "flat",
+    "illustration_mode": "diagrammatic",
+    "transition_family": "cut"
+  },
+  "dials": {"energy": 3, "density": 5, "formality": 5, "warmth": 2, "pace": 3},
+  "motion": {
+    "ease_family": ["power3.out", "power2.inOut"],
+    "ease_sources": [
+      {"ease": "power3.out", "file": ".claude/skills/explainer-motion-craft/SKILL.md"},
+      {"ease": "power2.inOut", "file": ".claude/skills/explainer-motion-craft/SKILL.md"}
+    ],
+    "forbidden": [
+      "bounce, elastic or back overshoot on any entrance (R1)",
+      "fabricated or unverified quantitative claims presented as real data",
+      "visual clutter exceeding four active data points per scene"
+    ],
+    "respects_r1_r6": true
+  },
+  "layout_vocabulary": ["metric callout", "progress bar", "comparative card", "axis label"],
+  "sound": {"mode": "narration-led", "max_cues_per_minute": 4},
+  "requires": ["renderer:hyperframes"],
+  "frame_checklist": [
+    "Numbers animate monotonically from zero to target value during take",
+    "Comparative bars show accurate relative proportions matching voice narration",
+    "Safezone margin guarantees metric labels are unobstructed by UI controls",
+    "Data sources and metric units are clearly labeled"
+  ],
+  "best_for": {
+    "content_types": ["architecture-lesson", "science-concept", "news-opinion"],
+    "avoid": ["historical-explainer"]
+  },
+  "source_techniques": ["financial & analytical infographic motion conventions"],
+  "licence_notes": "Procedural SVG charts and HTML metrics; zero external charting libraries."
+}

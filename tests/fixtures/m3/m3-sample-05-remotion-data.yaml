@@ -1,0 +1,38 @@
+content_id: m3-sample-05-remotion-data
+title: "Benchmarking Inference Latency Across Providers"
+thumb_text: "LATENCY DATA"
+description: "Empirical latency and throughput benchmarks across top inference engines."
+tags: [benchmarks, data storytelling, remotion]
+format: "9:16"
+kind: short
+language: en
+platform_targets: [youtube]
+voice: af_heart
+render: remotion
+features:
+  style_card:
+    chosen: "data-storyteller"
+  scene_plan: true
+  visual_layer: true
+  audio_bed: true
+  captions_hook: true
+  qa_extra: true
+script:
+  - say: "We measured inference latency across five major providers."
+    headline: "Inference Benchmarks"
+    tag: HOOK
+  - say: "Time to first token ranged from eighty milliseconds to over two seconds."
+    headline: "Eighty Milliseconds"
+    tag: STEP 1
+  - say: "Throughput varied by four hundred percent between quantized and native weights."
+    headline: "Four Hundred Percent"
+    tag: STEP 2
+  - say: "Specialized silicon cut power consumption by half while doubling sustained tokens per second."
+    headline: "Half The Power"
+    tag: STEP 3
+  - say: "Data proves optimization matters more than raw parameter counts."
+    headline: "Optimization Wins"
+    tag: RECAP
+  - say: "Check the full benchmark methodology in the description."
+    headline: "Full Methodology"
+    tag: CTA

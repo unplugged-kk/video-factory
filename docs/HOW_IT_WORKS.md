@@ -10,7 +10,10 @@ The parts:
 | Part | What it does | Where |
 |---|---|---|
 | ContentOS (`contentos`) | Python CLI: stage engine, ledger, gates, queue, worker | `contentos/`, entry point `./contentos.sh` |
-| HyperFrames 0.8.114 | Turns an HTML/GSAP composition into MP4 (pinned in `package.json`) | `node_modules/`, run via `npx --no-install hyperframes` |
+| HyperFrames 0.8.114 | Turns an HTML/GSAP composition into MP4 (default renderer) | `node_modules/`, run via `npx --no-install hyperframes` |
+| Remotion 4.0 | React/TypeScript programmatic rendering engine for spring physics & kinetic type | `~/.contentos/remotion`, selectable via `render: remotion` |
+| Render Providers | Unified multi-renderer abstraction (`hyperframes`, `remotion`, `mpt`) | `contentos/renderers/`, guide: `docs/RENDERERS.md` |
+| Motion Catalog | 6 validated visual style families across 6 structural axes | `config/styles/catalog/` |
 | Kokoro TTS | Local English voice (`af_heart` etc.), via `hyperframes tts` | `config/providers.yaml` |
 | whisper.cpp | Word timings for captions and alignment | via `hyperframes transcribe` |
 | ffmpeg / ffprobe | Rendering support and QA measurements | `/opt/homebrew/bin` must come first |
@@ -40,13 +43,13 @@ There are two tracks. They share the voice, QA and gates but differ in how much 
 | brief | records the spec and sources | RESEARCH_APPROVED |
 | script | stores the script from the spec (no local LLM yet) | SCRIPT_APPROVED |
 | voice | Kokoro speaks each line to a WAV | needs SCRIPT_APPROVED |
-| compose | builds a HyperFrames project: scenes timed to the audio, captions from whisper word timings, then lints it | |
-| render | HyperFrames renders `video.mp4` | needs PRODUCTION_APPROVED |
+| compose | builds a HyperFrames project (or Remotion React project if `render: remotion`): scenes timed to the audio, captions from whisper word timings, safezone enforcement (460px bottom, 190px right), then lints it | |
+| render | HyperFrames or Remotion CLI renders `video.mp4` | needs PRODUCTION_APPROVED |
 | qa | ffprobe/ffmpeg checks: resolution, fps, duration, audio, loudness, clipping, black and frozen frames | |
 | package | title, description, tags, thumbnail text files | |
 | publish | **dry run only**: needs PUBLISH_APPROVED and `config/youtube.yaml` has `publish.enabled: false`; no uploader exists | |
 
-Failed voice, compose or render stages are retried twice (after 15 s and 45 s); QA failures and blocked gates are not retried. The `mpt` render lane replaces the picture with stock footage from MoneyPrinterTurbo (needs Docker and a free stock key, or local clips); the OpenMontage lane is a manual handoff only.
+Failed voice, compose or render stages are retried twice (after 15 s and 45 s); QA failures and blocked gates are not retried. The `remotion` render lane produces React/TypeScript spring-driven motion with word-level captions; the `mpt` render lane replaces the picture with stock footage from MoneyPrinterTurbo (needs Docker and a free stock key, or local clips); the OpenMontage lane is a manual handoff only. See `docs/RENDERERS.md` for lane invocation details.
 
 ## 4. Track B, step by step (how an agent makes a planned explainer)
 1. **Check the toolchain.** `./contentos.sh doctor`. Stop if something the plan needs is NOT_INSTALLED.
@@ -115,11 +118,15 @@ Tests: `~/.contentos/venv/bin/python -m pytest tests` (Python 3.12 or later). On
 ## 8. Where things live
 ```
 config/            capabilities.json, platforms.json, providers.yaml, quality.yaml, youtube.yaml, policies
+config/styles/     seed style cards (blueprint-diagram, punch-split, slow-parallax-story)
+config/styles/catalog/  6 validated motion style cards (sketch-hand-drawn, product-launch, kinetic-typography, data-storyteller, spatial-generative, hybrid-craft)
 contentos/         CLI, pipeline.py (stages), ledger, queue, QA, worker adapters
+contentos/renderers/ base.py (RenderProvider protocol), hyperframes.py, remotion.py, mpt.py, registry.py
+contentos/features/  feature flag registry (style_card, visual_layer, scene_plan, audio_bed, captions_hook, qa_extra)
 contentos/production/  sceneplan, align, direction (validator), director, platforms, critic, motion_audit, preview,
                        sheet (labelled sheets, sheet/1, shadow), timeline (timeline/1, shadow), visual_gate (rendered-frame gate), core (retries)
 .claude/skills/    video-production-orchestrator, video-director, explainer-* (pinned hyperframes-* are generated)
-docs/              this guide, AGENT_BRIEF.md, factory-v2/ (audits, reports)
+docs/              this guide, AGENT_BRIEF.md, RENDERERS.md, factory-v2/ (audits, reports)
 examples/          sample specs
 ~/Desktop/VideoFactory-Workspace   ALL generated work (outside the repo, VIDEO_FACTORY_WORKSPACE)
 ~/Desktop/Video-Publishing         validated finals + sidecars for schedulers (VIDEO_FACTORY_PUBLISH_DIR)
@@ -140,7 +147,7 @@ A project folder (for example Pilot 001) holds `script/`, `audio/`, `captions/`,
 No public upload and no paid service without explicit approval; do not change gates, `config/*.yaml` or the pinned HyperFrames version unless asked; do not invent facts; label illustrative data; English only for now; third-party audio or footage needs a rights decision; stay inside this repo and `~/.contentos`; never print secrets. Details in `AGENT_BRIEF.md`.
 
 ## 10. What is built and what is not
-Working: the Track A pipeline, Kokoro voice, whisper captions, HyperFrames render, QA, gates, ledger, queue and worker, ContentForge exchange, the capability registry and validator, the director check, platform limits, the contact-sheet and critic tools.
+Working: the Track A pipeline, Kokoro voice, whisper captions, multi-renderer architecture (HyperFrames default + Remotion selectable second provider + MPT b-roll), 6-family motion catalog, QA (including Safezone G6 and Rule A), gates, ledger, queue and worker, ContentForge exchange, the capability registry and validator, the director check, platform limits, the contact-sheet and critic tools.
 New and in shadow mode: `production/sheet.py` (timeline-labelled contact sheets, `sheet/1`) and `production/timeline.py` (`timeline/1`). Nothing imports the timeline yet, and the labelled sheet needs an ffmpeg built with `drawtext`: the `/opt/homebrew` build on this Mac has no freetype, so there it fails closed and the plain `preview --sheet` is the fallback. `--allow-unlabelled` produces an unlabelled sheet, which is not the same artifact; the labelled path enters the QA workflow only after a labelled sheet has been generated on this Mac and its labels inspected. Nothing invokes the timeline: `visual_gate captions --timing` reads scenes with `start`/`end`, so a `timeline/1` file (`t0`/`t1`) yields no windows and a misleading `visible_ratio: 0.0`. `visual scenes --timing` is the tool that does accept `t0`.
 Built but not wired into the builder: scene-plan consumption (Track B composition is agent-built).
 Tested only as a dry run: the `video-director` plan for "What Happens When an AI Agent Uses a Tool?" (`workspace/experiments/m2-director-dryrun-001/`, not rendered).
