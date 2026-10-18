@@ -116,6 +116,22 @@ def cmd_approve(a):
               f"Pass --spec SPEC.yaml to bind it.", file=sys.stderr)
 
 
+def cmd_job_register(a):
+    """Bring a hand-built (Track B) job folder under the manifest/ledger/export discipline. Writes only manifest.json."""
+    import time
+    from . import storage
+    m, created = storage.adopt_external(a.path, title=a.title, project=a.project, project_name=a.project_name)
+    if created:
+        t0 = time.time()
+        rid = ledger.new_run_id()
+        for st in ("script", "voice", "compose", "render"):          # stages a person ran outside the pipeline
+            ledger.record(rid, m["job_id"], st, "external:track-B", "EXTERNAL", t0)
+    print(f"{'registered' if created else 'already registered'} {m['job_id']} (Track B). Export needs both gates:\n"
+          f"  contentos approve {m['job_id']} SCRIPT_APPROVED\n  contentos approve {m['job_id']} PRODUCTION_APPROVED\n"
+          f"  contentos storage export {m['job_id']}")
+    return 0
+
+
 def cmd_status(a):
     for r in ledger.recent():
         print("  ".join(str(x) for x in r))
@@ -213,6 +229,10 @@ def main():
     q = sp.add_parser("qa"); q.add_argument("video"); q.add_argument("--format", default="9:16"); q.set_defaults(f=cmd_qa)
     pv = sp.add_parser("preview", help="preview frames from a project dir (pre-render) or an .mp4 (post-render)"); pv.add_argument("target"); pv.add_argument("--at", required=True, help="comma-separated seconds"); pv.add_argument("--out", required=True); pv.add_argument("--sheet", action="store_true"); pv.add_argument("--cols", type=int, default=6); pv.set_defaults(f=cmd_preview)
     ap = sp.add_parser("approve"); ap.add_argument("content_id"); ap.add_argument("gate"); ap.add_argument("--note", default=""); ap.add_argument("--spec", help="spec YAML the approval covers (default: the one this job last ran with)"); ap.set_defaults(f=cmd_approve)
+    jb = sp.add_parser("job", help="jobs built outside the pipeline"); jbs = jb.add_subparsers(dest="jcmd", required=True)
+    jr = jbs.add_parser("register", help="register a hand-built job folder (writes only manifest.json)"); jr.add_argument("path")
+    jr.add_argument("--track", required=True, choices=["B"], help="B = hand-built, agent-authored composition")
+    jr.add_argument("--title"); jr.add_argument("--project"); jr.add_argument("--project-name"); jr.set_defaults(f=cmd_job_register)
     j = sp.add_parser("jev"); j.add_argument("action", choices=["status", "triage"]); j.add_argument("topics", nargs="*"); j.set_defaults(f=cmd_jev)
     l = sp.add_parser("learn"); l.add_argument("loop", choices=["providers", "cost", "calibration", "platforms", "packaging"]); l.set_defaults(f=cmd_learn)
     rc = sp.add_parser("recommend"); rc.add_argument("content_id"); rc.add_argument("--jev", action="store_true"); rc.set_defaults(f=cmd_recommend)

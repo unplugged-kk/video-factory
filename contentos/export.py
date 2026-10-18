@@ -114,6 +114,12 @@ def export_job(job_id, *, force=False, mode=None, cfg=None, jobs=None):
     m = storage.read_manifest(d)
     if m is None:
         raise storage.StorageError(f"job {job_id!r} has no manifest.json")
+    if m.get("track") == "B":                                # hand-built jobs have no pipeline gates, so the ledger must hold both before export
+        from . import ledger
+        missing = [g for g in ("SCRIPT_APPROVED", "PRODUCTION_APPROVED") if not ledger.approved(job_id, g)]
+        if missing:
+            raise ExportRefused(f"{job_id}: hand-built job is not exported until {' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} granted: "
+                                + "; ".join(f"contentos approve {job_id} {g}" for g in missing))
     mode = mode or storage.export_mode(cfg)
     with storage.file_lock(pub / ".state" / "locks" / f"{job_id}.lock"):
         return _export_locked(d, m, pub, mode, force, cfg)
