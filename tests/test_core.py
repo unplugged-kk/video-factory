@@ -5,6 +5,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from contentos import providers  # noqa: E402
+from _pinned_skills import needs_local_tts  # noqa: E402
 
 ROOT = providers.ROOT
 
@@ -21,6 +22,7 @@ def test_paid_blocked_unless_allowed(monkeypatch):
     assert "elevenlabs" in [c["id"] for c in providers.candidates("tts", allow_paid=True) if c["healthy"]]
 
 
+@needs_local_tts
 def test_local_beats_paid_even_when_both_healthy(monkeypatch):
     monkeypatch.setenv("ELEVENLABS_API_KEY", "x")
     c = providers.candidates("tts", allow_paid=True)

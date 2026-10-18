@@ -23,6 +23,8 @@ import yaml
 from contentos.features import registry as _feat
 from contentos.pipeline import s_compose, words_for, dur
 
+from _pinned_skills import needs_hyperframes_bin  # noqa: E402
+
 
 FIXTURES = Path(__file__).parent / "fixtures" / "baseline"
 
@@ -62,6 +64,7 @@ def _make_ctx(spec, tmp_dir: Path, audio_src: Path):
 M1_AUDIO = FIXTURES / "audio"
 
 
+@needs_hyperframes_bin
 @pytest.mark.skipif(
     not BASELINE_YAML.exists() or not M1_AUDIO.exists() or not GOLDEN_FILE.exists(),
     reason="vendored M1 baseline fixtures missing under tests/fixtures/baseline",
