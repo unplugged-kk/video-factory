@@ -41,6 +41,7 @@ _PASS_THROUGH = {
     "audio_bed": _pt_audio_bed,
     "captions_hook": _pt_captions_hook,
     "qa_extra": _pt_qa_extra,
+    "extra_gates": _pt_qa_extra,      # extra_gates registers this alias; without an entry here get() raises KeyError when it is off
 }
 
 
