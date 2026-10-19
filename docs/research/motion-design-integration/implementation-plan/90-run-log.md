@@ -433,3 +433,33 @@ Acceptance (T7-cue-audibility.md section 8, and 91-handover-2026-10-18.md sectio
 - Zero em dashes in contentos/production/cue_audibility.py or tests/test_cue_audibility.py: PASS. Both files contain 0 non-ASCII characters.
 
 Verdict: T7 PASS.
+
+## Closeout (2026-10-19) - gap remediation: the work was never committed
+
+Written by the owner's agent after an independent audit of the T1 to T7 claims. This section corrects the record.
+
+What the audit found:
+- The T4 to T7 work was implemented and independently verified in the treehouse worktree at
+  `/Users/kishore/.treehouse/video-factory-56f71d/2/video-factory`, but it sat **uncommitted at a detached HEAD**
+  on base commit `b3dabdb`. No branch, commit or remote held it. Only that one working tree did.
+- The statement in the T3a to T7 summary that the "Working tree clean (changes staged or committed by owner)"
+  was **wrong**. HEAD equalled the base commit, so nothing had been committed.
+- The standalone report claimed `checkpoint.py` is 198 lines. It is 197. The report has been corrected.
+
+What was done about it:
+- Branch `fm/vf-motion-t3a-t7` was created at `b3dabdb` and the work committed to it on 2026-10-19:
+  - `a43bf68` feat(timeline): additive audio cues, transitions, beats and markers in timeline/1
+  - `8592ed3` feat(motion): style-frame checkpoint, gate negative controls and cue audibility (T4, T6, T7)
+- Pull request: https://github.com/unplugged-kk/video-factory/pull/3 (base `main`, 9 files, 1687 insertions, 0 deletions).
+- Re-verified by the owner's agent on the committed branch before the push: `pytest tests -q` -> 808 passed,
+  10 skipped; `node --test contentos/adapters/v1/*.test.mjs` -> 44 pass, 0 fail; zero removed lines in
+  `timeline.py`; empty `git status`. These reproduce the implementer and verifier figures independently.
+
+Clarification on the em dash claim:
+- The 137 lines added to this run log, and the 6 new source, test and doc files, contain zero em dashes and zero
+  non-ASCII characters. This file does contain em dashes and non-ASCII characters, all on lines 1 to 73 (T0 and
+  T1 era text), and none of them are in the T3a to T7 content.
+
+Rules for future sessions (owner decisions):
+- Verified work is committed per task on a named branch. Never leave it uncommitted, and never at a detached HEAD.
+- Remaining tasks T8, T9 and T10 run in `/Users/kishore/git/video-factory`, not the firstmate or treehouse clone.
