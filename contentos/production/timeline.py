@@ -13,6 +13,9 @@ the per-word `source` label and the checks. Word timing is ASR-derived and is la
 Word `source` values: "matched" (one-to-one with an ASR word), "span" (several script words, or one script word, timed from the
 ASR span they replace, e.g. "spellchecker" heard as "spell"+"checker": an extension to the 06 spec's two values) and
 "interpolated" (no ASR counterpart; timed between its neighbours).
+
+Optional extension keys: audio_cues, transition_windows, beats, markers describe sound and transitions on the same clock.
+Validation is additive and strict; existing timelines without these keys validate unchanged.
 """
 import difflib
 import hashlib
@@ -113,6 +116,165 @@ def validate(tl):
             add("error", "cue_not_in_scene", f"cue {c['id']} anchors to word {wi} outside scene {c['scene']}")
         if words[wi]["source"] == "interpolated":
             add("warning", "cue_on_interpolated_word", f"cue {c['id']} sits on word {wi} {words[wi]['text']!r}, which has no ASR counterpart")
+    iss.extend(_validate_extensions(tl, words, scenes))
+    return iss
+
+
+def _validate_extensions(tl, words, scenes):
+    iss = []
+
+    def add(level, code, msg):
+        iss.append({"level": level, "code": code, "msg": msg})
+
+    duration_s = tl.get("duration_s", 0.0)
+    sids = [s["id"] for s in scenes]
+    smap = {s["id"]: s for s in scenes}
+
+    def check_unique_ids(items, label):
+        seen = set()
+        for item in items:
+            iid = item.get("id")
+            if iid in seen:
+                add("error", "id_duplicate", f"duplicate id {iid!r} in {label}")
+            seen.add(iid)
+
+    audio_cues = tl.get("audio_cues")
+    if audio_cues is not None:
+        check_unique_ids(audio_cues, "audio_cues")
+        for c in audio_cues:
+            cid = c.get("id", "")
+            kind = c.get("kind")
+            if kind not in ("sfx", "duck", "music"):
+                add("error", "audio_cue_kind", f"cue {cid}: kind {kind!r} not in ('sfx', 'duck', 'music')")
+            scene_id = c.get("scene")
+            if scene_id not in smap:
+                add("error", "audio_cue_scene", f"cue {cid}: unknown scene {scene_id!r}")
+            at = c.get("at", {})
+            wi = at.get("word")
+            offset_s = at.get("offset_s", 0.0)
+            if not isinstance(wi, int) or not (0 <= wi < len(words)):
+                add("error", "audio_cue_word", f"cue {cid}: word index {wi} not in words")
+            else:
+                w = words[wi]
+                if scene_id in smap:
+                    sc = smap[scene_id]
+                    if not (sc["w0"] <= wi <= sc["w1"]):
+                        add("error", "audio_cue_not_in_scene", f"cue {cid}: word {wi} outside scene {scene_id}")
+                expected_t = round(w["t0"] + offset_s, 3)
+                if abs(c.get("t", 0.0) - (w["t0"] + offset_s)) > EPS:
+                    add("error", "audio_cue_time", f"cue {cid}: t {c.get('t')} differs from word start + offset {expected_t}")
+                if w.get("source") == "interpolated":
+                    add("warning", "audio_cue_on_interpolated_word", f"cue {cid}: sits on interpolated word {wi}")
+            dur_s = c.get("dur_s")
+            t = c.get("t", 0.0)
+            if not isinstance(dur_s, (int, float)) or dur_s <= 0 or (t + dur_s > duration_s + EPS):
+                add("error", "audio_cue_dur", f"cue {cid}: invalid dur_s {dur_s} (must be > 0 and t + dur_s <= duration_s)")
+            level_db = c.get("level_db")
+            if isinstance(level_db, bool) or not isinstance(level_db, (int, float)) or level_db > 0:
+                add("error", "audio_cue_level", f"cue {cid}: invalid level_db {level_db} (must be number <= 0)")
+
+    trans_windows = tl.get("transition_windows")
+    if trans_windows is not None:
+        check_unique_ids(trans_windows, "transition_windows")
+        from contentos.intelligence import styles
+        allowed_trans = styles.AXES["transition_family"]
+        for tw in trans_windows:
+            tw_id = tw.get("id", "")
+            from_s = tw.get("from_scene")
+            to_s = tw.get("to_scene")
+            kind = tw.get("kind")
+            if kind not in allowed_trans:
+                add("error", "transition_kind", f"transition {tw_id}: kind {kind!r} not in {allowed_trans}")
+            if from_s not in smap or to_s not in smap:
+                add("error", "transition_scene", f"transition {tw_id}: unknown from/to scene ({from_s}, {to_s})")
+            else:
+                from_idx = sids.index(from_s)
+                to_idx = sids.index(to_s)
+                if to_idx != from_idx + 1:
+                    add("error", "transition_scene", f"transition {tw_id}: scenes {from_s} and {to_s} are not adjacent")
+                else:
+                    boundary = smap[from_s]["t1"]
+                    t0 = tw.get("t0", 0.0)
+                    t1 = tw.get("t1", 0.0)
+                    if t1 <= t0 or not (t0 <= boundary + EPS and t1 >= boundary - EPS):
+                        add("error", "transition_window", f"transition {tw_id}: window [{t0}, {t1}] must have t1 > t0 and contain boundary {boundary}")
+
+    beats = tl.get("beats")
+    if beats is not None:
+        prev_t = None
+        for b in beats:
+            t = b.get("t", 0.0)
+            if not isinstance(t, (int, float)) or t < 0.0 - EPS or t > duration_s + EPS:
+                add("error", "beat_order", f"beat t {t} outside [0, {duration_s}]")
+            elif prev_t is not None and t < prev_t - 1e-9:
+                add("error", "beat_order", f"beat t {t} is decreasing after {prev_t}")
+            prev_t = t
+
+    markers = tl.get("markers")
+    if markers is not None:
+        check_unique_ids(markers, "markers")
+        for m in markers:
+            mid = m.get("id", "")
+            t = m.get("t", 0.0)
+            if not isinstance(t, (int, float)) or t < 0.0 - EPS or t > duration_s + EPS:
+                add("error", "marker_range", f"marker {mid}: t {t} outside [0, {duration_s}]")
+
+    return iss
+
+
+def add_extensions(tl, audio_cues=None, transition_windows=None, beats=None, markers=None):
+    import copy
+    out = copy.deepcopy(tl)
+    words = out.get("words", [])
+    if audio_cues is not None:
+        processed_cues = []
+        for c in audio_cues:
+            item = copy.deepcopy(c)
+            wi = item.get("word") if "word" in item else item.get("at", {}).get("word")
+            offset_s = item.get("offset_s", item.get("at", {}).get("offset_s", 0.0))
+            if "at" not in item:
+                item["at"] = {"word": wi, "offset_s": offset_s}
+            if "t" not in item and wi is not None and 0 <= wi < len(words):
+                item["t"] = round(words[wi]["t0"] + offset_s, 3)
+            item.pop("word", None)
+            item.pop("offset_s", None)
+            processed_cues.append(item)
+        out["audio_cues"] = processed_cues
+    if transition_windows is not None:
+        out["transition_windows"] = copy.deepcopy(transition_windows)
+    if beats is not None:
+        out["beats"] = copy.deepcopy(beats)
+    if markers is not None:
+        out["markers"] = copy.deepcopy(markers)
+    return out
+
+
+def cue_budget(tl, max_per_minute):
+    import math
+    iss = []
+    duration_s = tl.get("duration_s", 0.0)
+    audio_cues = tl.get("audio_cues", [])
+    sfx_times = sorted([c["t"] for c in audio_cues if c.get("kind") == "sfx"])
+
+    if duration_s < 60.0:
+        allowed = math.ceil(max_per_minute * duration_s / 60.0)
+        if len(sfx_times) > allowed:
+            iss.append({
+                "level": "warning",
+                "code": "cue_budget",
+                "msg": f"{len(sfx_times)} sfx cues exceeds allowed budget of {allowed} for {duration_s:.1f}s video",
+            })
+    else:
+        window_s = 60.0
+        for i, t in enumerate(sfx_times):
+            count = sum(1 for t2 in sfx_times[i:] if t2 <= t + window_s)
+            if count > max_per_minute:
+                iss.append({
+                    "level": "warning",
+                    "code": "cue_budget",
+                    "msg": f"{count} sfx cues in 60s window starting at {t:.2f}s exceeds max {max_per_minute} per minute",
+                })
+                break
     return iss
 
 
