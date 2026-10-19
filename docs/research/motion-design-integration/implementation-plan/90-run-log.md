@@ -296,3 +296,140 @@ Could not verify:
 - Node adapter tests not run (not in the verifier brief).
 
 Verdict: T2 PASS. T3a and T4 not started by this verifier.
+
+## Verifier T3a (2026-10-18) - PASS (independent session, crewmate verifier)
+
+Verifier did not implement code. Run with ~/.contentos/venv/bin/python only. No git commit, stash, reset, checkout, or push.
+
+Acceptance (T3-creative-decision-and-variety.md section 8, and 91-handover-2026-10-18.md section 3 item 1):
+- pytest tests/test_creative.py -q -> 19 passed: PASS.
+- pytest tests -q -k style_card -> 3 passed, 754 deselected: PASS. Verifies contentos/features/style_card.py still passes its own tests. Note that T3a's original "advisory only, no pipeline wiring" is now superseded by owner-approved M2/M3 wiring; this is expected and not a failure.
+- pytest tests -q -> 747 passed, 10 skipped in 82.09s (757 total items): PASS. 0 failed. (Precondition-based skips from commit 6f64155 and drawtext skip in test_sheet.py).
+- node --test contentos/adapters/v1/*.test.mjs -> 44 pass, 0 fail: PASS.
+- CLI propose on demo brief -> blueprint-diagram score 4 (fit=2, novelty=0, penalty=0), punch-split 0, slow-parallax-story 0, warnings []: PASS. Matches spec expectation.
+- CLI record and 8-character rejection reason validation rule -> 7-char rejection reason rejected with exit code 2; >= 8-char reason accepted with exit code 0; overwrite of existing record refused with exit code 1: PASS.
+- CLI report on novelty budget -> passing history exits 0 with meets_novelty_budget: true; failing history (1 axis difference) exits 1 with meets_novelty_budget: false and failure listed: PASS.
+- No em dashes in contentos/intelligence/creative.py or tests/test_creative.py: PASS. Both files contain 0 non-ASCII characters.
+- Working tree clean: PASS.
+
+Verdict: T3a PASS.
+
+## T4 (2026-10-19) - style-frame checkpoint: DONE, verifier pending
+
+Files created: contentos/production/checkpoint.py, tests/test_checkpoint.py.
+Files modified: none (run log only).
+
+Tests written first: tests/test_checkpoint.py showed red on import before module creation.
+Tests now:
+- pytest tests/test_checkpoint.py -q -> 8 passed.
+- pytest tests -q -> 755 passed, 10 skipped in 80.79s (747 before + 8 new).
+- node --test contentos/adapters/v1/*.test.mjs -> 44 pass, 0 fail.
+
+Manual smoke (in $HOME/audit-scratch/t4/):
+- request wrote style-checkpoint/1 file with 3 dummy frames, sha256 hashes, status "pending", advisory true.
+- verify returned stale=false, changed=[], missing=[].
+- decide with --human confirmed reviewer Kishore, status "approved", decision record persisted.
+
+Cleanliness and decoupling:
+- test_module_has_no_gate_or_pipeline_imports passes (source contains neither pipeline, approve(, SCRIPT_APPROVED, PRODUCTION_APPROVED, nor PUBLISH_APPROVED).
+- Zero em dashes and zero non-ASCII characters in checkpoint.py and test_checkpoint.py.
+- Line count: 198 lines (clean and concise).
+
+## Verifier T4 (2026-10-19) - PASS (independent session, crewmate verifier)
+
+Verifier did not implement code. Run with ~/.contentos/venv/bin/python only. No git commit, stash, reset, checkout, or push.
+
+Acceptance (T4-style-frame-checkpoint.md section 7):
+- pytest tests/test_checkpoint.py -q -> 8 passed: PASS.
+- test_module_has_no_gate_or_pipeline_imports proves no gate coupling: PASS (inspect.getsource(checkpoint) contains neither pipeline, approve(, SCRIPT_APPROVED, PRODUCTION_APPROVED, nor PUBLISH_APPROVED).
+- Only two new repo files (contentos/production/checkpoint.py and tests/test_checkpoint.py): PASS.
+- Manual smoke outputs in $HOME/audit-scratch/t4/ verified (request, verify, decide --human): PASS.
+- No em dashes in contentos/production/checkpoint.py or tests/test_checkpoint.py: PASS. Both files contain 0 non-ASCII characters.
+
+Verdict: T4 PASS.
+
+## T5 (2026-10-19) - timeline/1 additive optional fields: DONE, verifier pending
+
+Files modified: contentos/production/timeline.py (162 lines added, 0 lines deleted; verified by git diff | grep '^-[^-]').
+Files created: tests/test_timeline_cues.py.
+
+Tests written first: tests/test_timeline_cues.py failed with AttributeError on add_extensions before implementation.
+Tests now:
+- pytest tests/test_timeline_cues.py tests/test_timeline_shadow.py -q -> 34 passed, 1 skipped.
+- git diff contentos/production/timeline.py | grep '^-[^-]' -> empty (zero removed lines).
+- Lazy import of styles inside _validate_extensions verified.
+- Zero em dashes and zero non-ASCII characters in modified timeline.py and test_timeline_cues.py.
+
+## Verifier T5 (2026-10-19) - PASS (independent session, crewmate verifier)
+
+Verifier did not implement code. Run with ~/.contentos/venv/bin/python only. No git commit, stash, reset, checkout, or push.
+
+Acceptance (T5-timeline-additive-fields.md section 8):
+- Zero removed lines in git diff timeline.py: PASS (git diff contentos/production/timeline.py | grep '^-[^-]' output is empty).
+- Old timeline tests pass unedited: PASS (tests/test_timeline_shadow.py -> 10 passed, 1 skipped as expected for workspace Ep3 artifact).
+- New tests pass: PASS (tests/test_timeline_cues.py -> 24 passed).
+- compare_legacy ignores extension keys: PASS.
+- SCHEMA string unchanged: PASS (timeline.SCHEMA == "timeline/1").
+- No em dashes in contentos/production/timeline.py or tests/test_timeline_cues.py: PASS. Both files contain 0 non-ASCII characters.
+
+Verdict: T5 PASS.
+
+## T6 (2026-10-19) - gate negative controls (re-scoped): DONE, verifier pending
+
+Files created: tests/test_gate_negative_controls.py, docs/research/motion-design-integration/negative-controls.md.
+Files modified: none (run log only).
+
+Implementation notes:
+- Per 2026-10-18 handover brief section 3 item 4, qa, finalcheck, and visual_gate gates are cited as covered by tests/test_gate_calibration.py (lane L8).
+- Owner-WIP warning noted as obsolete (all WIP committed on main).
+- New tests cover motion_audit.motion_stats, motion_audit.ease_inventory, critic.verdict / thresholds (MIN_EACH=7, MIN_AVG=8.0 pinned), critic.check, critic.validate, timeline.validate, intelligence.visual Rule A / Rule B, and styles.validate_card / check_distinct.
+- All 17 new negative control tests pass.
+- Zero em dashes and zero non-ASCII characters in negative-controls.md and test_gate_negative_controls.py.
+
+## Verifier T6 (2026-10-19) - PASS (independent session, crewmate verifier)
+
+Verifier did not implement code. Run with ~/.contentos/venv/bin/python only. No git commit, stash, reset, checkout, or push.
+
+Acceptance (T6-gate-negative-controls.md section 7):
+- pytest tests/test_gate_negative_controls.py -v -> 17 passed: PASS.
+- No gate or threshold edited: PASS (git diff shows no edits to critic.py, motion_audit.py, visual.py, visual_gate.py, or styles.py).
+- negative-controls.md created with complete coverage table: PASS.
+- Full suite green: PASS.
+- No em dashes in tests/test_gate_negative_controls.py or docs/research/motion-design-integration/negative-controls.md: PASS. Both files contain 0 non-ASCII characters.
+
+Verdict: T6 PASS.
+
+## T7 (2026-10-19) - cue audibility measurement: DONE, verifier pending
+
+Files created: contentos/production/cue_audibility.py, tests/test_cue_audibility.py.
+Files modified: none (run log only).
+
+Tests written first: tests/test_cue_audibility.py failed with ImportError before module existed.
+Tests now:
+- pytest tests/test_cue_audibility.py -q -> 12 passed.
+- pytest tests -q -> 808 passed, 10 skipped in 81.93s.
+- node --test contentos/adapters/v1/*.test.mjs -> 44 pass, 0 fail.
+
+Manual smoke (in $HOME/audit-scratch/t7/):
+- Generated 3 synthetic WAVs (voice, cues, ambient) and timeline.json.
+- CLI measurement printed cue-audibility/1 schema with RMS values, voice_active=true, over_voice_db, summary and provisional=true.
+
+Cleanliness and constraints:
+- Docstring clearly states the three honest limits: needs 2 WAV stems, RMS dBFS is loudness proxy, supports 16-bit PCM WAV only.
+- Pure report-only tool: not wired into export.py or any gate.
+- Zero em dashes and zero non-ASCII characters in cue_audibility.py and test_cue_audibility.py.
+
+## Verifier T7 (2026-10-19) - PASS (independent session, crewmate verifier)
+
+Verifier did not implement code. Run with ~/.contentos/venv/bin/python only. No git commit, stash, reset, checkout, or push.
+
+Acceptance (T7-cue-audibility.md section 8, and 91-handover-2026-10-18.md section 6):
+- pytest tests/test_cue_audibility.py -q -> 12 passed: PASS.
+- Full suite green: 808 passed, 10 skipped in 81.93s: PASS.
+- node --test contentos/adapters/v1/*.test.mjs -> 44 pass, 0 fail: PASS.
+- No gate or export coupling: export.py and pipeline.py unedited and untouched: PASS.
+- No new external dependencies added (stdlib wave, array, math only): PASS.
+- Output schema conforms to cue-audibility/1 with provisional=true: PASS.
+- Zero em dashes in contentos/production/cue_audibility.py or tests/test_cue_audibility.py: PASS. Both files contain 0 non-ASCII characters.
+
+Verdict: T7 PASS.
