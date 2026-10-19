@@ -58,7 +58,7 @@ def visual_layer_hook(
     enriched_html = scene_html.replace(old_tag_start, new_tag_start, 1)
 
     # Style-card family awareness for container craft
-    style_id = (ctx.get("style_card") or {}).get("chosen") or spec.get("style") or ""
+    style_id = (ctx.get("style_card") or {}).get("id") or spec.get("style") or ""
 
     if "sketch" in style_id:
         card_style = (
