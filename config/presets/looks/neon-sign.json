@@ -1,0 +1,34 @@
+{
+  "schema": "look/1",
+  "id": "neon-sign",
+  "name": "Neon sign",
+  "kind": "look",
+  "summary": "A flickering neon outline around the speaker and neon-sign words on a dark set.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "segmentation"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#05010f",
+    "fg": "#ffffff",
+    "accent": "#ff00e5"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 4
+  },
+  "captions": "neon-sign words for key points",
+  "texture": [
+    "neon-glow"
+  ],
+  "effects": [
+    "neon-outline-trace"
+  ]
+}

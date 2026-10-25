@@ -1,0 +1,19 @@
+{
+  "schema": "look/1",
+  "id": "confetti-beat",
+  "name": "Confetti on beat",
+  "kind": "effect",
+  "summary": "A burst of confetti or paint on strong beats.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "beat-detection"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "beat",
+  "params": {
+    "burst": "on-kick",
+    "limit_per_bar": 1
+  }
+}

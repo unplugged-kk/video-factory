@@ -1,0 +1,34 @@
+{
+  "schema": "look/1",
+  "id": "red-collage-bw",
+  "name": "Red collage black and white",
+  "kind": "look",
+  "summary": "Black and white footage, cut-out collage type and paper textures with one glowing red word.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#0d0d0d",
+    "fg": "#f2f2f2",
+    "accent": "#ff1f1f"
+  },
+  "typography": {
+    "display": "Anton",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 4
+  },
+  "captions": "collage cut-out words",
+  "texture": [
+    "paper-cutout"
+  ],
+  "effects": [
+    "bw-red-word",
+    "punch-in-zoom"
+  ]
+}

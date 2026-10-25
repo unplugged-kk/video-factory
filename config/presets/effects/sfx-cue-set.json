@@ -1,0 +1,27 @@
+{
+  "schema": "look/1",
+  "id": "sfx-cue-set",
+  "name": "Sound cue set",
+  "kind": "effect",
+  "summary": "Short sound cues on the same moments as the visuals (cuts, numbers, stings); none unless music is allowed.",
+  "family": "any",
+  "status": "unvalidated",
+  "needs": [
+    "core"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "scene",
+  "params": {
+    "cues": [
+      "whoosh",
+      "ding",
+      "sting"
+    ],
+    "max_per_minute": 8
+  },
+  "audio": [
+    "whoosh",
+    "ding",
+    "sting"
+  ]
+}

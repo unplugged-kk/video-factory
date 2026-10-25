@@ -1,0 +1,34 @@
+{
+  "schema": "look/1",
+  "id": "aged-paper-rain",
+  "name": "Aged paper and rain",
+  "kind": "look",
+  "summary": "A calm lyric look: script lines write on over old paper while rain falls and footprints cross the page.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#e8d8b0",
+    "fg": "#3b2f2f",
+    "accent": "#6b8f9e"
+  },
+  "typography": {
+    "display": "Noto Sans Devanagari",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 1
+  },
+  "captions": "large lines, written on",
+  "texture": [
+    "paper-grain",
+    "rain"
+  ],
+  "effects": [
+    "handwriting-write-on"
+  ]
+}

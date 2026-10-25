@@ -1,0 +1,33 @@
+{
+  "schema": "look/1",
+  "id": "tv-news",
+  "name": "TV news",
+  "kind": "look",
+  "summary": "A red breaking lower third, a ticker of short headlines and a generic channel bug.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#101820",
+    "fg": "#ffffff",
+    "accent": "#d00000"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 3
+  },
+  "captions": "lower-third captions",
+  "texture": [
+    "flat-ui"
+  ],
+  "effects": [
+    "channel-chyron-ticker"
+  ]
+}

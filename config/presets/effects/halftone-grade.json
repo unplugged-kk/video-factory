@@ -1,0 +1,18 @@
+{
+  "schema": "look/1",
+  "id": "halftone-grade",
+  "name": "Halftone grade",
+  "kind": "effect",
+  "summary": "Turn footage into a halftone comic look inside a thick panel border.",
+  "family": "any",
+  "status": "unvalidated",
+  "needs": [
+    "core"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "always",
+  "params": {
+    "dots": "halftone",
+    "border_px": 12
+  }
+}

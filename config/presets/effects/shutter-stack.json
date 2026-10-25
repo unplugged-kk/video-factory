@@ -1,0 +1,27 @@
+{
+  "schema": "look/1",
+  "id": "shutter-stack",
+  "name": "Shutter stack",
+  "kind": "effect",
+  "summary": "On each beat flash white and drop a photo card at a slight angle onto a stack with soft shadows.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "beat-detection",
+    "supplied-media"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "beat",
+  "params": {
+    "flash": "white",
+    "angle_deg": [
+      -6,
+      6
+    ],
+    "shadow": "soft"
+  },
+  "audio": [
+    "shutter"
+  ]
+}

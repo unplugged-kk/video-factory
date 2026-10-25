@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "flat-cartoon-narrator",
+  "name": "Flat cartoon narrator",
+  "kind": "look",
+  "summary": "Flat cartoon cast acts out a spoken story while the speaker talks from a lip-synced corner badge.",
+  "family": "story",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#1c2541",
+    "fg": "#ffffff",
+    "accent": "#f4a300"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Noto Sans Devanagari"
+  },
+  "motion": {
+    "intensity": 3
+  },
+  "captions": "3-5 word chunks, active word in an accent pill",
+  "texture": [
+    "flat-fill",
+    "starry-backdrop"
+  ],
+  "effects": [
+    "lip-sync-mouth",
+    "speech-bubble-pop"
+  ]
+}

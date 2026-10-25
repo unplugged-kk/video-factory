@@ -1,0 +1,20 @@
+{
+  "schema": "look/1",
+  "id": "bw-red-word",
+  "name": "Black and white with a red word",
+  "kind": "effect",
+  "summary": "Strong-contrast black and white footage; one key word per sentence glows red; quick shake on emphasis.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "sentence",
+  "params": {
+    "grade": "bw-contrast",
+    "glow_word": "one-per-sentence",
+    "shake_px": 6
+  }
+}

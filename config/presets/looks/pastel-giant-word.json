@@ -1,0 +1,34 @@
+{
+  "schema": "look/1",
+  "id": "pastel-giant-word",
+  "name": "Pastel giant word",
+  "kind": "look",
+  "summary": "A soft pastel set with one giant topic word behind the speaker, changing per point.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "segmentation"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#fbd5e0",
+    "fg": "#2a2a2a",
+    "accent": "#7b5ea7"
+  },
+  "typography": {
+    "display": "Noto Sans Devanagari",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 3
+  },
+  "captions": "2-3 words, active word highlighted",
+  "texture": [
+    "flat-pastel"
+  ],
+  "effects": [
+    "cutout-behind-text"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "look/1",
+  "id": "cutaway-highlight",
+  "name": "Cutaway with highlight",
+  "kind": "effect",
+  "summary": "Cut to the supplied page or slide when it is mentioned and highlight the exact line.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "supplied-media",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "keyword",
+  "params": {
+    "source": "supplied-document",
+    "highlight": "line"
+  }
+}

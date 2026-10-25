@@ -1,0 +1,26 @@
+{
+  "schema": "look/1",
+  "id": "lip-sync-mouth",
+  "name": "Lip-sync mouth",
+  "kind": "effect",
+  "summary": "Open and close a drawn mouth from the loudness of that character's own voice; add blinks and small idle motion.",
+  "family": "story",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "word",
+  "params": {
+    "mouth_source": "voice-loudness",
+    "blink_every_s": [
+      3,
+      5
+    ],
+    "idle_motion_px": 2
+  },
+  "forbidden": [
+    "guessing mouth timing without the voice audio"
+  ]
+}

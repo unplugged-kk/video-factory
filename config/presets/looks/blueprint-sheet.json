@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "blueprint-sheet",
+  "name": "Blueprint sheet",
+  "kind": "look",
+  "summary": "A blue grid sheet with white line drawings and numbers that calculate live as they are spoken.",
+  "family": "explainer",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "chart-data"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#0b3d91",
+    "fg": "#ffffff",
+    "accent": "#9fd3ff"
+  },
+  "typography": {
+    "display": "Space Mono",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 2
+  },
+  "captions": "lower band, mono type",
+  "texture": [
+    "grid"
+  ],
+  "effects": [
+    "glass-stat-card"
+  ],
+  "base_style": "blueprint-diagram"
+}

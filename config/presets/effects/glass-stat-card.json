@@ -1,0 +1,24 @@
+{
+  "schema": "look/1",
+  "id": "glass-stat-card",
+  "name": "Glass stat card",
+  "kind": "effect",
+  "summary": "A frosted blurred card over the footage with a label and a number that counts up from zero as it is spoken.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "number",
+  "params": {
+    "count_from": 0,
+    "blur_px": 24,
+    "exit": "slide"
+  },
+  "safe_zone": true,
+  "frame_checklist": [
+    "the number matches the spoken value"
+  ]
+}

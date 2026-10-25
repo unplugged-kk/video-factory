@@ -1,0 +1,38 @@
+{
+  "schema": "look/1",
+  "id": "crayon-chalkboard",
+  "name": "Crayon chalkboard",
+  "kind": "look",
+  "summary": "Pastel crayon on a dark board: words write on as sung, each line gets a doodle.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "vocal-separation",
+    "beat-detection"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#14213d",
+    "fg": "#fdf0d5",
+    "accent": "#ffd166"
+  },
+  "typography": {
+    "display": "Permanent Marker",
+    "body": "Kalam"
+  },
+  "motion": {
+    "intensity": 3
+  },
+  "captions": "written on, letter by letter",
+  "texture": [
+    "crayon-grain",
+    "chalk-dust"
+  ],
+  "effects": [
+    "handwriting-write-on",
+    "doodle-per-line",
+    "confetti-beat"
+  ]
+}

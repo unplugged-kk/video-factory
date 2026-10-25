@@ -1,0 +1,33 @@
+{
+  "schema": "look/1",
+  "id": "dark-red-rec",
+  "name": "Dark red REC",
+  "kind": "look",
+  "summary": "A dark red grade, a blinking REC dot and an animated editing timeline.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#1a0000",
+    "fg": "#ffffff",
+    "accent": "#ff1a1a"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 3
+  },
+  "captions": "bold red key words",
+  "texture": [
+    "red-grade"
+  ],
+  "effects": [
+    "rec-timecode-timeline"
+  ]
+}

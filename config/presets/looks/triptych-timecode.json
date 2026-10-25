@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "triptych-timecode",
+  "name": "Triptych timecode",
+  "kind": "look",
+  "summary": "Three clips in three vertical panels, each with its own timecode; the speaking panel is highlighted.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "supplied-media"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#000000",
+    "fg": "#ffffff",
+    "accent": "#ffcc00"
+  },
+  "typography": {
+    "display": "Space Mono",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 3
+  },
+  "captions": "per-panel",
+  "texture": [
+    "mono"
+  ],
+  "effects": [
+    "rec-timecode-timeline"
+  ],
+  "layout": "three-panels"
+}

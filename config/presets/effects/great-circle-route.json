@@ -1,0 +1,28 @@
+{
+  "schema": "look/1",
+  "id": "great-circle-route",
+  "name": "Great-circle route",
+  "kind": "effect",
+  "summary": "Fly a marker along the true great-circle route between two places with a dashed trail and a running distance counter.",
+  "family": "explainer",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "map-data"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "scene",
+  "params": {
+    "route": "great-circle",
+    "trail": "dashed",
+    "counter": "km",
+    "camera": [
+      "close-start",
+      "follow",
+      "close-end"
+    ]
+  },
+  "forbidden": [
+    "hand-drawn route line"
+  ]
+}

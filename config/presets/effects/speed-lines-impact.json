@@ -1,0 +1,26 @@
+{
+  "schema": "look/1",
+  "id": "speed-lines-impact",
+  "name": "Speed lines and impact",
+  "kind": "effect",
+  "summary": "Speed lines, a one or two frame impact flash and a short screen shake on key lines.",
+  "family": "story",
+  "status": "unvalidated",
+  "needs": [
+    "core"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "keyword",
+  "params": {
+    "speed_lines": true,
+    "impact_frames": 2,
+    "shake_px": 12,
+    "duration_frames": 8
+  },
+  "audio": [
+    "hit"
+  ],
+  "forbidden": [
+    "more than one impact per 3 seconds"
+  ]
+}

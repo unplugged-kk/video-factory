@@ -1,0 +1,32 @@
+{
+  "schema": "look/1",
+  "id": "tier-board",
+  "name": "Tier board",
+  "kind": "effect",
+  "summary": "A ranking board (top tier to bottom) where each item slides into its row on the word and a big grade pops with a cue.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "word",
+  "params": {
+    "tiers": [
+      "S",
+      "A",
+      "B",
+      "C",
+      "D",
+      "F"
+    ],
+    "grade_pop": true
+  },
+  "audio": [
+    "grade"
+  ],
+  "frame_checklist": [
+    "end on the complete board"
+  ]
+}

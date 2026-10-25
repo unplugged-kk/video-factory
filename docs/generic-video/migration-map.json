@@ -1,0 +1,422 @@
+{
+  "schema": "migration-map/1",
+  "note": "Old spec name -> where its technique lives now. kind says whether the spec became a look/effect preset or only a capability workflow. Nothing was deleted: the specs were never installed as skills.",
+  "specs": {
+    "anime-reel": {
+      "kind": "look",
+      "presets": [
+        "anime-cel"
+      ],
+      "capabilities": [
+        "storyboard-director",
+        "video-understanding"
+      ]
+    },
+    "titan-anime": {
+      "kind": "look",
+      "presets": [
+        "anime-cel"
+      ],
+      "capabilities": [
+        "storyboard-director"
+      ]
+    },
+    "anime-fight": {
+      "kind": "look",
+      "presets": [
+        "anime-cel",
+        "speed-lines-impact"
+      ],
+      "capabilities": [
+        "storyboard-director"
+      ]
+    },
+    "madhubani-kahani": {
+      "kind": "look",
+      "presets": [
+        "folk-art-painting"
+      ],
+      "capabilities": [
+        "storyboard-director",
+        "video-understanding"
+      ]
+    },
+    "katha-video": {
+      "kind": "look",
+      "presets": [
+        "flat-cartoon-narrator"
+      ],
+      "capabilities": [
+        "video-understanding",
+        "storyboard-director"
+      ]
+    },
+    "pusho-reel": {
+      "kind": "look",
+      "presets": [
+        "flat-cartoon-narrator"
+      ],
+      "capabilities": [
+        "storyboard-director"
+      ]
+    },
+    "latent-reel": {
+      "kind": "look",
+      "presets": [
+        "flat-cartoon-narrator"
+      ],
+      "capabilities": [
+        "storyboard-director"
+      ]
+    },
+    "comic-reel": {
+      "kind": "look",
+      "presets": [
+        "comic-halftone"
+      ],
+      "capabilities": [
+        "storyboard-director"
+      ]
+    },
+    "mirzapur-video": {
+      "kind": "look",
+      "presets": [
+        "comic-halftone"
+      ],
+      "capabilities": []
+    },
+    "podcast-cartoon": {
+      "kind": "look",
+      "presets": [
+        "stick-figure-explainer",
+        "flat-cartoon-narrator"
+      ],
+      "capabilities": [
+        "video-understanding"
+      ]
+    },
+    "podcast-explainer": {
+      "kind": "look",
+      "presets": [
+        "stick-figure-explainer"
+      ],
+      "capabilities": [
+        "video-understanding",
+        "storyboard-director"
+      ]
+    },
+    "lyric-video": {
+      "kind": "look",
+      "presets": [
+        "crayon-chalkboard"
+      ],
+      "capabilities": [
+        "lyric-video-engine"
+      ]
+    },
+    "hindi-lyric-video": {
+      "kind": "look",
+      "presets": [
+        "aged-paper-rain"
+      ],
+      "capabilities": [
+        "lyric-video-engine"
+      ]
+    },
+    "sketch-music-video": {
+      "kind": "look",
+      "presets": [
+        "pencil-sketch"
+      ],
+      "capabilities": [
+        "lyric-video-engine"
+      ]
+    },
+    "kinetic-lyrics": {
+      "kind": "look",
+      "presets": [
+        "kinetic-black"
+      ],
+      "capabilities": [
+        "lyric-video-engine"
+      ]
+    },
+    "ink-line-lyrics": {
+      "kind": "look",
+      "presets": [
+        "ink-line-glow"
+      ],
+      "capabilities": [
+        "lyric-video-engine"
+      ]
+    },
+    "party-lyrics": {
+      "kind": "look",
+      "presets": [
+        "gold-party-3d"
+      ],
+      "capabilities": [
+        "lyric-video-engine"
+      ]
+    },
+    "personal-explainer": {
+      "kind": "capability",
+      "presets": [],
+      "capabilities": [
+        "storyboard-director",
+        "video-understanding"
+      ]
+    },
+    "blueprint-explainer": {
+      "kind": "look",
+      "presets": [
+        "blueprint-sheet"
+      ],
+      "capabilities": [
+        "storyboard-director"
+      ]
+    },
+    "news-report": {
+      "kind": "look",
+      "presets": [
+        "flat-dark-news"
+      ],
+      "capabilities": [
+        "research",
+        "storyboard-director"
+      ]
+    },
+    "watercolor-map": {
+      "kind": "look",
+      "presets": [
+        "watercolor-wash",
+        "great-circle-route"
+      ],
+      "capabilities": []
+    },
+    "sketch-to-motion": {
+      "kind": "look",
+      "presets": [
+        "sketch-beside-motion"
+      ],
+      "capabilities": [
+        "asset-library"
+      ]
+    },
+    "talking-head-edit": {
+      "kind": "capability",
+      "presets": [],
+      "capabilities": [
+        "talking-head-editor",
+        "video-understanding"
+      ]
+    },
+    "personal-short-form-reels": {
+      "kind": "capability",
+      "presets": [],
+      "capabilities": [
+        "talking-head-editor",
+        "asset-library"
+      ]
+    },
+    "personal-broll-library": {
+      "kind": "capability",
+      "presets": [],
+      "capabilities": [
+        "asset-library"
+      ]
+    },
+    "depth-ui-reel": {
+      "kind": "look",
+      "presets": [
+        "floating-interface-depth"
+      ],
+      "capabilities": [
+        "talking-head-editor"
+      ]
+    },
+    "youtube-clips": {
+      "kind": "capability",
+      "presets": [],
+      "capabilities": [
+        "talking-head-editor",
+        "video-understanding"
+      ]
+    },
+    "educational-youtube-editor": {
+      "kind": "capability",
+      "presets": [],
+      "capabilities": [
+        "talking-head-editor",
+        "video-understanding"
+      ]
+    },
+    "ranking-format": {
+      "kind": "effect",
+      "presets": [
+        "tier-board"
+      ],
+      "capabilities": [
+        "talking-head-editor"
+      ]
+    },
+    "business-short-form-reels": {
+      "kind": "look",
+      "presets": [
+        "corporate-docs"
+      ],
+      "capabilities": [
+        "talking-head-editor"
+      ]
+    },
+    "match-cut": {
+      "kind": "effect",
+      "presets": [
+        "match-cut-keyword"
+      ],
+      "capabilities": []
+    },
+    "shutter-stack": {
+      "kind": "effect",
+      "presets": [
+        "shutter-stack"
+      ],
+      "capabilities": []
+    },
+    "led-matrix-text": {
+      "kind": "effect",
+      "presets": [
+        "led-matrix-word"
+      ],
+      "capabilities": []
+    },
+    "glass-stat-card": {
+      "kind": "effect",
+      "presets": [
+        "glass-stat-card"
+      ],
+      "capabilities": []
+    },
+    "particle-chart": {
+      "kind": "effect",
+      "presets": [
+        "particle-chart"
+      ],
+      "capabilities": []
+    },
+    "particle-text": {
+      "kind": "effect",
+      "presets": [
+        "particle-text"
+      ],
+      "capabilities": []
+    },
+    "price-tag-zoom": {
+      "kind": "effect",
+      "presets": [
+        "price-tag-zoom"
+      ],
+      "capabilities": []
+    },
+    "podcast-reel-edit": {
+      "kind": "look",
+      "presets": [
+        "podcast-clean-cuts"
+      ],
+      "capabilities": [
+        "talking-head-editor"
+      ]
+    },
+    "dark-red-timeline-motion-graphics": {
+      "kind": "look",
+      "presets": [
+        "dark-red-rec"
+      ],
+      "capabilities": []
+    },
+    "instagram-ui-hinglish": {
+      "kind": "look",
+      "presets": [
+        "social-profile-grid"
+      ],
+      "capabilities": []
+    },
+    "hindi-pastel-reel-edit": {
+      "kind": "look",
+      "presets": [
+        "pastel-giant-word"
+      ],
+      "capabilities": []
+    },
+    "kinetic-talking-head-edit": {
+      "kind": "look",
+      "presets": [
+        "cream-kinetic-panel"
+      ],
+      "capabilities": []
+    },
+    "red-kinetic-collage-edit": {
+      "kind": "look",
+      "presets": [
+        "red-collage-bw"
+      ],
+      "capabilities": []
+    },
+    "iphone-style-by-aansh": {
+      "kind": "look",
+      "presets": [
+        "frosted-mobile-ui"
+      ],
+      "capabilities": []
+    },
+    "rgb-glitch-live": {
+      "kind": "look",
+      "presets": [
+        "rgb-glitch-news"
+      ],
+      "capabilities": []
+    },
+    "magazine-cover": {
+      "kind": "look",
+      "presets": [
+        "magazine-masthead"
+      ],
+      "capabilities": []
+    },
+    "comic-halftone": {
+      "kind": "look",
+      "presets": [
+        "comic-halftone"
+      ],
+      "capabilities": []
+    },
+    "breaking-news": {
+      "kind": "look",
+      "presets": [
+        "tv-news"
+      ],
+      "capabilities": []
+    },
+    "neon-outline": {
+      "kind": "look",
+      "presets": [
+        "neon-sign"
+      ],
+      "capabilities": []
+    },
+    "cinema-scope": {
+      "kind": "look",
+      "presets": [
+        "cinema-scope"
+      ],
+      "capabilities": []
+    },
+    "triptych-timecode": {
+      "kind": "look",
+      "presets": [
+        "triptych-timecode"
+      ],
+      "capabilities": []
+    }
+  }
+}

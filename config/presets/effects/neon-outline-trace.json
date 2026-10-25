@@ -1,0 +1,23 @@
+{
+  "schema": "look/1",
+  "id": "neon-outline-trace",
+  "name": "Neon outline trace",
+  "kind": "effect",
+  "summary": "Trace the subject outline each frame with a glowing line that flickers slightly; darken the background.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "segmentation"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "always",
+  "params": {
+    "line": "neon",
+    "flicker": 0.03,
+    "bg_darken": 0.5
+  },
+  "forbidden": [
+    "covering the face with glow"
+  ]
+}

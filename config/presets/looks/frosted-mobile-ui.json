@@ -1,0 +1,33 @@
+{
+  "schema": "look/1",
+  "id": "frosted-mobile-ui",
+  "name": "Frosted mobile UI",
+  "kind": "look",
+  "summary": "Frosted glass widgets and notifications floating over the footage in a light, clean mobile style.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#eef2f7",
+    "fg": "#111827",
+    "accent": "#3b82f6"
+  },
+  "typography": {
+    "display": "Inter",
+    "body": "Inter"
+  },
+  "motion": {
+    "intensity": 2
+  },
+  "captions": "clean sans, active word bold",
+  "texture": [
+    "frosted-glass"
+  ],
+  "effects": [
+    "glass-stat-card"
+  ]
+}
