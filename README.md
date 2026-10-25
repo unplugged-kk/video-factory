@@ -113,7 +113,7 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 | yt-* skills (11) | installed in `~/.claude/skills`, hookscore.py + title.py verified |
 | Kokoro TTS | live, ~3.6 s per short line warm |
 | hyperframes render | live, 24 s 1080x1920 video in 9.8 s |
-| Generic video system | built and verified 2026-10-25: 30 looks + 27 effects, the `videojob/1` selector, all 51 old specs migrated. Three capabilities still `planned`; a named look does not change the render yet |
+| Generic video system | built and verified 2026-10-25: 30 looks + 27 effects, the `videojob/1` selector, `asset-library` (index and search local media), all 51 old specs migrated. `talking-head-editor` and `lyric-video-engine` are still `planned`; a named look does not change the render yet |
 | QA (ffprobe/ffmpeg) | live: resolution, fps, duration, audio, loudness, clipping, black, frozen |
 | Provider routing + paid block | live, tested |
 | Approval gates | live: voice needs SCRIPT_APPROVED, render needs PRODUCTION_APPROVED |

@@ -39,7 +39,8 @@ IMPLEMENTED_BY = {
     "motion-graphics-engine": {"state": "exists", "by": ".claude/skills/explainer-motion-craft"},
     "talking-head-editor": {"state": "planned", "by": None},
     "lyric-video-engine": {"state": "planned", "by": None},
-    "asset-library": {"state": "planned", "by": None},
+    "asset-library": {"state": "exists", "by": "contentos/production/assets.py",
+                      "note": "an ffprobe index, sampled frames, agent-written notes and search over them"},
     "video-renderer": {"state": "exists", "by": "contentos/renderers/registry.py"},
     "video-quality-checker": {"state": "exists", "by": "contentos/qa.py"},
 }

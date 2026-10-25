@@ -198,8 +198,10 @@ labelled sheet has been generated successfully on this Mac and its labels inspec
 **Generic video system (state 2026-10-25, `feat/generic-video-system`).** Built and tested: the universal
 `create-video` entry, the `look/1` library (30 looks, 27 effects in `config/presets/`), the `videojob/1` selector
 and the 51-spec migration map; `docs/generic-video/verification.md` holds the commands and their output. Not
-built: `talking-head-editor`, `lyric-video-engine` and `asset-library` are `planned` and a request that needs one
-must say so instead of faking it; `video-understanding` does word timing only (no beat detection, vocal separation
+built: `talking-head-editor` and `lyric-video-engine` are `planned` and a request that needs one must say so
+instead of faking it, while `asset-library` exists (`contentos/production/assets.py`: an ffprobe index, sampled
+frames, notes written by whoever looks at them, and plain-English search over them — the code never writes a
+description itself); `video-understanding` does word timing only (no beat detection, vocal separation
 or diarization). Every preset is `unvalidated` and no procedure promotes one. **A chosen look is not read by the
 builder**, so naming a style changes no frame until `features/style_card.py` and the hardcoded backdrop table in
 `features/visual_layer.py` consume it. The tag `look/1` names two shapes — a preset in `config/presets/` and the
