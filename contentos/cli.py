@@ -88,6 +88,18 @@ def cmd_preview(a):
     return 0
 
 
+def cmd_looks(a):
+    """look/1 presets. Delegates so the exit code (1 = problems, 2 = unreadable) survives to the shell."""
+    from .intelligence import looks
+    return looks.main(a.args)
+
+
+def cmd_videojob(a):
+    """videojob/1 selector. Delegates so a blocker (exit 1) is visible to whatever ran the command."""
+    from . import videojob
+    return videojob.main(a.args)
+
+
 def _subject_digest(content_id, gate, spec_arg):
     """Digest of the artifact an approval covers, read from disk now, or None when it cannot be determined (the gate is
     then unbound). The spec comes from --spec, else from the one the job's last run recorded in its manifest."""
@@ -244,6 +256,12 @@ def main():
     w = sp.add_parser("worker"); w.add_argument("--concurrency", type=int, default=2); w.add_argument("--once", action="store_true", help="drain the queue then exit"); w.set_defaults(f=cmd_worker)
     from . import storage_cli
     storage_cli.register(sp)
+    lk = sp.add_parser("looks", help="look/1 presets: validate, list, show, combine")
+    lk.add_argument("args", nargs=argparse.REMAINDER, help="validate | list [--kind look|effect] | show ID | combine BASE OVERLAY")
+    lk.set_defaults(f=cmd_looks)
+    vj = sp.add_parser("videojob", help="videojob/1 workflows: select, validate")
+    vj.add_argument("args", nargs=argparse.REMAINDER, help="select [--intent I] --input kind[:ref] ... | validate MANIFEST.json")
+    vj.set_defaults(f=cmd_videojob)
     fw = sp.add_parser("factory-worker", help="ContentForge v1 queue worker (exchange root: VIDEO_FACTORY_ROOT, default ~/.contentos/exchange)")
     fw.add_argument("--once", action="store_true", help="process available jobs then exit")
     fw.add_argument("--port", type=int, default=4300, help="manifest.json HTTP port for processingReady (0 = any free port)")
