@@ -20,11 +20,13 @@ end to end and [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the step-by-step r
 ./contentos.sh recommend <content_id>           # PUBLISH/HOLD/REVISE/ABANDON with reasons
 ./contentos.sh research "topic"                # last30days dossier (Reddit+HN keyless)
 ./contentos.sh competitor <youtube-url...>      # teardown of public videos via agent-reach
+./contentos.sh videojob select --intent create --input topic:"..."   # which capabilities a request needs, and their state
+./contentos.sh looks list --kind look           # 30 looks, 27 effects; show <id> | combine <base> <overlay> | validate
 ./contentos.sh queue add specs/*.yaml --approve-private   # batch; omit flag to park jobs at the gate
 ./contentos.sh worker --concurrency 2 [--once]            # runs queued jobs; queue list / requeue <id>
 ./contentos.sh learn providers|cost|calibration|platforms|packaging
 docker compose up -d                           # container side: MoneyPrinterTurbo (UI :8501, API :8081) + OpenMontage Backlot (:4750)
-~/.contentos/venv/bin/python -m pytest tests    # 15 tests
+~/.contentos/venv/bin/python -m pytest tests    # 848 tests
 ```
 
 Pipeline: `brief > script > voice > compose > render > qa > package > export > publish`. Each stage writes an
@@ -57,6 +59,16 @@ Visual style cards define structural design languages across 6 visual families i
 - `hybrid-craft`: choreographed split layout combining kinetic type and structured comparison cards.
 
 Select a style in your spec via `features.style_card.chosen: "<style-id>"` or `style: "<style-id>"`. See [docs/RENDERERS.md](docs/RENDERERS.md) for full options.
+
+## Generic video system (one entry, many kinds of video)
+`/create-video` (`.claude/skills/create-video/`) takes any request — a video from a topic, script, audio, song, images or data, an edit of a recording, a lyric video, repurposing a long video, or a search of your own B-roll — reads the inputs, and lets the selector decide the workflow:
+
+```bash
+./contentos.sh videojob select --intent create --input topic:"Explain Kubernetes operators"   # ordered capabilities, each with its state
+./contentos.sh looks list --kind look                   # 30 looks, 27 effects: show <id>, combine <base> <overlay>, validate
+```
+
+The workflow comes from the inputs; the look is data (`config/presets/`, schema `look/1`), so a new style is a new JSON file, never a new skill. `edit-video`, `lyric-video`, `repurpose-video` and `video-assets` are thin shortcuts for the same entry. `docs/generic-video/migration-map.json` maps all 51 old topic-specific specs to the look, effect or capability that carries their technique now, and `docs/generic-video/verification.md` records exactly what is verified and what is still planned.
 
 ## ContentForge exchange (v1 worker)
 `./contentos.sh factory-worker` runs the production jobs ContentForge drops into a shared folder. That folder is the **exchange root**:
@@ -101,6 +113,7 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 | yt-* skills (11) | installed in `~/.claude/skills`, hookscore.py + title.py verified |
 | Kokoro TTS | live, ~3.6 s per short line warm |
 | hyperframes render | live, 24 s 1080x1920 video in 9.8 s |
+| Generic video system | built and verified 2026-10-25: 30 looks + 27 effects, the `videojob/1` selector, all 51 old specs migrated. Three capabilities still `planned`; a named look does not change the render yet |
 | QA (ffprobe/ffmpeg) | live: resolution, fps, duration, audio, loudness, clipping, black, frozen |
 | Provider routing + paid block | live, tested |
 | Approval gates | live: voice needs SCRIPT_APPROVED, render needs PRODUCTION_APPROVED |
