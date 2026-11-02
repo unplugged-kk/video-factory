@@ -14,6 +14,8 @@ end to end and [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the step-by-step r
 ./contentos.sh doctor                           # PASS / NOT_INSTALLED / OPTIONAL per provider, with fix commands
 ./contentos.sh route tts                        # which provider wins, and why (local-first policy)
 ./contentos.sh pipeline run examples/youtube-short.yaml --approve-private
+./contentos.sh validate SPEC.yaml               # Studio Track A field check, one JSON object
+./contentos.sh dashboard                        # Creator Studio on http://127.0.0.1:4310
 ./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/<id>/video.mp4
 ./contentos.sh status                           # recent ledger rows
 ./contentos.sh jev status | jev triage "topic"  # decision layer
@@ -21,15 +23,40 @@ end to end and [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the step-by-step r
 ./contentos.sh research "topic"                # last30days dossier (Reddit+HN keyless)
 ./contentos.sh competitor <youtube-url...>      # teardown of public videos via agent-reach
 ./contentos.sh queue add specs/*.yaml --approve-private   # batch; omit flag to park jobs at the gate
-./contentos.sh worker --concurrency 2 [--once]            # runs queued jobs; queue list / requeue <id>
+./contentos.sh worker [--concurrency N] [--once]          # runs queued jobs (default 1); queue list / requeue <id>
 ./contentos.sh learn providers|cost|calibration|platforms|packaging
 docker compose up -d                           # container side: MoneyPrinterTurbo (UI :8501, API :8081) + OpenMontage Backlot (:4750)
-~/.contentos/venv/bin/python -m pytest tests    # 15 tests
+~/.contentos/venv/bin/python -m pytest tests    # 884 tests
+node --test contentos/ui/*.test.mjs contentos/adapters/v1/*.test.mjs   # 69 Node tests
+npx playwright install && npx playwright test   # 6 browser journeys against fixture data
 ```
 
 Pipeline: `brief > script > voice > compose > render > qa > package > export > publish`. Each stage writes an
 artifact under `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<content_id>/` (outside the repo; default `~/Desktop/VideoFactory-Workspace`; the `export` stage copies validated finals to `~/Desktop/Video-Publishing/ready/`, see [docs/STORAGE.md](docs/STORAGE.md)) and resumes (skips) if it exists. A failed stage
-deletes its own artifact so resume never trusts half-built output.
+deletes its own artifact so resume never trusts half-built output. Each stage appends its command, output and verdict to
+`<job>/logs/<stage>.log`, and `pipeline run SPEC --only STAGE --force` deletes the later sentinels and revokes the
+approval gates that stage invalidates.
+
+## Creator Studio (local web UI)
+`./contentos.sh dashboard` serves Creator Studio and the `/api/v1` JSON API on `http://127.0.0.1:4310` (`--port`).
+It is loopback-only: the socket binds `127.0.0.1`, and a request whose `Host` is not `localhost`/`127.0.0.1` gets
+421; writes additionally need the per-session token embedded in the page plus a same-origin `Origin`. The CLI stays
+the source of truth, and every Studio action calls the same function the CLI calls.
+
+Screens: **Jobs** (home, filterable, next action per job), **job workspace** (stage history, per-stage log, previews,
+approvals, rerun, QA, export), **New Job** (Track A spec authoring with live validation and the narration estimate at
+2.5 words/s), **Track B** workbench (intake, register, voice, align, HyperFrames render, QA/critic diagnostics),
+**Queue**, **Health**, **Help**. The frontend is vanilla ES modules in `contentos/ui/`; screens, API contract and
+decisions live in [docs/ui-discovery/creator-studio/](docs/ui-discovery/creator-studio/) (status:
+[rollout](docs/ui-discovery/creator-studio/rollout-status.md)).
+
+What it can do: resume a job through `production run` (never `--approve-private`); grant `SCRIPT_APPROVED` or
+`PRODUCTION_APPROVED` only when the digest shown to the owner still matches the artifact; preview and then confirm a
+one-stage rerun; rerun QA; preview and export into the validated publishing library with a caller-invisible
+destination; read stage logs with secrets redacted; add, list and requeue queue rows.
+
+What it cannot do, by design: publish, `PUBLISH_APPROVED`, `--allow-paid`, `--approve-private`, cancel a running job,
+persist a rejection, start or stop the worker, storage `--apply`, research, competitor inspection, ContentForge.
 
 ## Render lanes
 `render:` in a spec picks the lane. The script, voice, gates and QA are always contentos'; a lane only makes the picture. Detailed guide: [docs/RENDERERS.md](docs/RENDERERS.md).
@@ -111,6 +138,8 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 | MPT lane | live for `mpt.source: local` (full pipeline, QA all PASS, resumes, shows on the dashboard). Pexels/Pixabay/Coverr wired but UNTESTED: no key set, so the per-clip rights record is unverified |
 | OpenMontage | running in Dory (Backlot :4750), no contentos adapter; manual handoff only |
 | Captions | word-highlight captions from whisper.cpp timings (warm 2.9 s per 27 s audio, WER 1.4% on synthetic speech) |
+| Creator Studio (verified 2026-11-02) | live on `127.0.0.1`, served by the stdlib server: `/api/v1` read models, digest-bound approvals, one-stage rerun with downstream invalidation, stage logs, SSE invalidation hints with polling fallback. 884 pytest and 69 Node tests pass; the 6 Playwright journeys need `npx playwright install` first |
+| Studio spec validation (verified 2026-11-02) | `./contentos.sh validate SPEC` returns one JSON object: field errors plus a narration estimate. It checks the Studio's Track A field set, not every optional spec key |
 | Niche discovery, analytics, multi-platform, thumbnails, n8n | planned, not built |
 
 ## Known problems
@@ -118,6 +147,8 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 - `/usr/local/bin/ffmpeg` and `timeout` are x86_64 and die with "bad CPU type" (no Rosetta). `contentos.sh` puts `/opt/homebrew/bin` first. Remove the stale ones when convenient.
 - Template now has word captions but is still minimal (no brand styling, B-roll or thumbnails).
 - `frozen_frames` is a WARN on text slides; expected, tune in `config/quality.yaml`.
+- `validate` (and the Studio New Job form) accept only `content_id`, `title`, `format`, `voice`, `script`, `render`, `kind` and `platform_targets`. A full spec carrying `description`, `tags` or `thumb_text` is reported as unsupported even though `pipeline run` accepts those keys.
+- Playwright browser binaries are not installed on this Mac; `npx playwright install` is required before `npx playwright test`.
 - Old chatterbox voice-clone venv (`~/.voice-clone-venv`) and `~/Desktop/voice-sample.wav` are missing.
 
 Details: [docs/report.md](docs/report.md). Catalog: [research/tool-catalog.yaml](research/tool-catalog.yaml). Capability graph: [registry/capabilities.yaml](registry/capabilities.yaml).
