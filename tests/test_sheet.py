@@ -64,10 +64,25 @@ def test_find_font_uses_the_explicit_path_then_the_environment(tmp_path, monkeyp
     assert sheet.find_font() == str(f)
 
 
+def test_drawtext_probe_treats_an_unrunnable_ffmpeg_as_unavailable(monkeypatch):
+    def bad_cpu(*args, **kwargs):
+        raise OSError(86, "Bad CPU type in executable")
+
+    monkeypatch.setattr(sheet.subprocess, "run", bad_cpu)
+    assert sheet._drawtext_available() is False
+
+
 def drawing_ok():
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         return False
     return sheet._drawtext_available() and sheet.find_font() is not None
+
+
+def ffmpeg_ok():
+    try:
+        return subprocess.run(["ffmpeg", "-version"], capture_output=True).returncode == 0
+    except OSError:
+        return False
 
 
 def synth(path):
@@ -75,8 +90,8 @@ def synth(path):
 
 
 def test_missing_font_fails_closed_unless_unlabelled_is_allowed(tmp_path, monkeypatch):
-    if not shutil.which("ffmpeg"):
-        pytest.skip("ffmpeg not available")
+    if not ffmpeg_ok():
+        pytest.skip("ffmpeg not runnable")
     synth(tmp_path / "v.mp4")
     monkeypatch.setattr(sheet, "find_font", lambda explicit=None: None)
     with pytest.raises(sheet.SheetError):

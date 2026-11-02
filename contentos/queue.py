@@ -1,9 +1,10 @@
-"""Job queue + worker. Jobs are rows in workspace/ledger.db; each job runs `pipeline run` in its own process so a
+"""Job queue + worker. Jobs are rows in workspace/ledger.db; each job runs `production run` in its own session so a
 crash cannot take down the worker. Gates are NOT bypassed: a job only auto-approves the private gates if it was
 queued with --approve-private. Publishing is never auto-approved."""
+import json
 import os
+import signal
 import subprocess
-import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -13,6 +14,7 @@ import yaml
 from . import ledger
 
 ROOT = Path(__file__).resolve().parent.parent
+TIMEOUT = int(os.environ.get("CONTENTOS_QUEUE_TIMEOUT", "1800"))
 
 
 def add(specs, approve_private=False, priority=0):
@@ -51,20 +53,80 @@ def claim():
     return row
 
 
+def _production_result(stdout):
+    for line in reversed((stdout or "").splitlines()):
+        try:
+            value = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict) and "ok" in value:
+            return value
+    return None
+
+
+def _kill_group(process):
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except (OSError, ProcessLookupError):
+        process.kill()
+        return
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except (OSError, ProcessLookupError):
+            process.kill()
+
+
 def _run(job):
     jid, spec, cid, ap = job
-    cmd = [str(ROOT / "contentos.sh"), "pipeline", "run", spec] + (["--approve-private"] if ap else [])
-    r = subprocess.run(cmd, capture_output=True, text=True)
-    ok = r.returncode == 0
-    err = "" if ok else (r.stdout.strip().splitlines() or [r.stderr.strip()])[-1][:300]
-    # BLOCKED (waiting on a gate) is not a failure: park as 'blocked' so a human can approve and re-queue
-    status = "done" if ok else ("blocked" if "BLOCKED" in r.stdout else "failed")
+    cmd = [str(ROOT / "contentos.sh"), "production", "run", spec] + (["--approve-private"] if ap else [])
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
+    timed_out = False
+    try:
+        stdout, stderr = process.communicate(timeout=TIMEOUT)
+    except subprocess.TimeoutExpired:
+        timed_out = True
+        _kill_group(process)
+        stdout, stderr = process.communicate()
+    result = _production_result(stdout)
+    if timed_out:
+        status, err = "failed", f"timed out after {TIMEOUT}s"
+    elif result and result.get("ok"):
+        status, err = "done", ""
+    elif result and result.get("failureClass") == "blocked":
+        status, err = "blocked", str(result.get("error") or "BLOCKED")[:300]
+    elif result:
+        status, err = "failed", str(result.get("error") or "failed")[:300]
+    else:
+        text = (stdout or "") + "\n" + (stderr or "")
+        status = "blocked" if "BLOCKED" in text else "failed"
+        err = "" if process.returncode == 0 else (text.strip().splitlines() or ["failed"])[-1][:300]
+        if process.returncode == 0 and result is None:
+            status, err = "failed", "production run did not return a result"
     with ledger.db() as c:
         c.execute("UPDATE jobs SET status=?, finished=?, error=? WHERE id=?", (status, time.time(), err, jid))
     print(f"  job {jid} {cid}: {status} {err}")
 
 
-def work(concurrency=2, once=False, poll=3):
+def view():
+    """Queue rows for Creator Studio. This does not start a worker."""
+    rows = []
+    for job_id, content_id, status, priority, seconds, error in listing():
+        rows.append({
+            "id": job_id,
+            "contentId": content_id,
+            "status": status,
+            "priority": priority,
+            "seconds": seconds,
+            "error": error or "",
+            "blocked": status == "blocked",
+        })
+    return {"schema": "creator-studio/queue/1", "concurrencyDefault": 1, "jobs": rows}
+
+
+def work(concurrency=1, once=False, poll=3):
     recover()
     print(f"worker pid {os.getpid()} concurrency {concurrency} ({'drain' if once else 'watching'})")
     with ThreadPoolExecutor(concurrency) as ex:

@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
-import { adaptV1Contract } from "./contract_adapter.mjs";
+import { adaptV1Contract, KOKORO_VOICE_IDS } from "./contract_adapter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const samplePath = join(here, "fixtures/legacy-voiceless.contract.json");
@@ -47,6 +47,14 @@ test("rejects unknown voice id permanently", () => {
   const r = adaptV1Contract({ ...base, voice: { enabled: true, id: "not_a_real_voice_id" } });
   assert.equal(r.ok, false);
   assert.equal(r.code, "unknown_voice_id");
+});
+
+test("loads the shared Kokoro voice allowlist", () => {
+  const shared = JSON.parse(readFileSync(join(here, "../../kokoro_voice_ids.json"), "utf8"));
+  assert.deepEqual([...KOKORO_VOICE_IDS], shared);
+  for (const id of shared) {
+    assert.equal(adaptV1Contract({ ...base, voice: { enabled: true, id } }).ok, true);
+  }
 });
 
 test("legacy done folder voiceless contract is rejected", () => {

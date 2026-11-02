@@ -67,6 +67,25 @@ def cmd_production(a):
     return 0 if result.ok else 1
 
 
+def cmd_validate(a):
+    """Validate one Track A YAML spec; stdout is always exactly one JSON object."""
+    import json
+    import yaml
+    from . import specs
+    try:
+        spec = specs.load_spec(a.spec)
+    except (OSError, yaml.YAMLError) as exc:
+        print(json.dumps({
+            "ok": False,
+            "errors": [{"path": "$", "message": f"cannot read spec: {exc}"}],
+            "narration": {"word_count": 0, "estimated_seconds": 0.0, "words_per_second": specs.WORDS_PER_SECOND},
+        }))
+        return 2
+    result = specs.validate_spec(spec)
+    print(json.dumps(result))
+    return 0 if result["ok"] else 1
+
+
 def cmd_qa(a):
     res = run_qa(a.video, a.format)
     for c, s, d in res:
@@ -226,6 +245,9 @@ def main():
     pl.set_defaults(f=cmd_pipeline)
     pr = sp.add_parser("production", help="shared production core: retries, failure classes, one JSON result line"); pr.add_argument("action", choices=["run"]); pr.add_argument("spec")
     pr.add_argument("--approve-private", action="store_true"); pr.set_defaults(f=cmd_production)
+    va = sp.add_parser("validate", help="validate a Track A spec and emit one JSON result")
+    va.add_argument("spec"); va.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    va.set_defaults(f=cmd_validate)
     q = sp.add_parser("qa"); q.add_argument("video"); q.add_argument("--format", default="9:16"); q.set_defaults(f=cmd_qa)
     pv = sp.add_parser("preview", help="preview frames from a project dir (pre-render) or an .mp4 (post-render)"); pv.add_argument("target"); pv.add_argument("--at", required=True, help="comma-separated seconds"); pv.add_argument("--out", required=True); pv.add_argument("--sheet", action="store_true"); pv.add_argument("--cols", type=int, default=6); pv.set_defaults(f=cmd_preview)
     ap = sp.add_parser("approve"); ap.add_argument("content_id"); ap.add_argument("gate"); ap.add_argument("--note", default=""); ap.add_argument("--spec", help="spec YAML the approval covers (default: the one this job last ran with)"); ap.set_defaults(f=cmd_approve)
@@ -241,7 +263,7 @@ def main():
     cp = sp.add_parser("competitor"); cp.add_argument("urls", nargs="+"); cp.set_defaults(f=cmd_competitor)
     q = sp.add_parser("queue"); q.add_argument("action", choices=["add", "list", "requeue"]); q.add_argument("args", nargs="*")
     q.add_argument("--approve-private", action="store_true"); q.add_argument("--priority", type=int, default=0); q.set_defaults(f=cmd_queue)
-    w = sp.add_parser("worker"); w.add_argument("--concurrency", type=int, default=2); w.add_argument("--once", action="store_true", help="drain the queue then exit"); w.set_defaults(f=cmd_worker)
+    w = sp.add_parser("worker"); w.add_argument("--concurrency", type=int, default=1); w.add_argument("--once", action="store_true", help="drain the queue then exit"); w.set_defaults(f=cmd_worker)
     from . import storage_cli
     storage_cli.register(sp)
     fw = sp.add_parser("factory-worker", help="ContentForge v1 queue worker (exchange root: VIDEO_FACTORY_ROOT, default ~/.contentos/exchange)")

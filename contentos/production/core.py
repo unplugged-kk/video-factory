@@ -1,6 +1,5 @@
 """Shared production core (ticket 07): the one place that decides what a failed stage means and when to try again, so
 the folder bridge and any later transport behave the same. pipeline.py stays the stage engine; this wraps it."""
-import shutil
 import sys
 import time
 from dataclasses import dataclass
@@ -8,7 +7,8 @@ from pathlib import Path
 
 import yaml
 
-from .. import ledger, pipeline, storage
+from .. import pipeline, storage
+from . import recovery
 
 TRANSIENT_STAGES = ("voice", "compose", "render")   # the stages that shell out to flaky tools (TTS, lint, headless Chrome)
 RETRY_BACKOFF = (15, 45)                             # seconds before retry 1 and 2: three tries in all
@@ -37,36 +37,21 @@ class RunResult:
                 "attempts": self.attempts, "elapsedS": round(self.elapsed_s, 1)}
 
 
-def scrub_interrupted(content_id, spec, project_dir=None):
-    """Resume trusts any artifact it finds, and a kill leaves artifacts behind: compose writes index.html and then lints for
-    seconds, voice writes a wav under ffmpeg. Keep an artifact only if the ledger recorded its stage OK and every stage
-    before it; anything later is redone. Returns the artifacts it removed."""
-    d = Path(project_dir) if project_dir else storage.find_job_dir(content_id)
+scrub_interrupted = recovery.scrub_interrupted
+
+
+def _run_injected_attempt(run, spec_path, spec, approve_private):
+    """Keep the historical injected-run seam while enforcing recovery's lock contract.
+
+    Injected runners are test doubles for ``pipeline.run``. Production uses
+    ``pipeline.run`` directly, which owns the same lock and does not re-enter it.
+    """
+    d = storage.find_job_dir(spec["content_id"])
     if d is None:
-        return []                                   # no job folder yet: nothing a killed run could have left behind
-    with ledger.db() as c:
-        done = {r[0] for r in c.execute("SELECT DISTINCT stage FROM runs WHERE content_id=? AND status='OK'", (content_id,))}
-    removed, dirty = [], False
-    for scratch in d.glob("work-*"):              # hyperframes' render scratch: a killed render never cleans it up, and nothing is rendering now
-        if scratch.is_dir():
-            shutil.rmtree(scratch, ignore_errors=True)
-            removed.append(f"render:{scratch.name}")
-    for st in pipeline.STAGES:
-        dirty = dirty or st not in done
-        if not dirty:
-            continue
-        target = d / ("audio" if st == "voice" else pipeline.artifact(st, spec).replace("%02d", "01"))
-        if target.is_dir():
-            had_files = any(target.iterdir())     # a failed try leaves an empty folder: tidy it, but it is not a leftover
-            shutil.rmtree(target)
-        elif target.exists():
-            target.unlink()
-            had_files = True
-        else:
-            continue
-        if had_files:
-            removed.append(f"{st}:{target.relative_to(d)}")
-    return removed
+        return run(spec_path, approve_private=approve_private), []
+    with storage.file_lock(d / ".run.lock", blocking=False):
+        removed = scrub_interrupted(spec["content_id"], spec, d)
+    return run(spec_path, approve_private=approve_private), removed
 
 
 def run_until_blocked_or_done(spec_path, *, approve_private=False, run=None, sleep=time.sleep, clock=time.monotonic,
@@ -75,16 +60,18 @@ def run_until_blocked_or_done(spec_path, *, approve_private=False, run=None, sle
     the pipeline's own resume) until the retries or the wall-clock cap run out. Never raises for a failed job: the result
     says what happened. `run`, `sleep` and `clock` are seams for tests."""
     log = log or (lambda m: print(m, file=sys.stderr, flush=True))
-    run = run or pipeline.run
+    injected_run = run
     spec = yaml.safe_load(Path(spec_path).read_text())
     cid = spec["content_id"]
     t0, attempts, delays = clock(), 0, list(backoff)
     while True:
         attempts += 1
-        removed = scrub_interrupted(cid, spec)
-        if removed:
-            log(f"{cid}: redoing artifacts a killed run left unfinished: {', '.join(removed)}")
-        _, report = run(spec_path, approve_private=approve_private)
+        if injected_run is None:
+            _, report = pipeline.run(spec_path, approve_private=approve_private, recover=True, recovery_log=log)
+        else:
+            (_, report), removed = _run_injected_attempt(injected_run, spec_path, spec, approve_private)
+            if removed:
+                log(f"{cid}: redoing artifacts a killed run left unfinished: {', '.join(removed)}")
         bad = next(((s, st) for s, st, _ in report if not st.startswith(("OK", "SKIP"))), None)
         elapsed = clock() - t0
         if bad is None:

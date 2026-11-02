@@ -1,15 +1,19 @@
-"""Read-only local dashboard. `./contentos.sh dashboard` -> http://127.0.0.1:4310
-Serves one HTML page + JSON from the ledger and workspace. Binds to localhost only; serves only
-whitelisted artifact names inside workspace/projects/<id>/ (no path traversal)."""
+"""Local-only Creator Studio and legacy dashboard API."""
 import json
+import hashlib
+import mimetypes
 import re
+import secrets
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from . import jev, ledger, providers, storage
 from .pipeline import STAGES, artifact
+from .ui_api import MAX_BODY, dispatch, valid_host
+from .ui_state import job_state
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -31,8 +35,10 @@ def _job_dirs():
 def _job_dir(cid):
     return storage.find_job_dir(cid) or storage.legacy_job_dir(cid) if storage.valid_job_id(cid) else None
 SERVE = {"video.mp4": "video/mp4", "qa.json": "application/json", "script.md": "text/markdown",
-         "metadata.yaml": "text/plain", "publish-result.json": "application/json", "script-lint.json": "application/json"}
+         "metadata.yaml": "text/plain", "publish-result.json": "application/json",
+         "script-lint.json": "application/json", "export-result.json": "application/json"}
 _cache = {"t": 0, "providers": None, "jev": None}
+UI_ROOT = Path(__file__).parent / "ui"
 
 
 def _health():
@@ -96,29 +102,196 @@ class H(BaseHTTPRequestHandler):
         for k, v in (extra or {}).items():
             self.send_header(k, v)
         self.end_headers()
-        self.wfile.write(body)
+        if self.command != "HEAD":
+            self.wfile.write(body)
+
+    def _host_ok(self):
+        if valid_host(self.headers.get("Host", "")):
+            return True
+        self._send(421, b"invalid host", "text/plain; charset=utf-8")
+        return False
+
+    def _api(self, body=b""):
+        response = dispatch(
+            self.command,
+            self.path,
+            dict(self.headers.items()),
+            body,
+            self.server.ui_token,
+        )
+        data = json.dumps(response.body).encode("utf-8")
+        self._send(response.status, data, "application/json; charset=utf-8", response.headers)
+
+    def _events(self, path):
+        match = re.fullmatch(r"/api/v1/jobs/([^/]+)/events", path)
+        if not match:
+            return False
+        content_id = unquote(match.group(1))
+        if not storage.valid_job_id(content_id) or job_state(content_id) is None:
+            self._send(404, b"not found", "text/plain; charset=utf-8")
+            return True
+        once = parse_qs(urlsplit(self.path).query).get("once") == ["1"]
+        self.send_response(200)
+        self.send_header("Content-Type", "text/event-stream; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Connection", "close" if once else "keep-alive")
+        self.send_header("X-Accel-Buffering", "no")
+        if once:
+            self.close_connection = True
+        self.end_headers()
+        if self.command == "HEAD":
+            return True
+        prior = None
+        try:
+            while True:
+                detail = job_state(content_id)
+                if detail is None:
+                    return True
+                signal = {
+                    "contentId": content_id,
+                    "state": detail["state"],
+                    "updated": detail["updated"],
+                    "activeRun": detail.get("activeRun", False),
+                    "nextAction": (detail.get("nextAction") or {}).get("kind"),
+                }
+                encoded = json.dumps(signal, sort_keys=True, separators=(",", ":"))
+                revision = hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16]
+                if revision != prior:
+                    signal["revision"] = revision
+                    data = json.dumps(signal, separators=(",", ":")).encode("utf-8")
+                    self.wfile.write(b"id: " + revision.encode("ascii") + b"\n")
+                    self.wfile.write(b"event: progress\n")
+                    self.wfile.write(b"data: " + data + b"\n\n")
+                    self.wfile.flush()
+                    prior = revision
+                else:
+                    self.wfile.write(b": keepalive\n\n")
+                    self.wfile.flush()
+                if once:
+                    return True
+                time.sleep(1)
+        except (BrokenPipeError, ConnectionResetError, OSError):
+            return True
+
+    def _static(self, path):
+        relative = "index.html" if path in ("", "/", "/index.html") else unquote(path.lstrip("/"))
+        if relative.startswith("ui/"):
+            relative = relative[3:]
+        candidate = (UI_ROOT / relative).resolve()
+        try:
+            candidate.relative_to(UI_ROOT.resolve())
+        except ValueError:
+            return False
+        if not candidate.is_file() or candidate.suffix not in (".html", ".css", ".js", ".mjs", ".svg"):
+            return False
+        data = candidate.read_bytes()
+        if candidate.name == "index.html":
+            data = data.replace(b"__CONTENTOS_TOKEN__", self.server.ui_token.encode("ascii"))
+        ctype = mimetypes.guess_type(candidate.name)[0] or "application/octet-stream"
+        if candidate.suffix in (".js", ".mjs"):
+            ctype = "text/javascript"
+        self._send(200, data, f"{ctype}; charset=utf-8",
+                   {"Content-Security-Policy": "default-src 'self'; img-src 'self' data:; "
+                                               "media-src 'self'; style-src 'self'; script-src 'self'; "
+                                               "connect-src 'self'; object-src 'none'; base-uri 'none'; "
+                                               "frame-ancestors 'none'",
+                    "X-Content-Type-Options": "nosniff"})
+        return True
+
+    def _media(self, path):
+        match = re.fullmatch(r"/media/([^/]+)/([^/]+)", path)
+        if not match:
+            return False
+        content_id, name = map(unquote, match.groups())
+        if not storage.valid_job_id(content_id) or not re.fullmatch(r"[\w.-]+", name):
+            return False
+        directory = _job_dir(content_id)
+        if directory is None:
+            return False
+        if name in SERVE:
+            candidate, ctype = directory / name, SERVE[name]
+        elif name.endswith(".png"):
+            candidate, ctype = directory / "previews" / name, "image/png"
+        else:
+            return False
+        candidate = candidate.resolve()
+        try:
+            candidate.relative_to(directory.resolve())
+        except ValueError:
+            return False
+        if not candidate.is_file():
+            return False
+        size = candidate.stat().st_size
+        start, end, status = 0, max(0, size - 1), 200
+        range_header = self.headers.get("Range", "")
+        if range_header:
+            range_match = re.fullmatch(r"bytes=(\d+)-(\d*)", range_header)
+            if not range_match:
+                self._send(416, b"", ctype, {"Content-Range": f"bytes */{size}"})
+                return True
+            start = int(range_match.group(1))
+            end = int(range_match.group(2)) if range_match.group(2) else size - 1
+            if start >= size or end < start:
+                self._send(416, b"", ctype, {"Content-Range": f"bytes */{size}"})
+                return True
+            end, status = min(end, size - 1), 206
+        length = 0 if size == 0 else end - start + 1
+        self.send_response(status)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(length))
+        self.send_header("Accept-Ranges", "bytes")
+        self.send_header("Cache-Control", "no-store")
+        if status == 206:
+            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.end_headers()
+        if self.command != "HEAD" and length:
+            with candidate.open("rb") as stream:
+                stream.seek(start)
+                remaining = length
+                while remaining:
+                    chunk = stream.read(min(64 * 1024, remaining))
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+                    remaining -= len(chunk)
+        return True
 
     def do_GET(self):
-        if self.path in ("/", "/index.html"):
-            return self._send(200, (Path(__file__).parent / "dashboard.html").read_bytes(), "text/html; charset=utf-8")
-        if self.path == "/api/state":
+        if not self._host_ok():
+            return
+        path = urlsplit(self.path).path
+        if path == "/api/state":
             return self._send(200, json.dumps(state()).encode(), "application/json")
-        m = re.fullmatch(r"/media/([\w.-]+)/([\w.-]+)", self.path)
-        if m and m.group(2) in SERVE and "/" not in m.group(1) and m.group(1) not in (".", ".."):
-            jd = _job_dir(m.group(1))
-            f = jd / m.group(2) if jd else None
-            if f is not None and f.is_file():
-                data, ctype = f.read_bytes(), SERVE[m.group(2)]
-                rng = re.match(r"bytes=(\d+)-(\d*)", self.headers.get("Range", ""))
-                if rng:
-                    a = int(rng.group(1)); b = int(rng.group(2)) if rng.group(2) else len(data) - 1
-                    return self._send(206, data[a:b + 1], ctype, {"Content-Range": f"bytes {a}-{b}/{len(data)}", "Accept-Ranges": "bytes"})
-                return self._send(200, data, ctype, {"Accept-Ranges": "bytes"})
+        if self._events(path):
+            return
+        if path.startswith("/api/v1/"):
+            return self._api()
+        if self._media(path) or self._static(path):
+            return
         self._send(404, b"not found", "text/plain")
+
+    do_HEAD = do_GET
+
+    def do_POST(self):
+        if not self._host_ok():
+            return
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            return self._send(400, b"invalid content length", "text/plain")
+        if length > MAX_BODY:
+            return self._send(413, b"request body too large", "text/plain")
+        self._api(self.rfile.read(length))
+
+
+def make_server(port=4310):
+    server = ThreadingHTTPServer(("127.0.0.1", port), H)
+    server.ui_token = secrets.token_urlsafe(32)
+    return server
 
 
 def serve(port=4310):
     threading.Thread(target=_health, daemon=True).start()   # warm provider cache
-    srv = ThreadingHTTPServer(("127.0.0.1", port), H)
-    print(f"dashboard: http://127.0.0.1:{port}  (read-only, Ctrl-C to stop)")
+    srv = make_server(port)
+    print(f"dashboard: http://127.0.0.1:{port}  (local-only, Ctrl-C to stop)")
     srv.serve_forever()

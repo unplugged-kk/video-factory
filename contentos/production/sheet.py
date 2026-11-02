@@ -84,7 +84,10 @@ def _ffprobe_size(video):
 
 
 def _drawtext_available():
-    r = subprocess.run(["ffmpeg", "-hide_banner", "-filters"], capture_output=True, text=True)
+    try:
+        r = subprocess.run(["ffmpeg", "-hide_banner", "-filters"], capture_output=True, text=True)
+    except OSError:
+        return False
     return " drawtext " in r.stdout
 
 

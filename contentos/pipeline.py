@@ -4,6 +4,7 @@ import hashlib
 import html
 import json
 import os
+import shlex
 import shutil
 import signal
 import subprocess
@@ -15,7 +16,7 @@ import yaml
 
 from . import export as exporter
 from . import hf, ledger, mpt, providers, storage
-from .production import align, supplied_audio
+from .production import align, recovery, supplied_audio
 from .qa import probe_video, run_qa
 from .features import registry as _feat
 
@@ -61,18 +62,37 @@ def _kill_tree(pid):
             pass
 
 
-def sh(cmd, cwd=None, timeout=None):
+def _append_log(path, text):
+    if path is None:
+        return
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as f:
+        f.write(text)
+
+
+def sh(cmd, cwd=None, timeout=None, log_path=None):
     limit = timeout or SH_TIMEOUT
+    _append_log(log_path, f"$ {shlex.join(map(str, cmd))}\n")
     p = subprocess.Popen(cmd, cwd=cwd, env=ENV, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     try:
         out, err = p.communicate(timeout=limit)
     except subprocess.TimeoutExpired:
         _kill_tree(p.pid)
-        p.communicate()
+        out, err = p.communicate()
+        _append_log(log_path, f"[stdout]\n{out}[stderr]\n{err}[timeout after {limit:.0f}s]\n")
         raise RuntimeError(f"{' '.join(map(str, cmd))[:120]} -> timed out after {limit:.0f}s")
+    _append_log(log_path, f"[stdout]\n{out}[stderr]\n{err}[exit {p.returncode}]\n")
     if p.returncode:
         raise RuntimeError(f"{' '.join(map(str, cmd))[:120]} -> {err.strip()[-400:] or out.strip()[-400:]}")
     return out
+
+
+def _stage_sh(ctx, cmd, cwd=None, timeout=None):
+    """Call the historical shell seam unchanged unless this run captures a stage log."""
+    if ctx.get("log_path"):
+        return sh(cmd, cwd=cwd, timeout=timeout, log_path=ctx["log_path"])
+    return sh(cmd, cwd=cwd, timeout=timeout)
 
 
 def dur(path):
@@ -92,7 +112,8 @@ def s_script(ctx):
     md = ctx["dir"] / "script.md"
     md.write_text(f"# {ctx['spec']['title']}\n\n" + "\n\n".join(f"## Line {i+1}\n{ln['say']}" for i, ln in enumerate(lines)))
     lint = ctx["dir"] / "script-lint.json"
-    out = sh(["python3", str(skill_tool("yt-script", "hookscore.py")), "--hook", lines[0]["say"], "--json"])
+    out = _stage_sh(ctx, ["python3", str(skill_tool("yt-script", "hookscore.py")),
+                          "--hook", lines[0]["say"], "--json"])
     lint.write_text(out)
     return "yt-script/hookscore", [md, lint]
 
@@ -114,18 +135,22 @@ def s_voice(ctx):
         wav = vd / f"{i:02d}.wav"
         if not wav.exists():
             raw = vd / f"{i:02d}.raw.wav"
-            sh(hf.command("tts", ln.get("tts", ln["say"]), "-v", voice, "-o", raw))
-            sh(["ffmpeg", "-y", "-i", str(raw), "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", "24000", str(wav)])
+            _stage_sh(ctx, hf.command("tts", ln.get("tts", ln["say"]), "-v", voice, "-o", raw))
+            _stage_sh(ctx, ["ffmpeg", "-y", "-i", str(raw), "-af",
+                            "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", "24000", str(wav)])
             raw.unlink()
         outs.append(wav)
     return prim["id"], outs
 
 
-def words_for(wav, workdir):
+def words_for(wav, workdir, log_path=None):
     """Word timings from whisper.cpp (via hyperframes). Falls back to even spacing if ASR is unavailable."""
     workdir.mkdir(exist_ok=True)
     try:
-        sh(hf.command("transcribe", wav, "--json", "-d", workdir))
+        if log_path:
+            sh(hf.command("transcribe", wav, "--json", "-d", workdir), log_path=log_path)
+        else:
+            sh(hf.command("transcribe", wav, "--json", "-d", workdir))
         return [(w["text"], w["start"], w["end"]) for w in json.loads((workdir / "transcript.json").read_text())]
     except Exception:
         return None
@@ -172,7 +197,9 @@ def s_compose(ctx):
         wav = ctx["dir"] / "audio" / f"{i:02d}.wav"
         shutil.copy(wav, proj / f"assets/voice/{i:02d}.wav")
         d = round(dur(wav) + 0.35, 2)
-        asr = words_for(wav, ctx["dir"] / "audio" / f"tx{i:02d}")
+        workdir = ctx["dir"] / "audio" / f"tx{i:02d}"
+        asr = (words_for(wav, workdir, log_path=ctx["log_path"])
+               if ctx.get("log_path") else words_for(wav, workdir))
         toks = ln["say"].split()                      # captions show the SCRIPT words; ASR supplies timing only
         wl = caption_words(toks, asr, d)
         cap = "".join(f'<span id="w{i}_{k}">{html.escape(w)}</span> ' for k, (w, _, _) in enumerate(wl))
@@ -214,7 +241,7 @@ h1{{font-size:{int(U*0.085)}px;font-weight:900;line-height:1.1;letter-spacing:-1
 {''.join(scenes)}{''.join(audios)}</div>
 <script>const tl=gsap.timeline({{paused:true}});{''.join(anim)}
 window.__timelines=window.__timelines||{{}};window.__timelines["root"]=tl;</script></body></html>""")
-    sh(hf.command("lint"), cwd=proj)
+    _stage_sh(ctx, hf.command("lint"), cwd=proj)
     return "hyperframes", [proj / "index.html", proj / "hyperframes.json"]
 
 
@@ -229,7 +256,7 @@ def s_render(ctx):
     hf_q = ctx["spec"].get("_v1_hyperframes_quality")
     if isinstance(hf_q, str) and hf_q.strip():
         cmd.extend(["-q", hf_q.strip()])
-    sh(cmd, cwd=ctx["dir"] / "project", timeout=RENDER_TIMEOUT)
+    _stage_sh(ctx, cmd, cwd=ctx["dir"] / "project", timeout=RENDER_TIMEOUT)
     # Hook 4: post-render audio stage (Lane D). Pass-through returns mp4 unchanged.
     mp4 = _feat.get("audio_bed", ctx["spec"])(ctx, mp4, ctx["spec"])
     return "hyperframes", [mp4]
@@ -249,7 +276,8 @@ def s_qa(ctx):
 
 def s_package(ctx):
     spec = ctx["spec"]
-    lint = sh(["python3", str(skill_tool("yt-package", "title.py")), "--title", spec["title"], "--thumb", spec.get("thumb_text", ""), "--json"])
+    lint = _stage_sh(ctx, ["python3", str(skill_tool("yt-package", "title.py")),
+                           "--title", spec["title"], "--thumb", spec.get("thumb_text", ""), "--json"])
     meta = ctx["dir"] / "metadata.yaml"
     meta.write_text(yaml.safe_dump({"title": spec["title"], "description": spec.get("description", ""), "tags": spec.get("tags", []),
                                     "privacy": "private", "title_lint": json.loads(lint)}, sort_keys=False))
@@ -381,6 +409,64 @@ def artifact(st, spec):
     return ARTIFACT[st]
 
 
+def rerun_plan(stage):
+    """Stages and approval gates affected by forcing one stage.
+
+    Sentinels after the selected stage stop counting as current. Script and composition grants are revoked only when
+    the forced stage can change the artifact those grants reviewed.
+    """
+    if stage not in STAGES:
+        raise ValueError(f"unknown pipeline stage: {stage}")
+    index = STAGES.index(stage)
+    gates = []
+    if index <= STAGES.index("script"):
+        gates.append("SCRIPT_APPROVED")
+    if index <= STAGES.index("compose"):
+        gates.append("PRODUCTION_APPROVED")
+    return STAGES[index + 1:], gates
+
+
+def invalidate_downstream(directory, spec, stage):
+    """Delete stale downstream sentinels and revoke the approval gates they depended on."""
+    later, gates = rerun_plan(stage)
+    root = Path(directory).resolve()
+    removed = []
+
+    def _unlink(path):
+        candidate = Path(path)
+        if candidate.is_symlink() or not candidate.is_file():
+            return
+        try:
+            candidate.resolve().relative_to(root)
+        except ValueError:
+            return
+        candidate.unlink()
+        removed.append(str(candidate.relative_to(root)))
+
+    for name in later:
+        _unlink(root / artifact(name, spec).replace("%02d", "01"))
+    if "voice" in later:
+        audio = root / "audio"
+        if audio.is_dir() and not audio.is_symlink():
+            for wav in audio.glob("*.wav"):
+                _unlink(wav)
+    if "compose" in later:
+        for name in ("project/index.html", "project/mpt-request.json", "project_remotion/src/Video.tsx"):
+            _unlink(root / name)
+    revoked = []
+    for gate in gates:
+        if ledger.revoke(spec["content_id"], gate, f"forced rerun of {stage}"):
+            revoked.append(gate)
+    return {"stage": stage, "removed": removed, "revokedApprovals": revoked}
+
+
+def stage_log_path(job_dir, stage):
+    """Stable location for diagnostics from one pipeline stage."""
+    if stage not in STAGES:
+        raise ValueError(f"unknown pipeline stage: {stage}")
+    return Path(job_dir) / "logs" / f"{stage}.log"
+
+
 # A stage whose sentinel is not enough on its own: presence means "this stage ran", which is only the same as "the result
 # is still current" for export, whose output can be superseded by a later render. The guard returns None to allow the
 # skip, or the reason it must not be reported as done.
@@ -417,7 +503,7 @@ def _note_spec(d, m, spec_path):
             pass
 
 
-def run(spec_path, allow_paid=False, force=False, only=None, approve_private=False):
+def run(spec_path, allow_paid=False, force=False, only=None, approve_private=False, recover=False, recovery_log=None):
     spec = yaml.safe_load(Path(spec_path).read_text())
     if spec.get("render", "hyperframes") not in RENDER_LANES:
         raise ValueError(f"render: {spec['render']!r} is not one of {RENDER_LANES}")
@@ -434,7 +520,16 @@ def run(spec_path, allow_paid=False, force=False, only=None, approve_private=Fal
         ledger.record(rid, cid, "manifest", "-", "BLOCKED", time.time(), error=str(exc))
         return rid, [("manifest", f"BLOCKED: {exc}", 0.0)]
     with storage.file_lock(d / ".run.lock", blocking=False):     # one run per job; a second run is refused, not queued
+        removed = recovery.scrub_interrupted(cid, spec, d) if recover else []
+        if removed:
+            message = f"{cid}: redoing artifacts a killed run left unfinished: {', '.join(removed)}"
+            if recovery_log:
+                recovery_log(message)
+            else:
+                print(message, file=sys.stderr, flush=True)
         _note_spec(d, _manifest, spec_path)
+        if only and force:
+            invalidate_downstream(d, spec, only)
         return _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private)
 
 
@@ -475,6 +570,9 @@ def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
             break
         gate = GATE_OF.get(st)
         t0 = time.time()
+        log_path = stage_log_path(d, st)
+        ctx["log_path"] = log_path
+        _append_log(log_path, f"\n--- stage {st} run {rid} ---\n")
         ledger.record(rid, cid, st, "-", "RUNNING", t0)   # in-flight marker for the dashboard
         try:
             if gate:
@@ -485,14 +583,17 @@ def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
                 _check_gate(cid, gate, d, spec)
             prov, arts = FN[st](ctx)
             ledger.record(rid, cid, st, prov, "OK", t0, arts)
+            _append_log(log_path, f"[stage OK provider={prov}]\n")
             _note_stage(d, st, arts)
             report.append((st, "OK", time.time() - t0))
         except Blocked as e:
+            _append_log(log_path, f"[stage BLOCKED] {e}\n")
             art.unlink(missing_ok=True)
             ledger.record(rid, cid, st, "-", "BLOCKED", t0, error=str(e))
             report.append((st, f"BLOCKED: {e}", time.time() - t0))
             break
         except Exception as e:
+            _append_log(log_path, f"[stage FAIL] {e}\n")
             art.unlink(missing_ok=True)  # never leave a half-built artifact that resume would trust
             ledger.record(rid, cid, st, "-", "FAIL", t0, error=str(e))
             _note_failure(d, st, e)

@@ -83,5 +83,19 @@ def approved(content_id, gate):
     return db().execute("SELECT 1 FROM approvals WHERE content_id=? AND gate=?", (content_id, gate)).fetchone() is not None
 
 
+def revoke(content_id, gate, reason=""):
+    """Remove grants for one gate after the reviewed artifact is invalidated.
+
+    ``reason`` is accepted so callers can record why in their own logs. The deletion itself is the contract:
+    ``check_gate`` then reports ``none`` and a fresh review is required. A missing gate is a no-op.
+    """
+    del reason
+    with db() as c:
+        existing = c.execute("SELECT COUNT(*) FROM approvals WHERE content_id=? AND gate=?", (content_id, gate)).fetchone()[0]
+        if existing:
+            c.execute("DELETE FROM approvals WHERE content_id=? AND gate=?", (content_id, gate))
+        return existing
+
+
 def recent(n=15):
     return db().execute("SELECT run_id,content_id,stage,provider,status,round(end-start,1),error FROM runs ORDER BY end DESC LIMIT ?", (n,)).fetchall()

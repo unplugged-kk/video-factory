@@ -140,7 +140,7 @@ def finished(content_id, *stages):
 
 
 def present(d):
-    return sorted(str(p.relative_to(d)) for p in d.rglob("*") if p.is_file())
+    return sorted(str(p.relative_to(d)) for p in d.rglob("*") if p.is_file() and not p.name.endswith(".lock"))
 
 
 def test_artifacts_the_ledger_never_finished_are_not_trusted_after_a_hard_kill(ws):
@@ -176,6 +176,79 @@ def test_the_scrub_runs_before_every_attempt(ws):
     seen = []
     result, _ = go(spec, lambda p, **kw: (seen.append(present(d)), ("rid", report(("render", "OK"))))[1])
     assert result.ok and seen == [["audio/01.wav", "content.json", "script-lint.json"]]
+
+
+def test_injected_run_scrubs_only_while_job_lock_is_held(ws, monkeypatch):
+    spec = write_spec(ws)
+    d = make_project(ws)
+    observed = []
+
+    def scrub(content_id, loaded_spec, project_dir):
+        observed.append(storage.lock_is_held(Path(project_dir) / ".run.lock"))
+        return []
+
+    monkeypatch.setattr(core, "scrub_interrupted", scrub)
+    result, _ = go(spec, scripted(report(("brief", "OK"))))
+    assert result.ok
+    assert observed == [True]
+
+
+def test_real_pipeline_scrubs_after_acquiring_job_lock(ws, monkeypatch):
+    spec_path = write_spec(ws)
+    monkeypatch.setenv("VIDEO_FACTORY_PUBLISH_DIR", str(ws / "publish"))
+    observed = []
+
+    def scrub(content_id, loaded_spec, project_dir):
+        observed.append(storage.lock_is_held(Path(project_dir) / ".run.lock"))
+        return []
+
+    def brief(ctx):
+        artifact = ctx["dir"] / "content.json"
+        artifact.write_text("{}")
+        return "test", [artifact]
+
+    monkeypatch.setattr(pipeline.recovery, "scrub_interrupted", scrub)
+    monkeypatch.setattr(pipeline, "STAGES", ["brief"])
+    monkeypatch.setitem(pipeline.FN, "brief", brief)
+    result = core.run_until_blocked_or_done(spec_path, log=lambda message: None)
+
+    assert result.ok
+    assert observed == [True]
+
+
+def test_stage_log_captures_command_stdout_and_stderr_without_ffmpeg(ws, monkeypatch):
+    spec = yaml.safe_load(write_spec(ws).read_text())
+    d, manifest = storage.open_job("cfvg-1", spec)
+
+    def logged_stage(ctx):
+        out = pipeline.sh(
+            [sys.executable, "-c", "import sys; print('stage-out'); print('stage-err', file=sys.stderr)"],
+            log_path=ctx["log_path"],
+        )
+        assert out.strip() == "stage-out"
+        return "test", [d / "artifact.txt"]
+
+    (d / "artifact.txt").write_text("done")
+    monkeypatch.setattr(pipeline, "STAGES", ["brief"])
+    monkeypatch.setitem(pipeline.FN, "brief", logged_stage)
+    _, rows = pipeline._stages("cfvg-1", d, spec, manifest, False, True, None, False)
+
+    text = pipeline.stage_log_path(d, "brief").read_text()
+    assert rows[0][:2] == ("brief", "OK")
+    assert "stage-out" in text and "stage-err" in text
+    assert "[stdout]" in text and "[stderr]" in text and "[exit 0]" in text
+    assert "VIDEO_FACTORY_WORKSPACE" not in text
+
+
+def test_command_failure_log_keeps_stdout_stderr_and_exception_summary(tmp_path):
+    log_path = tmp_path / "job" / "logs" / "render.log"
+    with pytest.raises(RuntimeError, match="stage-err"):
+        pipeline.sh(
+            [sys.executable, "-c", "import sys; print('stage-out'); print('stage-err', file=sys.stderr); raise SystemExit(7)"],
+            log_path=log_path,
+        )
+    text = log_path.read_text()
+    assert "stage-out" in text and "stage-err" in text and "[exit 7]" in text
 
 
 def test_a_killed_render_leaves_no_work_folder_behind(ws):

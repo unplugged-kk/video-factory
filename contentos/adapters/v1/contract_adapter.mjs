@@ -2,6 +2,8 @@
  * Disposable v1 ContentForge contract → contentos factory job adapter.
  * All v1 mapping lives here; delete this folder when contract v2 ships.
  */
+import { readFileSync } from "node:fs";
+
 import { deriveScenes } from "./scene-derivation.mjs";
 
 export const DISPOSABLE_ADAPTER_MODULE = "contentos/adapters/v1/contract_adapter.mjs";
@@ -9,20 +11,9 @@ export const DISPOSABLE_ADAPTER_MODULE = "contentos/adapters/v1/contract_adapter
 export const CONTRACT_VERSION = "video-factory.contract.v1";
 
 /** Kokoro ids from `hyperframes tts --list` (research 02). */
-export const KOKORO_VOICE_IDS = new Set([
-  "af_heart",
-  "af_nova",
-  "af_sky",
-  "am_adam",
-  "am_michael",
-  "bf_emma",
-  "bf_isabella",
-  "bm_george",
-  "ef_dora",
-  "ff_siwis",
-  "jf_alpha",
-  "zf_xiaobei",
-]);
+export const KOKORO_VOICE_IDS = new Set(
+  JSON.parse(readFileSync(new URL("../../kokoro_voice_ids.json", import.meta.url), "utf8")),
+);
 
 const JOB_ID_RE = /^cfvg-[1-9][0-9]{0,9}$/;
 
