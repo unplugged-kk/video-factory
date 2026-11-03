@@ -1,0 +1,38 @@
+# Hindi narration (Devanagari). Sample content, never published. Language routing: config/language.yaml
+content_id: sample-ml-hi-001
+title: "कुबेरनेट्स में पॉड क्या है"
+thumb_text: "पॉड क्या है"
+description: "कुबेरनेट्स पॉड, कंटेनर और शेड्यूलर, आसान हिंदी में।"
+tags: [kubernetes, hindi, devops]
+format: "9:16"
+kind: short
+language: hi
+visual_style: {id: clean-explainer, seed: 5}
+script:
+  - say: "कुबेरनेट्स में पॉड सबसे छोटी इकाई है जिसे आप डिप्लॉय कर सकते हैं।"
+    headline: "पॉड क्या है"
+    tag: परिचय
+  - say: "एक पॉड में एक या उससे ज़्यादा कंटेनर हो सकते हैं, जो एक ही नेटवर्क और स्टोरेज साझा करते हैं।"
+    headline: "कंटेनर साथ में"
+    tag: संरचना
+    visual:
+      type: diagram
+      nodes:
+        - {id: pod, label: पॉड}
+        - {id: c1, label: कंटेनर 1}
+        - {id: c2, label: कंटेनर 2}
+        - {id: st, label: साझा स्टोरेज}
+      edges:
+        - [pod, c1]
+        - [pod, c2]
+        - [c1, st]
+        - [c2, st]
+  - say: "अगर कोई पॉड फेल हो जाए, तो शेड्यूलर एक स्वस्थ नोड पर नया पॉड शुरू कर देता है।"
+    headline: "फेल होने पर"
+    tag: रिकवरी
+    visual:
+      type: steps
+      steps: [पॉड फेल होता है, शेड्यूलर नोड चुनता है, नया पॉड शुरू होता है]
+  - say: "अगले वीडियो में हम देखेंगे कि सर्विस, ट्रैफ़िक को पॉड तक कैसे पहुँचाती है।"
+    headline: "अगला: सर्विस"
+    tag: आगे

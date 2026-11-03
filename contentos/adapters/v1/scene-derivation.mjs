@@ -14,11 +14,28 @@ const STOP = new Set(
   ),
 );
 
-export function normalizeText(raw, maxLen) {
+const SEG = typeof Intl !== "undefined" && Intl.Segmenter ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : null;
+
+/** Cut to at most n grapheme clusters, never inside a Devanagari/Odia conjunct (slice() counts UTF-16 units and can sever one). */
+export function cutGraphemes(s, n) {
+  if (!SEG) return s.slice(0, n);
+  const out = [];
+  for (const { segment } of SEG.segment(s)) {
+    if (out.length >= n) break;
+    out.push(segment);
+  }
+  return out.join("");
+}
+
+const graphemeLength = (s) => (SEG ? [...SEG.segment(s)].length : s.length);
+
+/** language "en" (or unset) keeps the original code unit slice byte for byte; other languages cut on grapheme boundaries. */
+export function normalizeText(raw, maxLen, language = "en") {
   if (typeof raw !== "string") return "";
   let s = raw.replace(/\0/g, "").replace(/\r\n/g, "\n").trim();
   if (!s) return "";
-  if (s.length > maxLen) s = s.slice(0, maxLen);
+  if (language !== "en") s = s.normalize("NFC");
+  if (s.length > maxLen) s = language === "en" ? s.slice(0, maxLen) : cutGraphemes(s, maxLen);
   return s;
 }
 
@@ -35,9 +52,21 @@ export function stripMarkdownInline(s) {
     .trim();
 }
 
-function splitSentences(text) {
+function splitSentences(text, language = "en") {
   const cleaned = stripMarkdownInline(text.replace(/\n+/g, " "));
   if (!cleaned) return [];
+  if (language !== "en") {
+    // Hindi/Odia/Hinglish: sentences end at . ! ? or the danda (U+0964) / double danda (U+0965) and may start with any letter or digit,
+    // not only a Latin capital (the English rule below never splits Indic text, so a whole script would become one scene).
+    const prot = cleaned
+      .replace(/\b(e\.g\.|i\.e\.|U\.S\.|U\.K\.|Dr\.|Mr\.|Mrs\.|Ms\.|Prof\.|Sr\.|Jr\.|vs\.|etc\.)/gi, (m) => m.replace(/\./g, "\u0000"))
+      .replace(/(\d)\.(\d)/g, "$1\u0001$2");
+    const ps = prot
+      .split(/(?<=[.!?\u0964\u0965])\s+(?=[\p{L}\p{N}"'(])/u)
+      .map((p) => p.replace(/\u0000/g, ".").replace(/\u0001/g, ".").trim())
+      .filter(Boolean);
+    return ps.length ? ps : [cleaned];
+  }
   const protectedText = cleaned
     .replace(/\b(e\.g\.|i\.e\.|U\.S\.|U\.K\.|Dr\.|Mr\.|Mrs\.|Ms\.|Prof\.|Sr\.|Jr\.|vs\.|etc\.)/gi, (m) => m.replace(/\./g, "\u0000"))
     .replace(/(\d)\.(\d)/g, "$1\u0001$2");
@@ -74,7 +103,13 @@ export function splitStoryboardBlocks(storyboard) {
   return blocks.filter(Boolean);
 }
 
-function headlineFromSay(say) {
+function headlineFromSay(say, language = "en") {
+  if (language !== "en") {
+    const w = stripMarkdownInline(say).replace(/\s+/g, " ").trim().split(" ").slice(0, 8);
+    while (w.length > 1 && graphemeLength(w.join(" ")) > MAX_HEADLINE) w.pop();   // drop whole words: no ellipsis or cut inside a conjunct
+    const h = w.join(" ");
+    return graphemeLength(h) > MAX_HEADLINE ? cutGraphemes(h, MAX_HEADLINE) : h || "Untitled scene";
+  }
   const plain = stripMarkdownInline(say).replace(/\s+/g, " ").trim();
   if (!plain) return "Untitled scene";
   const words = plain.split(/\s+/);
@@ -87,7 +122,8 @@ function headlineFromSay(say) {
   return h;
 }
 
-function tagForIndex(i, total, say) {
+function tagForIndex(i, total, say, language = "en") {
+  if (language !== "en") return "";   // English tags (HOOK, STEP 2, CTA) would be wrong in a Hindi/Odia video; scenes carry no tag instead
   const lower = say.toLowerCase();
   if (i === 0) return "HOOK";
   if (i === total - 1 && /\b(follow|subscribe|link|comment|share|part two|next)\b/.test(lower)) return "CTA";
@@ -108,7 +144,7 @@ function brollPhrase(say, headline) {
   return phrase.length > MAX_BROLL ? phrase.slice(0, MAX_BROLL) : phrase;
 }
 
-function mergeShortSentences(sentences) {
+function mergeShortSentences(sentences, language = "en") {
   const out = [];
   for (const s of sentences) {
     if (out.length && s.length < 40 && out[out.length - 1].length + s.length + 1 <= MAX_SAY) {
@@ -130,33 +166,34 @@ function mergeShortSentences(sentences) {
 }
 
 export function deriveScenes(job) {
-  const title = normalizeText(job.title, 200);
-  const brief = normalizeText(job.brief, 8000);
-  const script = normalizeText(job.script, 50000);
-  const storyboard = normalizeText(job.storyboard, 50000);
+  const language = job.language || "en";
+  const title = normalizeText(job.title, 200, language);
+  const brief = normalizeText(job.brief, 8000, language);
+  const script = normalizeText(job.script, 50000, language);
+  const storyboard = normalizeText(job.storyboard, 50000, language);
 
   let segments;
   if (storyboard) {
     segments = splitStoryboardBlocks(storyboard);
   } else if (script) {
-    segments = splitSentences(script);
+    segments = splitSentences(script, language);
   } else {
-    segments = splitSentences(brief);
+    segments = splitSentences(brief, language);
   }
   if (!segments.length && brief) segments = [brief];
   if (!segments.length && title) segments = [title];
 
-  segments = mergeShortSentences(segments);
+  segments = mergeShortSentences(segments, language);
   if (!segments.length) {
     return [{ say: title || "Video", headline: headlineFromSay(title || "Video"), tag: "HOOK", broll: "abstract motion background" }];
   }
 
   return segments.map((say, i) => {
-    const headline = headlineFromSay(say);
+    const headline = headlineFromSay(say, language);
     return {
-      say: say.slice(0, MAX_SAY),
+      say: language === "en" ? say.slice(0, MAX_SAY) : cutGraphemes(say, MAX_SAY),
       headline,
-      tag: tagForIndex(i, segments.length, say),
+      tag: tagForIndex(i, segments.length, say, language),
       broll: brollPhrase(say, headline),
     };
   });

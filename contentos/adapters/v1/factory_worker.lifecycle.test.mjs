@@ -36,9 +36,10 @@ echo started >> "$FAKE_STAMPS/runs-$id.log"
 [ -n "$FAKE_SLEEP" ] && sleep "$FAKE_SLEEP"
 case "\${FAKE_MODE:-ok}" in
   ok)
-    mkdir -p "$FAKE_WS/jobs/2026/10/$id/project"
-    printf mp4 > "$FAKE_WS/jobs/2026/10/$id/video.mp4"
-    printf '{"width":1080,"height":1920,"fps":30,"duration":3.4}' > "$FAKE_WS/jobs/2026/10/$id/project/hyperframes.json"
+    # storage.py writes jobs/YYYY/MM/DD/<id>. The month-only path made every real job missing_output.
+    mkdir -p "$FAKE_WS/jobs/2026/10/17/$id/project"
+    printf mp4 > "$FAKE_WS/jobs/2026/10/17/$id/video.mp4"
+    printf '{"width":1080,"height":1920,"fps":30,"duration":3.4}' > "$FAKE_WS/jobs/2026/10/17/$id/project/hyperframes.json"
     echo '{"ok":true,"failureClass":null,"stage":null,"error":null,"attempts":1,"elapsedS":0.1}' ;;
   transient) echo '{"ok":false,"failureClass":"transient","stage":"render","error":"render failed: chrome died (after 3 attempts)","attempts":3,"elapsedS":65}'; exit 1 ;;
   output) echo '{"ok":false,"failureClass":"output","stage":"qa","error":"qa failed: QA failed: [frozen_frames]","attempts":1,"elapsedS":2}'; exit 1 ;;

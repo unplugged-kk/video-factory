@@ -35,6 +35,7 @@ import {
   assertExchangeRoot,
   assertReadinessHost,
   assertWorkspaceOutsideRoot,
+  findJobDir,
   listenWithRetry,
   loadStateFile,
   makeRedactor,
@@ -73,22 +74,6 @@ const TAIL_BYTES = 16 * 1024;
 
 // Same default as contentos/storage.py: generated work lives OUTSIDE the repo. Python and this worker must agree on it.
 const WORKSPACE = path.resolve(process.env.VIDEO_FACTORY_WORKSPACE?.trim() || path.join(os.homedir(), "Desktop", "VideoFactory-Workspace"));
-/** The job folder is <workspace>/jobs/YYYY/MM/<jobId> (chosen by contentos/storage.py on first use). */
-export function findJobDir(workspace, jobId) {
-  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(jobId) || jobId.includes("..")) return null;
-  const jobs = path.join(workspace, "jobs");
-  let years = [];
-  try { years = fs.readdirSync(jobs).filter((n) => /^\d{4}$/.test(n)).sort(); } catch { return null; }
-  for (const y of years) {
-    let months = [];
-    try { months = fs.readdirSync(path.join(jobs, y)).filter((n) => /^[01]\d$/.test(n)).sort(); } catch { continue; }
-    for (const m of months) {
-      const p = path.join(jobs, y, m, jobId);
-      try { if (fs.statSync(p).isDirectory()) return p; } catch { /* not here */ }
-    }
-  }
-  return null;
-}
 const CONTENTOS = process.env.VIDEO_FACTORY_CONTENTOS?.trim() || path.join(REPO_ROOT, "contentos.sh");
 const HEARTBEAT_FILE = path.join(WORKSPACE, ".factory_worker.heartbeat");
 
@@ -180,6 +165,7 @@ function contentosSpecToYaml(spec) {
     `format: ${yamlQuote(spec.format)}`,
     `voice: ${yamlQuote(spec.voice)}`,
   ];
+  if (spec.language) lines.push(`language: ${yamlQuote(spec.language)}`);
   if (spec._v1_hyperframes_quality) {
     lines.push(`_v1_hyperframes_quality: ${yamlQuote(spec._v1_hyperframes_quality)}`);
   }
@@ -439,6 +425,8 @@ async function processJob(D, jobId, jobDir) {
   const job = jobMap.get(jobId) || { id: jobId };
   job.title ??= contentosSpec.title;
   job.format ??= factorySettings.format;
+  job.language = factorySettings.language;
+  job.languageStatus = factorySettings.languageStatus;
   job.createdAt ??= now();
   job.contractVersion = CONTRACT_VERSION;
   job.status = "rendering";

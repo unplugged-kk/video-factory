@@ -70,7 +70,7 @@ script:
 - No paid services or APIs without my explicit approval. Do not pass paid MPT sources or music.
 - Do not edit `config/*.yaml`, gates, or the pinned `hyperframes` version (0.8.114) unless I ask.
 - Do not invent facts, numbers or quotes; unverifiable claims go in the report, not the video. Label illustrative data as illustrative.
-- English only for now: Kokoro and the installed Whisper model have no Odia, and Hindi voices are low grade. Odia/Hindi needs Indic Parler-TTS and a native reviewer first.
+- English is the production language. Hindi and Hinglish (`language: hi` / `hi-en`) run through `contentos.lang` (Chatterbox v3 + multilingual Whisper) and stay experimental until a native listener approves pronunciation and naturalness (`docs/MULTILINGUAL.md`). Odia (`or`) is registered but **blocked** (both TTS candidates are gated on Hugging Face and need PyTorch; an Odia job is rejected with that reason). A cloud job selects the language with `language` in its contract: see `docs/MULTILINGUAL.md` section 0 and `python -m contentos.lang matrix`.
 - Third-party audio/footage needs a rights decision from me.
 - Files outside this repo and `~/.contentos` are off limits. Never print secrets from `~/.contentos/secrets`.
 

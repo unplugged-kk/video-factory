@@ -1,0 +1,526 @@
+{
+  "bundle_name": "video-factory-skills-bundle",
+  "bundle_version": "1.0.0",
+  "generated_date": "2026-11-03",
+  "source_skill_count": 79,
+  "creative_skill_count": 79,
+  "core_workflow_skill_count": 7,
+  "prompt_count": 9,
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "130a9083d6a131e5550f593246270b94522e6ff1d1de9b1024d727b428ee6ea9",
+      "bytes": 2891
+    },
+    {
+      "path": "README.md",
+      "sha256": "b106a101a809d1ccadf47b5fb8c691eb533193b6d8dbd27041cb5415ecd7dae0",
+      "bytes": 3911
+    },
+    {
+      "path": "SKILL-MAP.md",
+      "sha256": "d18f12d3197a8cc9b0d683a71db8e9a5c2493567c5019921f56e14e9750cb4c6",
+      "bytes": 18830
+    },
+    {
+      "path": "VIDEO_FACTORY_SKILLS.org",
+      "sha256": "991755c223f4acc9c3293b6ab99a9ce5d9c23463924484a17e142af3ac19bf3b",
+      "bytes": 22281
+    },
+    {
+      "path": "config/skill-catalog.json",
+      "sha256": "8062417e13f26765667e98c6475a5774d5dfc8f2da718e81af422cb4d18a5169",
+      "bytes": 30858
+    },
+    {
+      "path": "config/style-registry.yaml",
+      "sha256": "78c60a738418ea96fe89918de3d4859e01e180f2eaae04a028c6c1e8f09b920c",
+      "bytes": 3466
+    },
+    {
+      "path": "core-skills/factory-skill-integrator/SKILL.md",
+      "sha256": "ba487795408d791949130d7ef04131d61892ec51a7c44d9170f11a975a042818",
+      "bytes": 1081
+    },
+    {
+      "path": "core-skills/publishing-packager/SKILL.md",
+      "sha256": "1d95717ee0846a6143508ec76151e1fe09e00782919421862f595a49119332d3",
+      "bytes": 759
+    },
+    {
+      "path": "core-skills/reference-video-analyzer/SKILL.md",
+      "sha256": "adae1eb8638f5e2e778db69762f5832c08bafa145e6ef4efb3c62884a5c4975f",
+      "bytes": 1031
+    },
+    {
+      "path": "core-skills/script-to-storyboard/SKILL.md",
+      "sha256": "038fafa15cc73e38ab0f1c32bff713344b3f86bd7ef8f7197b93ee6879089a80",
+      "bytes": 1320
+    },
+    {
+      "path": "core-skills/style-architect/SKILL.md",
+      "sha256": "dd4f2b5d57420d4acdf11f306bdec868deca8a801337edd936aa1b649e80e385",
+      "bytes": 1532
+    },
+    {
+      "path": "core-skills/video-director/SKILL.md",
+      "sha256": "63747a45d6f7015e3a26ef4a45a79b6f198195cdfe3694201cad025a9807bfc7",
+      "bytes": 1700
+    },
+    {
+      "path": "core-skills/video-qa-critic/SKILL.md",
+      "sha256": "79e8d2176586d500f5f2d58a87b4b33617af1135eb570a1f9f7de817e714267a",
+      "bytes": 1123
+    },
+    {
+      "path": "docs/OPERATING_MODEL.md",
+      "sha256": "035b594de3d74dca6212913293dc01598f030f47a7c68b4317a288b7a99af015",
+      "bytes": 1685
+    },
+    {
+      "path": "docs/VIDEO_FACTORY_INTEGRATION.md",
+      "sha256": "6811cfd2049914b73bccbfaef021eb10333b838cf84ba11d53ac02bfc3a938c1",
+      "bytes": 3030
+    },
+    {
+      "path": "prompts/00-quickstart.md",
+      "sha256": "8b64ababec41a2e1aa33291ec1ce75905f2557cd72f44d2b8466f8ace554402f",
+      "bytes": 786
+    },
+    {
+      "path": "prompts/01-wispr-flow-command.md",
+      "sha256": "08f492d362519330c320831d72ff17f973ee94e742923cc30c0dfc8af1039a86",
+      "bytes": 1600
+    },
+    {
+      "path": "prompts/02-script-intake-and-style-selector.md",
+      "sha256": "355c9928bc02a961db8bfea023d403cbed6733bf56782b2a0404d79c2ea445e5",
+      "bytes": 1180
+    },
+    {
+      "path": "prompts/03-create-video.md",
+      "sha256": "f404da7b739c2497f5395f0fe017598fa8f60d73b466167c2a9262c9747652a2",
+      "bytes": 1229
+    },
+    {
+      "path": "prompts/04-reference-video-analysis.md",
+      "sha256": "715216c64495de6bb9dbe5ddca3bcfadc8cf3c97818f4eed0a0d64600ccb4d9c",
+      "bytes": 940
+    },
+    {
+      "path": "prompts/05-integrate-skill-with-factory.md",
+      "sha256": "b9efa0018820c5b7943a8d8e712da9a7447570ac1f04830020b43fd0b514f001",
+      "bytes": 1042
+    },
+    {
+      "path": "prompts/06-research-upstream-project.md",
+      "sha256": "88e5d5eca31d45fcd7e990c5ab5173fdf01b4e4da9d9771e9f8a60c1efcd698b",
+      "bytes": 930
+    },
+    {
+      "path": "prompts/07-review-and-qa.md",
+      "sha256": "7e0358817664ae66b462c03af5136f4e8291adfb021b15c0df61fbb7332e43ef",
+      "bytes": 1094
+    },
+    {
+      "path": "prompts/08-publish-package.md",
+      "sha256": "475f4b518c4350bb394628d5f0901673e32acba7370eb76bf4303ff01218286e",
+      "bytes": 741
+    },
+    {
+      "path": "skills/3d-explainer/SKILL.md",
+      "sha256": "e565146535e87a6793da8a7e1c32531432d622be9408bcc5cc4a9158b38b2e12",
+      "bytes": 8980
+    },
+    {
+      "path": "skills/aarti-video/SKILL.md",
+      "sha256": "17c140b60a5370ec5d9b9c8bd8358a22bf40cd993e54961230cb23ae48bfe44d",
+      "bytes": 8059
+    },
+    {
+      "path": "skills/anime-fight/SKILL.md",
+      "sha256": "b9ddd9fd10f770ad43efc268723a30b3ff35db1a884be35404c46149a2337275",
+      "bytes": 8328
+    },
+    {
+      "path": "skills/anime-reel/SKILL.md",
+      "sha256": "3f47361d9cddf10b44457f7451c07a805e0f403f037f9324bf85380ed4c76b15",
+      "bytes": 8187
+    },
+    {
+      "path": "skills/baba-pusho/SKILL.md",
+      "sha256": "07bbb52d52cd7a6a10796ae92d436c56ec3b4eb1781f3dd81b1b288c77bd7a76",
+      "bytes": 8607
+    },
+    {
+      "path": "skills/bairan-style/SKILL.md",
+      "sha256": "4f48910c4f600f9a7f55134ec8a7034f571610f73c68044908d5f81e38d5625a",
+      "bytes": 8704
+    },
+    {
+      "path": "skills/beat-transition-edit/SKILL.md",
+      "sha256": "b7fae4107f58aa54229463ed09ba8309f68561e4d4d085d79b5f71f0a2779bf3",
+      "bytes": 8677
+    },
+    {
+      "path": "skills/blueprint-explainer/SKILL.md",
+      "sha256": "763f7ce5ef03ad2ccb6f9b1c4a7971aa7fccdaab7e9100ea0e0a5a5ec70b877c",
+      "bytes": 8549
+    },
+    {
+      "path": "skills/breaking-news/SKILL.md",
+      "sha256": "d840413e5a7ad149ac69051e16246035f272b420c434f3807cb947c34f4833f2",
+      "bytes": 7426
+    },
+    {
+      "path": "skills/business-short-form-reels/SKILL.md",
+      "sha256": "b1b7c503e5444a9c021aedb3cded862a3509efc48b7a6c0503cf56ebe2b341df",
+      "bytes": 7562
+    },
+    {
+      "path": "skills/cinema-scope/SKILL.md",
+      "sha256": "c7ce3c12ee689da6228e7b249f52b17a49a14e47d8fe568a0863bf2c2ff4ad6d",
+      "bytes": 7349
+    },
+    {
+      "path": "skills/comic-halftone/SKILL.md",
+      "sha256": "b809c1687f6ef502c8a01fe0e6f41512088621e581aadb141ee463ab8e70da62",
+      "bytes": 7426
+    },
+    {
+      "path": "skills/comic-reel/SKILL.md",
+      "sha256": "767db398a9feebd12b7127bd5e0002037f63e50b67c1aa39039834c68a1f624a",
+      "bytes": 8212
+    },
+    {
+      "path": "skills/crayon-carousel/SKILL.md",
+      "sha256": "57751b35c650259c9b780eadcff1ede79c2c80855046eba867239026330a1cdd",
+      "bytes": 8525
+    },
+    {
+      "path": "skills/dark-red-timeline-motion-graphics/SKILL.md",
+      "sha256": "d1c1c23bb976f8a946107ea10aece4c3206bc186dbeff6a44dc9d3966e78712a",
+      "bytes": 7539
+    },
+    {
+      "path": "skills/depth-ui-reel/SKILL.md",
+      "sha256": "b06452e19fab1206e2c5ad45c72996c157bd22da607a4fa4d8a202e84c267454",
+      "bytes": 7591
+    },
+    {
+      "path": "skills/educational-youtube-editor/SKILL.md",
+      "sha256": "72072c3da15eb857e4d5446528e214b85947dfc3be2c2dfb3dd248adef02c939",
+      "bytes": 7564
+    },
+    {
+      "path": "skills/glass-stat-card/SKILL.md",
+      "sha256": "498a3d1d11f58bedd20475b081a17aea41d7b4acbbdc3bdcc36346081ceaf9b9",
+      "bytes": 7421
+    },
+    {
+      "path": "skills/glass-to-neon-lyrics/SKILL.md",
+      "sha256": "f9de6d85dc6012202d2d9b7e331f63889ef1c09e64687451d425f2ca9cadb031",
+      "bytes": 10464
+    },
+    {
+      "path": "skills/glow-lyrics/SKILL.md",
+      "sha256": "9a848211164d839fbdda7c1d760ccb3febaaf56c4a795a8a907ec379fc347a2a",
+      "bytes": 8798
+    },
+    {
+      "path": "skills/hindi-lyric-video/SKILL.md",
+      "sha256": "8364a94cce6530ac6f85e6a233f832da4110d94ebb2f541782e21b088b1e734f",
+      "bytes": 8307
+    },
+    {
+      "path": "skills/hindi-pastel-reel-edit/SKILL.md",
+      "sha256": "740074464cd0327232b01b8e5a745e4e991fdb28b24e44cc1c4a8b5945600e05",
+      "bytes": 7465
+    },
+    {
+      "path": "skills/ink-line-lyrics/SKILL.md",
+      "sha256": "35a26ffca87d1da7d7cd19b26118090b5e034bfa7f2047fe7589389d1ad9f45b",
+      "bytes": 8531
+    },
+    {
+      "path": "skills/instagram-ui-hinglish/SKILL.md",
+      "sha256": "a80f31bdcb46d84e35901a8aacc0c83667f1c9d84dac692a83b4ca9de5de22c9",
+      "bytes": 7501
+    },
+    {
+      "path": "skills/iphone-style-by-aansh/SKILL.md",
+      "sha256": "6d0543fa9cfdabdc88c55a1f62bbb7488f6ee013ad7b5047611192f51400739e",
+      "bytes": 7535
+    },
+    {
+      "path": "skills/katha-video/SKILL.md",
+      "sha256": "769caa3421b3bdcacd3fad480e47ec6cc0864637daaca7cd2b04feb51ff7e0ba",
+      "bytes": 8296
+    },
+    {
+      "path": "skills/kids-story/SKILL.md",
+      "sha256": "c858e45d3bb0494b15cc8cddd3b09be9342d82a6173db48defdf0415debc34db",
+      "bytes": 8169
+    },
+    {
+      "path": "skills/kinetic-lyrics/SKILL.md",
+      "sha256": "a2e4573c6ac56b894515203308c64659c8c622941b9a38ef59ccea3d0cae05d7",
+      "bytes": 8274
+    },
+    {
+      "path": "skills/kinetic-talking-head-edit/SKILL.md",
+      "sha256": "cf58b79cc45acc19557797eee6034cbc659be0b52cfe33f03f1de7eedbfb9b8b",
+      "bytes": 7530
+    },
+    {
+      "path": "skills/latent-comic/SKILL.md",
+      "sha256": "f9dda95b2bbf3a43352258f662709193e8e779e5f2615ec8d1ab82e122fa1a7f",
+      "bytes": 9102
+    },
+    {
+      "path": "skills/latent-reel/SKILL.md",
+      "sha256": "89e1f3ab032cf21946c66f79899cdcf60e4d563180072eec742637f0c50b6c1b",
+      "bytes": 8318
+    },
+    {
+      "path": "skills/led-matrix-text/SKILL.md",
+      "sha256": "9f79ee372d2c6b59fd14599a11773e3298a43687919484d77216e7e27613fb27",
+      "bytes": 7406
+    },
+    {
+      "path": "skills/lyric-video/SKILL.md",
+      "sha256": "42807bbd440f641824a8eeb051bbc7f97e24432096373a75657818cc98ae01be",
+      "bytes": 8076
+    },
+    {
+      "path": "skills/madhubani-kahani/SKILL.md",
+      "sha256": "32c9b20f0022f4801866b52882d20c6162b7fe38b35b2a372ff4d0d38b1a70c0",
+      "bytes": 8134
+    },
+    {
+      "path": "skills/madira-peekar-soo-gaye/SKILL.md",
+      "sha256": "6dcd4f3bc86a08685270766a57658bdb96de70f423cd6af9718bc5da59317461",
+      "bytes": 8653
+    },
+    {
+      "path": "skills/magazine-cover/SKILL.md",
+      "sha256": "42ef307d13839fbaed73487d1858aecdb680d2a1f4cbd807b4b6e4a160299a22",
+      "bytes": 7456
+    },
+    {
+      "path": "skills/match-cut/SKILL.md",
+      "sha256": "7197bd054b1ab7e3641dd4cdf6cdc3c8fe31d3d121069d0a004c00f26b8cb44f",
+      "bytes": 7492
+    },
+    {
+      "path": "skills/maut-ke-bare-mai-sochte-ho/SKILL.md",
+      "sha256": "69e6c7ff359ab0425f673af4235d6b766db5b794ed94e123d0f115338b7da2dd",
+      "bytes": 8706
+    },
+    {
+      "path": "skills/minimal-lyrics/SKILL.md",
+      "sha256": "4b0a4d7ad95fd257dcb1d11a4278b3cb04f57c2365c1aacc97eeb5d458ab37f6",
+      "bytes": 8653
+    },
+    {
+      "path": "skills/mirzapur-video/SKILL.md",
+      "sha256": "6abaf32a1c82b3e5cba0f77985b8d141d369e7561e33b965ae37b572da61f681",
+      "bytes": 8291
+    },
+    {
+      "path": "skills/neon-lyrics/SKILL.md",
+      "sha256": "0101d5785057b60d8d5888c13d5380ca63a351fcc9a54559b1b5b28a4b92fe33",
+      "bytes": 8112
+    },
+    {
+      "path": "skills/neon-outline/SKILL.md",
+      "sha256": "6aa58f663c1e62bc254a4e64552d8b29fa9de7724d37489e163c8ba998876aa1",
+      "bytes": 7385
+    },
+    {
+      "path": "skills/news-report/SKILL.md",
+      "sha256": "0f991170ab6668a02619674b7a1c804268cb1ae908adbe9d6db61e0ec9d2550a",
+      "bytes": 8418
+    },
+    {
+      "path": "skills/night-glow-lyrics/SKILL.md",
+      "sha256": "1b05bd36138e4baef49ed7bccf9ade5d484e812aa1829301567aed95dc961df1",
+      "bytes": 10115
+    },
+    {
+      "path": "skills/painted-beat-edit/SKILL.md",
+      "sha256": "57f1d5035170a6a10e92f562a523e35dacc554efba587286b53915069259071e",
+      "bytes": 8414
+    },
+    {
+      "path": "skills/paper-cutout/SKILL.md",
+      "sha256": "12799f2575abfe00b78ecc206f047cbfa337e4eb21514ad2a9b726c4bd3df865",
+      "bytes": 8100
+    },
+    {
+      "path": "skills/particle-chart/SKILL.md",
+      "sha256": "70ed5a251d996c639a51d9c1906ff5095256af713291648169dd351fe3bfb5ec",
+      "bytes": 7429
+    },
+    {
+      "path": "skills/particle-text/SKILL.md",
+      "sha256": "2fc7a31a6312d9071d50e5847c1a206f4f7af88b12685fe7a56dd5c0a2906c92",
+      "bytes": 7420
+    },
+    {
+      "path": "skills/party-lyrics/SKILL.md",
+      "sha256": "e319b1f8949ea9110dc03ad2e1a6a28616f77a9283d2dab49b9d704b3ced94c4",
+      "bytes": 8329
+    },
+    {
+      "path": "skills/personal-broll-library/SKILL.md",
+      "sha256": "9beddb0a118ff390b3448e5685d552b4b8b733d655b5d23e8be46ad84d2dc71d",
+      "bytes": 7694
+    },
+    {
+      "path": "skills/personal-explainer/SKILL.md",
+      "sha256": "8bfd1ef13762fc1e880c1c53b8a0d55910b16f7c9f9a1a55d43b8914d6b0cb15",
+      "bytes": 8354
+    },
+    {
+      "path": "skills/personal-short-form-reels/SKILL.md",
+      "sha256": "38e647ed07c71d562853272915e1bc2c39736ec12fb14bdd80b044314538fef0",
+      "bytes": 7557
+    },
+    {
+      "path": "skills/pink-spotify-clip-lyrics/SKILL.md",
+      "sha256": "77d957aae3613cd9bcedfd03087da4f6ee22a9acee2d418bdaee59cd5bd0be38",
+      "bytes": 10105
+    },
+    {
+      "path": "skills/podcast-cartoon/SKILL.md",
+      "sha256": "53c4598f52734d78b87c19e8147573fd0f127cbbe4236af2a4d7555163c1a2be",
+      "bytes": 8631
+    },
+    {
+      "path": "skills/podcast-comic/SKILL.md",
+      "sha256": "100156a49f7e235ae5f8a7912050f3c0b77e72a689cc98997090672aea7a3897",
+      "bytes": 8797
+    },
+    {
+      "path": "skills/podcast-explainer/SKILL.md",
+      "sha256": "4b06aea95c93126371340f277f6096a8773fa42d857f07560a07cd4bd78f2915",
+      "bytes": 8583
+    },
+    {
+      "path": "skills/podcast-reel-edit/SKILL.md",
+      "sha256": "e0fbe89ed226bd801865d80c9b54c15cb8df36dc28bf70c8e42903a4c1828321",
+      "bytes": 7478
+    },
+    {
+      "path": "skills/price-tag-zoom/SKILL.md",
+      "sha256": "b6649e14b7988f8ac52ac8d3e951d1da0c3fdc2e6982742f96c0481754a44bbb",
+      "bytes": 7429
+    },
+    {
+      "path": "skills/pusho-reel/SKILL.md",
+      "sha256": "9fd1b61160290451f0db939a6c0df92fe6b2e9732a0a7694900c628d7696b950",
+      "bytes": 8478
+    },
+    {
+      "path": "skills/ranking-format/SKILL.md",
+      "sha256": "12a9b8f525409934bdac8188d7fae5b78a016c7faac93f048862ff7f10a890b1",
+      "bytes": 7425
+    },
+    {
+      "path": "skills/rap-video/SKILL.md",
+      "sha256": "1b250f13a1a9a01f55c78df84a526582556a44a5dba3c80f74d890201052113c",
+      "bytes": 8139
+    },
+    {
+      "path": "skills/red-kinetic-collage-edit/SKILL.md",
+      "sha256": "9afaedf398d114023e4bc554b72837007d8573bb289ff8e3259b7af0bed681b2",
+      "bytes": 7514
+    },
+    {
+      "path": "skills/red-rap-lyrics/SKILL.md",
+      "sha256": "446f529eb08a052f32c95aebea57d47b36775b36c49aee67748f2e185b2d1a9c",
+      "bytes": 10626
+    },
+    {
+      "path": "skills/rgb-glitch-live/SKILL.md",
+      "sha256": "54494426da53ed76cfdaebaec8cc65b0fd526148bdfaed61cc09a12d28f7b838",
+      "bytes": 7465
+    },
+    {
+      "path": "skills/scribble-edit/SKILL.md",
+      "sha256": "340c8e5ce499c1e921415c40167aa88bb4d12e63f4f64f3f0c92115f2bb54cf8",
+      "bytes": 9798
+    },
+    {
+      "path": "skills/shadow-puppet/SKILL.md",
+      "sha256": "56840995e29c688ddd404ef0b0c26406374370c0b3d3826b2e862c6889843e3e",
+      "bytes": 8133
+    },
+    {
+      "path": "skills/shutter-stack/SKILL.md",
+      "sha256": "f6062fc7b4b6de6f85487168a5fa13d473a1e104bfc3279306fabbac78f0d957",
+      "bytes": 7432
+    },
+    {
+      "path": "skills/sketch-doodle-edit/SKILL.md",
+      "sha256": "90fdd43892a0eccf0e1c319fd49ff3689d05e131bfa396e2533b0a7627d0c45e",
+      "bytes": 9044
+    },
+    {
+      "path": "skills/sketch-music-video/SKILL.md",
+      "sha256": "0852dd21c270a2866c018296c517a02f4cb0c2fac662515391fca309580d0627",
+      "bytes": 8373
+    },
+    {
+      "path": "skills/sketch-to-motion/SKILL.md",
+      "sha256": "a189122b6e029ee9651913a7c9d7b5106a293f3db8643f54f23d4e8303df6bd7",
+      "bytes": 8451
+    },
+    {
+      "path": "skills/spotify-particle-lyrics/SKILL.md",
+      "sha256": "0ba72efab1faecdf23fbc446c304e6da31d278a7c6f78f99cb49ca1e9e0897d6",
+      "bytes": 10723
+    },
+    {
+      "path": "skills/street-interview/SKILL.md",
+      "sha256": "1425ea9abd8dfc9b59c3e0708cbf5abed6c2250700363c678e76f0c70bdd7aa1",
+      "bytes": 8228
+    },
+    {
+      "path": "skills/talking-head-edit/SKILL.md",
+      "sha256": "36649b041c631a6fbd5ac6fbbc6e431f65819eb11596c7de2c445ccd7312a857",
+      "bytes": 8292
+    },
+    {
+      "path": "skills/titan-anime/SKILL.md",
+      "sha256": "00ca9b18af1b691f7fc91462c5b5c30c7296eeda56c6f22b75280a1eb444b918",
+      "bytes": 8388
+    },
+    {
+      "path": "skills/triptych-timecode/SKILL.md",
+      "sha256": "7cc26c31611562a4cd42a45b9bd485df745e9855db963507df0c515394f085f4",
+      "bytes": 7396
+    },
+    {
+      "path": "skills/watercolor-lyrics/SKILL.md",
+      "sha256": "b14ea0bd536974cae88cc89d44b51fc181a6c7fc7c1468bee1267cc849e79ecc",
+      "bytes": 8820
+    },
+    {
+      "path": "skills/watercolor-map/SKILL.md",
+      "sha256": "720cdabe233732eec95e58a98b3b1d942a4fa8554543f0b0e8002be77677c6a4",
+      "bytes": 8034
+    },
+    {
+      "path": "skills/woof-woof/SKILL.md",
+      "sha256": "04df2d73e22e571cc441ade3e3e33f4939f3289e1c805748c2484efc7cf6ab2a",
+      "bytes": 8574
+    },
+    {
+      "path": "skills/youtube-clips/SKILL.md",
+      "sha256": "476a5ac95246d0fad9ded3c6cfef436446119d335866b3162a9d6fb9e649ae75",
+      "bytes": 7581
+    }
+  ]
+}

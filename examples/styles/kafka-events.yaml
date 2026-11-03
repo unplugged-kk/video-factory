@@ -1,0 +1,48 @@
+# Same script is rendered in several styles by changing only `visual_style` (and content_id). Sample content, never published.
+content_id: sample-kafka-events
+title: "How Kafka Moves Events"
+thumb_text: "KAFKA, EXPLAINED"
+description: "Producers, topics, partitions and consumer groups in under a minute."
+tags: [kafka, event streaming, architecture]
+format: "9:16"
+voice: af_heart
+kind: short
+visual_style: {id: auto, seed: 7}
+script:
+  - say: "Every click on a big website becomes an event. Kafka is where those events wait their turn."
+    headline: "Events wait in a log"
+    tag: HOOK
+  - say: "Producers write events to a topic. The topic is split into partitions, and each partition is an ordered log."
+    headline: "Topics split into partitions"
+    tag: THE MODEL
+    visual:
+      type: diagram
+      nodes:
+        - {id: prod, label: Producer}
+        - {id: p0, label: Partition 0}
+        - {id: p1, label: Partition 1}
+        - {id: cons, label: Consumer group}
+      edges:
+        - [prod, p0, writes]
+        - [prod, p1, writes]
+        - [p0, cons, reads]
+        - [p1, cons, reads]
+  - say: "Order is guaranteed inside one partition, but not across the whole topic."
+    headline: "Order has a boundary"
+    tag: THE CATCH
+    visual:
+      type: compare
+      left: {title: One partition, points: [Events stay in order, Reads follow write order]}
+      right: {title: Whole topic, points: [No global order, Partitions are read separately]}
+  - say: "A consumer reads from its own position in the log, called an offset, and commits it as it goes."
+    headline: "Consumers track offsets"
+    tag: HOW READS WORK
+    visual:
+      type: steps
+      steps: [Producer appends an event, Broker stores it in a partition, Consumer reads at its offset, Offset is committed]
+  - say: "That is how Kafka scales reads. Add consumers to the group, up to the number of partitions."
+    headline: "Scale by adding consumers"
+    tag: SCALING
+  - say: "Follow for the next one: what happens when a consumer group rebalances."
+    headline: "Next: rebalancing"
+    tag: CTA

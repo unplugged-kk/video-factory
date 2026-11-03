@@ -29,6 +29,7 @@ capabilities:
   image_generation:   {status: planned}
   thumbnail_generation: {status: planned}
   thumbnail_analysis: {status: live,     skill: yt-package}
+  creative_skill_routing: {status: live, skill: creative-skill-router, tool: "python -m contentos.skills", note: "79 creative + 7 core recipes vendored from VIDEO_FACTORY_SKILLS_BUNDLE v1.0.0 and indexed in config/creative-skills.json. 3 are generated through scenekit (approximate); the rest are agent-authored recipes whose input media is not in the repo, so none is rendered end to end. See docs/video-intelligence/09-creative-skills-integration.md"}
   storyboard:         {status: live,     note: "script lines carry headline/tag; compose stage turns them into timed scenes"}
   video_generation:   {status: live,     provider: [hyperframes, mpt]}
   video_editing:      {status: live,     skill: yt-edit,      provider: [ffmpeg]}

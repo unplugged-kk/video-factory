@@ -142,3 +142,25 @@ export function listenWithRetry(server, { port, host, log = () => {}, delays = [
     },
   };
 }
+
+/**
+ * The job folder is <workspace>/jobs/YYYY/MM/DD/<jobId> (per-day folders, contentos/storage.py since 60fdc30). The older
+ * jobs/YYYY/MM/<jobId> layout is still found so jobs written before that change keep resolving. Python and this worker must agree.
+ */
+export function findJobDir(workspace, jobId) {
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(jobId) || jobId.includes("..")) return null;
+  const jobs = path.join(workspace, "jobs");
+  const list = (dir, re) => { try { return fs.readdirSync(dir).filter((n) => re.test(n)).sort(); } catch { return []; } };
+  const isDir = (p) => { try { return fs.statSync(p).isDirectory(); } catch { return false; } };
+  for (const y of list(jobs, /^\d{4}$/)) {
+    for (const m of list(path.join(jobs, y), /^[01]\d$/)) {
+      const flat = path.join(jobs, y, m, jobId);
+      if (isDir(flat)) return flat;
+      for (const d of list(path.join(jobs, y, m), /^[0-3]\d$/)) {
+        const p = path.join(jobs, y, m, d, jobId);
+        if (isDir(p)) return p;
+      }
+    }
+  }
+  return null;
+}

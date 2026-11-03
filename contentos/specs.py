@@ -75,10 +75,27 @@ def validate_spec(spec: Any) -> dict[str, Any]:
         _error(errors, "format", "must be 9:16 or 16:9")
 
     voice = spec.get("voice")
-    if not _non_empty_string(voice):
-        _error(errors, "voice", "voice is required")
-    elif voice not in KOKORO_VOICE_IDS:
-        _error(errors, "voice", f"Kokoro voice id {voice!r} is not in the factory allowlist")
+    language = spec.get("language", "en")
+    if language not in ("en", "hi", "hi-en", "or", "auto"):
+        _error(errors, "language", "must be en, hi, hi-en, or or auto")
+    elif language == "en" and all(ln.get("lang", "en") == "en" for ln in spec.get("script", []) if isinstance(ln, dict)):
+        if not _non_empty_string(voice):
+            _error(errors, "voice", "voice is required")
+        elif voice not in KOKORO_VOICE_IDS:
+            _error(errors, "voice", f"Kokoro voice id {voice!r} is not in the factory allowlist")
+    else:                                              # other languages: the voice is a profile of the routed backend (or omitted)
+        from .lang import router as _lr
+        from .lang.errors import LangError
+        try:
+            for ln in [{}] + [l for l in spec.get("script", []) if isinstance(l, dict)]:
+                _lr.resolve(spec, ln)
+            from .lang import script as _ls
+            for i, ln in enumerate(l for l in spec.get("script", []) if isinstance(l, dict)):
+                if _lr.resolve(spec, ln).language != "en" or spec.get("language") == "auto":
+                    for p in _ls.validate(_lr.resolve(spec, ln).language, [str(ln.get("say", ""))]):
+                        _error(errors, f"script[{i}].say", p)
+        except LangError as exc:
+            _error(errors, "language", str(exc))
 
     render = spec.get("render", "hyperframes")
     if render != "hyperframes":

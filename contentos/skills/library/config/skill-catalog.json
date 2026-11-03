@@ -1,0 +1,638 @@
+{
+  "schema_version": 1,
+  "numbering": "1-based order from source collection; stable within this bundle release",
+  "skills": [
+    {
+      "id": 1,
+      "name": "anime-reel",
+      "category": "stories-and-illustration",
+      "description": "An anime-style episode with original characters drawn in code and lip-synced to your voice lines, like the Zero Se Freelance series.",
+      "path": "skills/anime-reel/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 2,
+      "name": "madhubani-kahani",
+      "category": "stories-and-illustration",
+      "description": "A Panchatantra-style story told as a living Madhubani painting: double black outlines, patterned fills, fish-scale water and a red-yellow folk border.",
+      "path": "skills/madhubani-kahani/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 3,
+      "name": "katha-video",
+      "category": "spoken-content-and-editing",
+      "description": "A pravachan clip turned into an animated story: the characters act out the kahani, the speaker talks from a lip-synced corner badge, and Hindi captions follow every word.",
+      "path": "skills/katha-video/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 4,
+      "name": "lyric-video",
+      "category": "music-and-lyrics",
+      "description": "A hand-drawn crayon lyric video on a dark chalkboard: every word writes on as it's sung, and each line gets its own little drawing.",
+      "path": "skills/lyric-video/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 5,
+      "name": "watercolor-map",
+      "category": "stories-and-illustration",
+      "description": "A painted watercolor world map: a pin drops on the start city, a plane flies the real great-circle route, and the destination washes in with colour.",
+      "path": "skills/watercolor-map/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 6,
+      "name": "news-report",
+      "category": "spoken-content-and-editing",
+      "description": "A Hinglish tech-news report in Fireship style: flat dark background, screenshot cards with red boxes and highlights, memes, and a hard cut every two seconds, with you as the anchor.",
+      "path": "skills/news-report/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 7,
+      "name": "talking-head-edit",
+      "category": "spoken-content-and-editing",
+      "description": "Your raw clip, fully edited: captions on every word, the screen splits into two windows to show what you're talking about, and demo videos play full screen. Your face is never re-coloured.",
+      "path": "skills/talking-head-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 8,
+      "name": "podcast-explainer",
+      "category": "spoken-content-and-editing",
+      "description": "A podcast clip turned into an animated explainer, like the Raj Shamani “Two Winners” video: simple stick-figure metaphors for every idea, bold kinetic captions, and the host drawn as a cartoon in a live corner window.",
+      "path": "skills/podcast-explainer/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 9,
+      "name": "podcast-comic",
+      "category": "spoken-content-and-editing",
+      "description": "A podcast clip retold as a 9:16 comic book, like the Raj Shamani “ladke ko kab jaanoge” reel: the guest drawn in the studio below (bookshelf, Break the Cage poster, mic), and a new comic panel slams in on top for every point he makes, with a burst word and Hindi speech-bubble captions.",
+      "path": "skills/podcast-comic/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 10,
+      "name": "hindi-lyric-video",
+      "category": "music-and-lyrics",
+      "description": "A calm Hindi lyric video like Banjaare's “Barsaat”: Devanagari lines write on over old paper while rain falls and footprints walk across the page with the song.",
+      "path": "skills/hindi-lyric-video/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 11,
+      "name": "pusho-reel",
+      "category": "stories-and-illustration",
+      "description": "A Puneet Superstar “Baba Pusho” cartoon reel with the full class: Baba Pusho teaching, his students reacting, Hindi captions on every word, a new scene for every line.",
+      "path": "skills/pusho-reel/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 12,
+      "name": "titan-anime",
+      "category": "music-and-lyrics",
+      "description": "An anime episode set in an Attack on Titan-style world: giant walls, green capes, horses, flags and titans, with your own original characters telling the story.",
+      "path": "skills/titan-anime/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 13,
+      "name": "personal-explainer",
+      "category": "explainers-and-motion-graphics",
+      "description": "An explainer in your own voice, like “How will the Tesla fly?”: real footage with credit, clean diagrams that build step by step, numbers that pop, and you as the narrator.",
+      "path": "skills/personal-explainer/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 14,
+      "name": "sketch-music-video",
+      "category": "music-and-lyrics",
+      "description": "A pencil-sketch lyric video like Anuv Jain's “Inaam”: soft graphite drawings of the song's story fill the page while the lyrics are handwritten next to them, line by line.",
+      "path": "skills/sketch-music-video/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 15,
+      "name": "kinetic-lyrics",
+      "category": "music-and-lyrics",
+      "description": "Big kinetic typography for an English song, like Justin Bieber's “Let Me Love You”: every word punches in on the beat in chunky letters on black, with paint splats and confetti.",
+      "path": "skills/kinetic-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 16,
+      "name": "latent-reel",
+      "category": "stories-and-illustration",
+      "description": "A roast-show clip turned into a cartoon, like Samay Raina's India's Got Latent: the guest at the mic on the left, the host reacting on the right, the show's stage behind them.",
+      "path": "skills/latent-reel/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 17,
+      "name": "latent-comic",
+      "category": "stories-and-illustration",
+      "description": "An India's Got Latent clip retold as a 9:16 comic book, like the MC Stan episode reels: Samay Raina and the judges at the show's desk on top, a close-up of whoever is talking below with a gag for every line, halftone dots, bursts and speech-bubble captions.",
+      "path": "skills/latent-comic/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 18,
+      "name": "comic-reel",
+      "category": "music-and-lyrics",
+      "description": "A famous movie scene retold as a comic book, like the Drishyam 3 reel: halftone panels, speed lines, BOOM bursts and speech bubbles for every line of dialogue.",
+      "path": "skills/comic-reel/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 19,
+      "name": "sketch-to-motion",
+      "category": "music-and-lyrics",
+      "description": "Your rough paper sketches turned into a polished app-promo animation: the sketch stays on the left, the finished motion graphic plays next to it, like the Kulhad chai reel.",
+      "path": "skills/sketch-to-motion/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 20,
+      "name": "blueprint-explainer",
+      "category": "explainers-and-motion-graphics",
+      "description": "A long YouTube explainer drawn like an engineering blueprint, like the Piramal Finance loan video: a blue grid sheet, white line drawings, and numbers that calculate live as you talk.",
+      "path": "skills/blueprint-explainer/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 21,
+      "name": "podcast-cartoon",
+      "category": "music-and-lyrics",
+      "description": "A famous podcast moment turned into a gag: the podcast clip plays, then an original cheeky cartoon kid pops in as a sticker and asks the big question, and you react, like the “maut ke baare mein sochte ho?” reel.",
+      "path": "skills/podcast-cartoon/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 22,
+      "name": "ink-line-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A fast lyric video drawn as ONE glowing ink line that never breaks, like the Main Aur Tu reel: the line morphs into a new drawing on every key word, with the camera punching on every kick.",
+      "path": "skills/ink-line-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 23,
+      "name": "mirzapur-video",
+      "category": "music-and-lyrics",
+      "description": "A web-series dialogue turned into a comic meme, like the Kaalin Bhaiya “chai piyoge?” reel: a bold comic portrait of the don, halftone backgrounds that change on every beat, and a POV caption.",
+      "path": "skills/mirzapur-video/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 24,
+      "name": "party-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A loud party-anthem lyric video, like Honey Singh's Casa Tupka: gold and gem 3D lettering, red curtains and lavender smoke, confetti on every beat, and a cartoon of the singer in their signature look.",
+      "path": "skills/party-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 25,
+      "name": "anime-fight",
+      "category": "stories-and-illustration",
+      "description": "An anime fight gag in the one-punch style: a sleepy, unbothered hero ends a giant monster with a single punch, then turns the same punch on something relatable, like Monday morning.",
+      "path": "skills/anime-fight/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 26,
+      "name": "rap-video",
+      "category": "music-and-lyrics",
+      "description": "A full-energy cartoon rap video like Boom Shaka: the rapper drawn as a bold cartoon, BOOM bursts, speed lines and lyrics that slam in on every beat.",
+      "path": "skills/rap-video/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 27,
+      "name": "aarti-video",
+      "category": "music-and-lyrics",
+      "description": "A devotional aarti video full of fire and light, like the Shiv aarti: glowing diyas, flames, a damru rhythm and the aarti lines in Devanagari.",
+      "path": "skills/aarti-video/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 28,
+      "name": "shadow-puppet",
+      "category": "stories-and-illustration",
+      "description": "A kids story told like tholu bommalata shadow puppets: black cut-out characters with pin joints moving against a glowing orange screen.",
+      "path": "skills/shadow-puppet/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 29,
+      "name": "kids-story",
+      "category": "stories-and-illustration",
+      "description": "A bright 60-second kids story like Pyaasi Chidiya: soft rounded characters, a sunny world, Hindi speech bubbles and a little reacting companion in the corner.",
+      "path": "skills/kids-story/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 30,
+      "name": "neon-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A synthwave rap lyric video like KR$NA's “I Guess”: a neon grid, a big retro sun, a cartoon of the rapper in a varsity jacket and glowing Hindi lyrics.",
+      "path": "skills/neon-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 31,
+      "name": "paper-cutout",
+      "category": "music-and-lyrics",
+      "description": "A paper-cutout music video like Jaadoo: hand-cut paper characters, floating islands and lyric tags that pop on their words, moving in 15 fps stop-motion.",
+      "path": "skills/paper-cutout/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 32,
+      "name": "street-interview",
+      "category": "spoken-content-and-editing",
+      "description": "A funny street interview turned into a cartoon, like the bad day interview: the interviewee drawn as a flat cartoon, night-street background and big caption words on the punchlines.",
+      "path": "skills/street-interview/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 33,
+      "name": "bairan-style",
+      "category": "music-and-lyrics",
+      "description": "A romantic lyric video like the Bairan reel: watercolour-painted characters cut out like paper stickers, polaroids, a sunflower and a beating heart popping in, every move fast in and slowly settling.",
+      "path": "skills/bairan-style/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 34,
+      "name": "3d-explainer",
+      "category": "explainers-and-motion-graphics",
+      "description": "A 3D animated news explainer built in Blender, like the Professor of Claude ISRO and Cyclone Arnab reels: Claude builds every 3D shot in code (rockets on launch pads, a 3D India map with pins, a storm spiralling over the sea, Earth from space), cuts the camera on your words and pops the numbers in as you say them.",
+      "path": "skills/3d-explainer/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 35,
+      "name": "beat-transition-edit",
+      "category": "music-and-lyrics",
+      "description": "The trending beat edit from the How to do this with Claude series (Ep 1): your dance or twirl video in smooth slow motion, cutting to your photos on every music hit with a quick zoom-blur dissolve and a warm film grade, copied from any reference reel.",
+      "path": "skills/beat-transition-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 36,
+      "name": "scribble-edit",
+      "category": "music-and-lyrics",
+      "description": "Your own clip covered in live marker doodles, like the Justin Bieber “Where Are Ü Now” video from How to do this with Claude (Ep 5): the wall behind you fills with hand-drawn stars, rockets, cats and lightning, crowns and shades stick to your face as you move, a neon line traces your body, and the whole look changes on every beat.",
+      "path": "skills/scribble-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 37,
+      "name": "sketch-doodle-edit",
+      "category": "music-and-lyrics",
+      "description": "One photo turned into the trending sketch doodle edit from How to do this with Claude (Ep 4): the people flicker between the real photo and a pencil sketch on the beat, white wind lines swoosh across the sky, a scribble outline draws around them and a handwritten line writes itself in.",
+      "path": "skills/sketch-doodle-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 38,
+      "name": "crayon-carousel",
+      "category": "motion-effects-and-formats",
+      "description": "The trending crayon carousel from How to do this with Claude (Ep 3): every slide puts a crayon drawing of your photo on top, labelled “One day”, over the real photo labelled “Day one”, ready to post as an Instagram carousel.",
+      "path": "skills/crayon-carousel/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 39,
+      "name": "painted-beat-edit",
+      "category": "music-and-lyrics",
+      "description": "A viral footage edit remade with no footage at all, like the Shiv aarti reel from How to do this with Claude (Ep 2): Claude paints the images in code in an acrylic mural style and cuts between them on every half-beat with a slow zoom.",
+      "path": "skills/painted-beat-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 40,
+      "name": "glow-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A dreamy lyric video like MITRAZ's Khwahish from Ye likho ye milega Part 7: flat vector scenes at purple dusk, silhouettes that tell the story (a boy alone on a bench, the girl he misses glowing inside a golden birdcage), soft bloom on every light, and the lyric line glowing in word by word.",
+      "path": "skills/glow-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 41,
+      "name": "minimal-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A quiet, minimal lyric video like Bayaan's Safar from Ye likho ye milega Part 7: a flat horizon, a lone silhouette walking, wind drawn as sweeping streak lines, and a sky whose colour follows the mood of each line, with one small serif lyric line at the bottom.",
+      "path": "skills/minimal-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 42,
+      "name": "watercolor-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A soft lyric video like Ashu Shukla's Phir Se Shuru from Ye likho ye milega Part 7: the camera pans right across warm paper while autumn watercolour scenes of one couple draw themselves in (ink lines first, then the wash blooms), leaves fall, and the lyric lines write on word by word.",
+      "path": "skills/watercolor-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 43,
+      "name": "spotify-particle-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A 16:9 lyric video in four looks, like the Kalyani (ARJN × KDS × Fifty4 × Ronn ft. Shreya Ghoshal) video: a tilted Spotify lyrics card where every sung word lights up with glowing sparks, then the artists' photo turned into a monochrome particle portrait that morphs into a second photo while red-and-white lyrics pop on the right and dance on the beat, then gold motion-graphic lyrics with fast blur word changes for the singer's part, and a black-and-white rain-on-glass music player to end.",
+      "path": "skills/spotify-particle-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 44,
+      "name": "pink-spotify-clip-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A poetic 16:9 lyric video like the Alfaaz (Hamza Malik × Zain Zohaib) video: a tilted pink Spotify lyrics card, then motion graphics that follow the meaning of each line (a rose that draws itself, letters cut out of the clip, a cinema letterbox, a dotted footstep path with the words along it, and a split screen for the last line), with my emotional clips playing softly behind the lyrics so both the video and the words stay readable.",
+      "path": "skills/pink-spotify-clip-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 45,
+      "name": "night-glow-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A 16:9 lyric video that makes people feel the song, like the Dooron Dooron (Paresh Pahuja ft. Harleen Sethi) video: one night-blue look with glowing white light, emotional clips that follow the story of each line, an Instagram post that dives into the title, and lyrics that change style with the music (small tracked caps + one huge serif word for the key lines, simple bottom lines in between), ending with the last line turning to light.",
+      "path": "skills/night-glow-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 46,
+      "name": "red-rap-lyrics",
+      "category": "music-and-lyrics",
+      "description": "A fast rap lyric video in one red grade, like the Hola Amigo (KR$NA ft. Seedhe Maut) video: a red glass lyrics card that peels in like a page over a tilted wall of lyric words, then neon words standing on a rainy street with ripple reflections, then the rapper's photo turned into a monochrome particle portrait with stacked italic lyrics lighting up word by word, and a 3D tower of words where the camera eases to every new word, ending on a DAMN! slam.",
+      "path": "skills/red-rap-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 47,
+      "name": "glass-to-neon-lyrics",
+      "category": "music-and-lyrics",
+      "description": "An emotional 16:9 lyric video that keeps changing mood with the song, like the Arz Kiya Hai (Anuv Jain × Lost Stories) video: a red glass Apple-Music-style lyrics card over a wall of giant red words that cracks and shatters, then full-screen clips with the lyrics standing in the empty space (a starry red field with twinkling and shooting stars, a sunny hill, a man against the clouds), a key line cut out as giant letters with fire burning inside them, and a pink neon ending where lyrics fall in, splash and reflect in water while it rains.",
+      "path": "skills/glass-to-neon-lyrics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 48,
+      "name": "maut-ke-bare-mai-sochte-ho",
+      "category": "music-and-lyrics",
+      "description": "A podcast moment retold as a comic page, like the Ranveer × Honey Singh “manzil kya hai? … Death.” clip from Ye likho ye milega Part 8: the host's big question in a speech bubble, a long silent beat, then DEATH. slams in on black with a skull and the guest gulps in an inset panel.",
+      "path": "skills/maut-ke-bare-mai-sochte-ho/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 49,
+      "name": "madira-peekar-soo-gaye",
+      "category": "stories-and-illustration",
+      "description": "A famous movie dialogue turned into a comic-book scene, like the Drishyam 3 “madira peekar so gaye” clip from Ye likho ye milega Part 8: one character delivers the line in a speech bubble word by word, then the other explodes in close-up with speed lines and a colour flash.",
+      "path": "skills/madira-peekar-soo-gaye/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 50,
+      "name": "baba-pusho",
+      "category": "stories-and-illustration",
+      "description": "A Puneet Superstar “Baba Pusho” clip as a cartoon class, like Ye likho ye milega Part 8: Pusho preaches from his desk under a big Om, his fixed class of students reacts, and every Hindi line gets a caption plus a scene of its own.",
+      "path": "skills/baba-pusho/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 51,
+      "name": "woof-woof",
+      "category": "music-and-lyrics",
+      "description": "A streamer's live moment as a cartoon, like the IShowSpeed “woof woof” clip from Ye likho ye milega Part 8: he stares into the camera, then barks on every beat while WOOF! bursts fly, the live chat floods with woofs and the viewer count shoots up.",
+      "path": "skills/woof-woof/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 52,
+      "name": "personal-short-form-reels",
+      "category": "motion-effects-and-formats",
+      "description": "A fast personal reel with my own B-roll and word-by-word captions.",
+      "path": "skills/personal-short-form-reels/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 53,
+      "name": "personal-broll-library",
+      "category": "motion-effects-and-formats",
+      "description": "Search my own B-roll folder in plain English (\"me walking at night\") and return the best matching clips.",
+      "path": "skills/personal-broll-library/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 54,
+      "name": "depth-ui-reel",
+      "category": "visual-treatments-and-edit-styles",
+      "description": "Floating app interfaces that sit behind my head, with my body cut out in front of them.",
+      "path": "skills/depth-ui-reel/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 55,
+      "name": "youtube-clips",
+      "category": "motion-effects-and-formats",
+      "description": "Find the best moments in a long YouTube video and turn each into a vertical clip.",
+      "path": "skills/youtube-clips/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 56,
+      "name": "educational-youtube-editor",
+      "category": "explainers-and-motion-graphics",
+      "description": "Turn a long lesson recording into a clean, chaptered YouTube edit.",
+      "path": "skills/educational-youtube-editor/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 57,
+      "name": "ranking-format",
+      "category": "motion-effects-and-formats",
+      "description": "A tier-list reel: items ranked one by one, S to F.",
+      "path": "skills/ranking-format/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 58,
+      "name": "business-short-form-reels",
+      "category": "motion-effects-and-formats",
+      "description": "A reel for business topics, with docs, decks and screen recordings as B-roll.",
+      "path": "skills/business-short-form-reels/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 59,
+      "name": "match-cut",
+      "category": "music-and-lyrics",
+      "description": "The same word on a new page, landing in exactly the same spot on screen.",
+      "path": "skills/match-cut/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 60,
+      "name": "shutter-stack",
+      "category": "music-and-lyrics",
+      "description": "Photo cards that drop in on a camera flash, stacking up.",
+      "path": "skills/shutter-stack/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 61,
+      "name": "led-matrix-text",
+      "category": "music-and-lyrics",
+      "description": "Big dot-matrix words, one per beat, like a stadium screen.",
+      "path": "skills/led-matrix-text/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 62,
+      "name": "glass-stat-card",
+      "category": "motion-effects-and-formats",
+      "description": "A frosted-glass card with a number that counts up live.",
+      "path": "skills/glass-stat-card/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 63,
+      "name": "particle-chart",
+      "category": "explainers-and-motion-graphics",
+      "description": "Particles pour down and pile up into a bar chart.",
+      "path": "skills/particle-chart/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 64,
+      "name": "particle-text",
+      "category": "music-and-lyrics",
+      "description": "Words built out of falling dots that assemble on the beat.",
+      "path": "skills/particle-text/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 65,
+      "name": "price-tag-zoom",
+      "category": "explainers-and-motion-graphics",
+      "description": "A slow push-in on a product with a floating price tag.",
+      "path": "skills/price-tag-zoom/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 66,
+      "name": "podcast-reel-edit",
+      "category": "spoken-content-and-editing",
+      "description": "Tight cuts, a clean headline and punch-ins, podcast-clip style.",
+      "path": "skills/podcast-reel-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 67,
+      "name": "dark-red-timeline-motion-graphics",
+      "category": "explainers-and-motion-graphics",
+      "description": "A dark red grade, a blinking REC tag and an animated timeline.",
+      "path": "skills/dark-red-timeline-motion-graphics/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 68,
+      "name": "instagram-ui-hinglish",
+      "category": "motion-effects-and-formats",
+      "description": "Instagram profile grids behind me, with tick-mark chips for each point.",
+      "path": "skills/instagram-ui-hinglish/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 69,
+      "name": "hindi-pastel-reel-edit",
+      "category": "motion-effects-and-formats",
+      "description": "A soft pastel set with one giant word behind my head.",
+      "path": "skills/hindi-pastel-reel-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 70,
+      "name": "kinetic-talking-head-edit",
+      "category": "spoken-content-and-editing",
+      "description": "A cream panel with green highlight typography that moves with my words.",
+      "path": "skills/kinetic-talking-head-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 71,
+      "name": "red-kinetic-collage-edit",
+      "category": "visual-treatments-and-edit-styles",
+      "description": "Black-and-white footage with one glowing red word and collage-style type.",
+      "path": "skills/red-kinetic-collage-edit/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 72,
+      "name": "iphone-style-by-aansh",
+      "category": "visual-treatments-and-edit-styles",
+      "description": "Frosted iOS widgets and notifications floating over my footage.",
+      "path": "skills/iphone-style-by-aansh/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 73,
+      "name": "rgb-glitch-live",
+      "category": "visual-treatments-and-edit-styles",
+      "description": "Split colour channels, torn slices and a live news chyron.",
+      "path": "skills/rgb-glitch-live/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 74,
+      "name": "magazine-cover",
+      "category": "visual-treatments-and-edit-styles",
+      "description": "A magazine masthead behind my head, with cover lines around me.",
+      "path": "skills/magazine-cover/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 75,
+      "name": "comic-halftone",
+      "category": "stories-and-illustration",
+      "description": "Halftone dots, a comic panel border, speech bubbles and POW words.",
+      "path": "skills/comic-halftone/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 76,
+      "name": "breaking-news",
+      "category": "spoken-content-and-editing",
+      "description": "A TV-news lower third, a scrolling ticker and a channel bug.",
+      "path": "skills/breaking-news/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 77,
+      "name": "neon-outline",
+      "category": "visual-treatments-and-edit-styles",
+      "description": "A glowing neon outline around me, with neon words.",
+      "path": "skills/neon-outline/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 78,
+      "name": "cinema-scope",
+      "category": "visual-treatments-and-edit-styles",
+      "description": "2.39:1 film bars, film grain and a title card.",
+      "path": "skills/cinema-scope/SKILL.md",
+      "source_prompt_present": true
+    },
+    {
+      "id": 79,
+      "name": "triptych-timecode",
+      "category": "visual-treatments-and-edit-styles",
+      "description": "Three clips side by side, each with its own live timecode.",
+      "path": "skills/triptych-timecode/SKILL.md",
+      "source_prompt_present": true
+    }
+  ]
+}

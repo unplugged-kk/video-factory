@@ -1,0 +1,35 @@
+content_id: sample-why-gpus-ai
+title: "Why GPUs Power AI"
+thumb_text: "WHY GPUS?"
+description: "Matrix math and parallel hardware, in one minute."
+tags: [ai, gpu, hardware]
+format: "9:16"
+voice: af_heart
+kind: short
+visual_style: {id: auto, seed: 3}
+script:
+  - say: "Training a neural network is mostly one thing, done billions of times: multiplying big grids of numbers."
+    headline: "AI is mostly matrix math"
+    tag: HOOK
+  - say: "A CPU has a few powerful cores that are great at doing one complicated thing after another."
+    headline: "The CPU: few strong cores"
+    tag: THE CPU
+  - say: "A GPU has thousands of simpler cores, built to do many small multiplications at the same time."
+    headline: "The GPU: many simple cores"
+    tag: THE GPU
+    visual:
+      type: compare
+      left: {title: CPU, points: [Few powerful cores, Strong at sequential work]}
+      right: {title: GPU, points: [Thousands of simple cores, Strong at parallel work]}
+  - say: "Matrix multiplication splits into many independent pieces, so it fits that parallel hardware very well."
+    headline: "Independent pieces run in parallel"
+    tag: THE MATCH
+    visual:
+      type: steps
+      steps: [Split the matrices into tiles, Multiply every tile at once, Add the partial results, Pass the result to the next layer]
+  - say: "So the hardware did not change what AI is. It changed how fast we can train it."
+    headline: "Speed changed what is possible"
+    tag: THE POINT
+  - say: "Follow for the next one: why memory, not compute, is often the real limit."
+    headline: "Next: the memory wall"
+    tag: CTA

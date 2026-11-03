@@ -1,0 +1,249 @@
+{
+ "schema": "language-capabilities/1",
+ "source_sha256": "dc596ff16812553ca86abfcdfd22f0431a74443fb4fbe617e602eb33f8f29bd0",
+ "default_language": "en",
+ "languages": {
+  "en": {
+   "code": "en",
+   "name": "English",
+   "status": "production-ready",
+   "status_reason": "render + tests pass and documented production history",
+   "tts": {
+    "backend": "kokoro",
+    "model": "kokoro-v1.0.onnx",
+    "status": "ready",
+    "detail": "kokoro ready"
+   },
+   "asr": {
+    "route": "whisper_small_en",
+    "language": "en",
+    "status": "ready",
+    "model": "ggml-small.en.bin",
+    "detail": "/Users/kishore/.cache/hyperframes/whisper/models/ggml-small.en.bin (487614201 bytes)"
+   },
+   "voices": [
+    "af_heart"
+   ],
+   "default_voice": "af_heart",
+   "subtitle": {
+    "script": "latin",
+    "fonts": [],
+    "unicode_ranges": [],
+    "min_script_share": 0.0,
+    "normalization": "NFC",
+    "unicode_render": {
+     "status": "pass",
+     "note": "Latin"
+    }
+   },
+   "text_policy": "as_is",
+   "fallback_tts": null,
+   "evidence": {
+    "end_to_end_render": {
+     "status": "pass",
+     "jobs": [
+      "sample-ml-en-regress"
+     ],
+     "note": "byte-identical audio and frame-identical video vs the pre-change baseline"
+    },
+    "automated_tests": {
+     "status": "pass",
+     "where": "tests/ (full suite) and tests/test_lang.py"
+    },
+    "human_audio_review": {
+     "status": "not-applicable",
+     "note": "existing production voice"
+    }
+   },
+   "limitations": []
+  },
+  "hi": {
+   "code": "hi",
+   "name": "Hindi",
+   "status": "experimental",
+   "status_reason": "capped: no fluent listener has approved pronunciation or naturalness",
+   "tts": {
+    "backend": "chatterbox_v3",
+    "model": "mlx-community/chatterbox-multilingual-v3",
+    "status": "ready",
+    "detail": "chatterbox_v3 ready"
+   },
+   "asr": {
+    "route": "whisper_turbo_q5",
+    "language": "hi",
+    "status": "ready",
+    "model": "ggml-large-v3-turbo-q5_0.bin",
+    "detail": "/Users/kishore/.cache/hyperframes/whisper/models/ggml-large-v3-turbo-q5_0.bin (574041195 bytes)"
+   },
+   "voices": [
+    "hindi-default"
+   ],
+   "default_voice": "hindi-default",
+   "subtitle": {
+    "script": "devanagari",
+    "fonts": [
+     "Kohinoor Devanagari",
+     "Devanagari Sangam MN"
+    ],
+    "unicode_ranges": [
+     "0900-097F"
+    ],
+    "min_script_share": 0.6,
+    "normalization": "NFC",
+    "unicode_render": {
+     "status": "pass",
+     "note": "Devanagari in Kohinoor Devanagari, frames inspected"
+    }
+   },
+   "text_policy": "as_is",
+   "fallback_tts": null,
+   "evidence": {
+    "end_to_end_render": {
+     "status": "pass",
+     "jobs": [
+      "sample-ml-hi-001",
+      "sample-skill-bp-hi"
+     ],
+     "note": "voice, compose, render, qa; ASR round trip folded WER 0.023 on the benchmark text"
+    },
+    "automated_tests": {
+     "status": "pass",
+     "where": "tests/test_lang.py"
+    },
+    "human_audio_review": {
+     "status": "not-done",
+     "note": "no fluent listener has reviewed the audio; the reference voice is a synthetic Kokoro clip"
+    }
+   },
+   "limitations": [
+    "no human listening review",
+    "caption word timing is partly interpolated (match ratio 0.69-0.90)",
+    "Chatterbox needs an Apple-silicon Mac (about 5 GB)"
+   ]
+  },
+  "hi-en": {
+   "code": "hi-en",
+   "name": "Hinglish",
+   "status": "experimental",
+   "status_reason": "capped: segment-level routing was not evaluated, one benchmark sample cannot separate the mixed-script and transliteration policies, and Chatterbox misread one English term ('fail')",
+   "tts": {
+    "backend": "chatterbox_v3",
+    "model": "mlx-community/chatterbox-multilingual-v3",
+    "status": "ready",
+    "detail": "chatterbox_v3 ready"
+   },
+   "asr": {
+    "route": "whisper_turbo_q5",
+    "language": "hi",
+    "status": "ready",
+    "model": "ggml-large-v3-turbo-q5_0.bin",
+    "detail": "/Users/kishore/.cache/hyperframes/whisper/models/ggml-large-v3-turbo-q5_0.bin (574041195 bytes)"
+   },
+   "voices": [
+    "hindi-default"
+   ],
+   "default_voice": "hindi-default",
+   "subtitle": {
+    "script": "devanagari",
+    "fonts": [
+     "Kohinoor Devanagari",
+     "Devanagari Sangam MN"
+    ],
+    "unicode_ranges": [
+     "0900-097F"
+    ],
+    "min_script_share": 0.3,
+    "normalization": "NFC",
+    "unicode_render": {
+     "status": "pass",
+     "note": "mixed Devanagari and Latin captions, frames inspected"
+    }
+   },
+   "text_policy": "translit_known",
+   "fallback_tts": null,
+   "evidence": {
+    "end_to_end_render": {
+     "status": "pass",
+     "jobs": [
+      "sample-ml-hien-001"
+     ],
+     "note": "voice, compose, render, qa"
+    },
+    "automated_tests": {
+     "status": "pass",
+     "where": "tests/test_lang.py"
+    },
+    "human_audio_review": {
+     "status": "not-done"
+    }
+   },
+   "limitations": [
+    "Roman-script Hinglish is not supported (Devanagari required)",
+    "no human listening review",
+    "one benchmark sample"
+   ]
+  },
+  "or": {
+   "code": "or",
+   "name": "Odia",
+   "status": "blocked",
+   "status_reason": "TTS: [backend_blocked] TTS backend indic_parler_odia (ai4bharat/indic-parler-tts) is not available: not installed: needs (1) a Hugging Face token whose account accepted the model terms and (2) an isolated ",
+   "tts": {
+    "backend": "indic_parler_odia",
+    "model": "ai4bharat/indic-parler-tts",
+    "status": "blocked",
+    "code": "backend_blocked",
+    "detail": "[backend_blocked] TTS backend indic_parler_odia (ai4bharat/indic-parler-tts) is not available: not installed: needs (1) a Hugging Face token whose account accepted the model terms and (2) an isolated PyTorch venv, which is a major environment change that needs owner approval -- see docs/MULTILINGUAL.md section 'Odia' for the exact approval and install steps"
+   },
+   "asr": {
+    "route": "odia_asr_vaani_whisper",
+    "language": "or",
+    "status": "timing-fallback",
+    "model": "ggml-vaani-odia.bin",
+    "detail": "model absent; captions use measured audio duration with even spacing, unverified word timing"
+   },
+   "voices": [
+    "odia-default"
+   ],
+   "default_voice": "odia-default",
+   "subtitle": {
+    "script": "odia",
+    "fonts": [
+     "Oriya Sangam MN",
+     "Noto Sans Oriya"
+    ],
+    "unicode_ranges": [
+     "0B00-0B7F"
+    ],
+    "min_script_share": 0.6,
+    "normalization": "NFC",
+    "unicode_render": {
+     "status": "pass",
+     "note": "glyph/layout test with SILENT placeholder audio (not narration): Odia headline, caption highlight and steps render with intact conjuncts in Oriya Sangam MN; hyperframes lint 0 errors; text correctness not reviewed by a fluent speaker",
+     "frames": "experiments/multilingual/render/odia_glyph_test.png"
+    }
+   },
+   "text_policy": "as_is",
+   "fallback_tts": null,
+   "evidence": {
+    "end_to_end_render": {
+     "status": "not-run",
+     "note": "no TTS backend can run: both candidates are gated and need PyTorch"
+    },
+    "automated_tests": {
+     "status": "partial",
+     "where": "tests/test_lang.py (routing, script validation, blocked-backend error); no audio tests are possible"
+    },
+    "human_audio_review": {
+     "status": "not-done",
+     "note": "needs a fluent Odia speaker once audio exists"
+    }
+   },
+   "limitations": [
+    "no working TTS: IndicF5 and Indic Parler-TTS are gated on Hugging Face and need PyTorch (owner approval)",
+    "no ASR: whisper.cpp has no Odia language id; Vaani Odia Whisper needs conversion",
+    "Sarvavox Odia publishes no weights; MMS-TTS-ory is CC-BY-NC (excluded for monetized video)"
+   ]
+  }
+ }
+}

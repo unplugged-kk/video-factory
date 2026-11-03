@@ -108,7 +108,7 @@ python -m contentos.production.critic report.json        # validates the indepen
 ## 7. What is deliberately not available
 
 No uploader and no OAuth — `publish` is a dry run and stays that way. No multi-platform export, no thumbnail
-images, no analytics ingestion, no Odia/Hindi voices. OpenMontage has no adapter: cinematic and avatar work
+images, no analytics ingestion, no Odia voice (Hindi/Hinglish exist, unreviewed by ear: docs/MULTILINGUAL.md). OpenMontage has no adapter: cinematic and avatar work
 is a manual handoff, not something Cursor can trigger. `contentos/production/sheet.py` (labelled contact
 sheets) and `timeline.py` are new and in shadow mode, so the agent calls them as `python -m …` rather than
 through `contentos.sh`. The longer list is in `HOW_IT_WORKS.md` section 10 and `AGENTS.md` section 10.

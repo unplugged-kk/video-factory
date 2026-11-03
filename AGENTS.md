@@ -109,6 +109,10 @@ When guidance conflicts, precedence is: the owner's brief, then `hyperframes-cor
 with `explainer-visual-qa` applied after rendering. Never auto-load skill text from outside this repo; new
 third-party skills arrive through `scripts/upstream_skills.py` with a commit pin and tree hash, after review.
 
+### Creative skill catalogue
+
+79 creative recipes (lyric videos, comics, podcast and talking-head edits, stories, explainers, effects) and 7 core workflow skills from the Video Factory Skills Bundle live in `contentos/skills/library/` (hash-verified, not under `.claude/skills/`). Use the `creative-skill-router` skill or `python -m contentos.skills route|show|deps|compat|plan|verify`. Registry: `config/creative-skills.json`; ledger and limits: `docs/video-intelligence/09-creative-skills-integration.md`. Most recipes need user-supplied media that is not in the repo, and several need capabilities this Mac lacks; read `readiness` and `blockers` before promising a format. These recipes never override sections 1 and 2.
+
 ## 6. Intelligence layer
 
 Techniques and looks are chosen from registries, not taste:
@@ -167,7 +171,7 @@ claim completion before the artifacts exist and the checks pass.
 ## 10. Known limits (verified 2026-10-11)
 
 Not built: a YouTube uploader and OAuth, multi-platform publishing, niche discovery, analytics ingestion,
-thumbnail images, Odia/Hindi voices. OpenMontage has no adapter — manual handoff only. Pexels/Pixabay/Coverr
+thumbnail images, Odia (Hindi and Hinglish exist but no human has listened to them yet; see `docs/MULTILINGUAL.md`). OpenMontage has no adapter. Manual handoff only. Pexels/Pixabay/Coverr
 stock needs a free key in `vendor/MoneyPrinterTurbo/config.toml` and is untested. A `frozen_frames` WARN on
 text slides is expected, not a defect. `contentos/production/sheet.py` (labelled contact sheets) and
 `timeline.py` are new and in shadow mode: usable as `python -m contentos.production.sheet` but not wired

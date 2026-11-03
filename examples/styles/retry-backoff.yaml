@@ -1,0 +1,43 @@
+content_id: sample-retry-backoff
+title: "Retry With Backoff in Python"
+thumb_text: "RETRY RIGHT"
+description: "Why exponential backoff beats a fixed sleep, with a short Python example."
+tags: [python, reliability, api]
+format: "9:16"
+voice: af_heart
+kind: short
+visual_style: {id: auto, seed: 11}
+script:
+  - say: "Your API call failed once. Retrying instantly is how a small outage becomes a big one."
+    headline: "Do not retry instantly"
+    tag: HOOK
+  - say: "Here is the whole idea in a few lines. Try a few times, and wait longer after each failure."
+    headline: "Retry, then wait longer"
+    tag: THE CODE
+    visual:
+      type: code
+      file: fetch.py
+      code: |
+        import time
+
+        def fetch(url, tries=3):
+            for n in range(tries):
+                try:
+                    return get(url)
+                except TimeoutError:
+                    time.sleep(2 ** n)
+            raise RuntimeError("gave up")
+      focus: [4, 8, 9]
+  - say: "A fixed sleep waits the same time every round. Exponential backoff doubles the wait, which gives a struggling server room to recover."
+    headline: "Fixed vs exponential"
+    tag: WHY IT WORKS
+    visual:
+      type: compare
+      left: {title: Fixed sleep, points: [Same wait every retry, Clients retry in lockstep]}
+      right: {title: Backoff, points: [Wait doubles each retry, Load on the server eases]}
+  - say: "In production, add a random jitter to the wait so many clients do not retry at the same instant."
+    headline: "Add jitter"
+    tag: PRODUCTION
+  - say: "Follow for the next one: circuit breakers, and when to stop retrying."
+    headline: "Next: circuit breakers"
+    tag: CTA

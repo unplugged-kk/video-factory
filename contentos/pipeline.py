@@ -118,7 +118,40 @@ def s_script(ctx):
     return "yt-script/hookscore", [md, lint]
 
 
+def _voice_multilingual(ctx):
+    """Non-English (or per-line language) jobs: route each line through contentos.lang. Plain English never gets here."""
+    from .lang import capabilities as _lcap, router as _lr, script as _lscript, tts as _ltts
+    from .lang.errors import LangError
+    vd = ctx["dir"] / "audio"
+    try:
+        spec = ctx["spec"]
+        problems = []
+        for i, ln in enumerate(spec["script"], 1):         # per-line language wins; the script must really be in it
+            lang = _lr.resolve(spec, ln).language
+            problems += [f"{p} [{lang}]" for p in _lscript.validate(lang, [ln["say"]]) ]
+        if problems:
+            raise LangError("script does not match its language: " + "; ".join(problems), code="script_language_mismatch")
+        status = {l: _lcap.status_of(l)["status"] for l in {_lr.resolve(spec, ln).language for ln in spec["script"]}}
+        if "blocked" in status.values():
+            bad = [l for l, st in status.items() if st == "blocked"]
+            raise LangError("language " + ", ".join(f"{_lcap.status_of(l)['name']} ({l})" for l in bad) + " is blocked: "
+                            + "; ".join(_lcap.status_of(l)["status_reason"] for l in bad), code="language_blocked")
+        res = _ltts.synthesize_lines(spec, vd)
+    except LangError as e:
+        raise Blocked(f"language routing: {e}")
+    meta = {"schema": "voice-languages/1", "capability_status": status,
+            "notice": "; ".join(f"{l} is {st}: not production-ready" for l, st in status.items() if st != "production-ready") or None,
+            "lines": [{"index": i, **r.to_dict()} for i, r in enumerate(res, 1)]}
+    (vd / "voice-languages.json").write_text(json.dumps(meta, indent=1, ensure_ascii=False), encoding="utf-8")
+    return res[0].backend, [Path(r.path) for r in res]
+
+
 def s_voice(ctx):
+    from .lang import router as _lr
+    if not _lr.is_legacy(ctx["spec"]):
+        if supplied_audio.has_record(ctx["dir"]):
+            raise Blocked("this job holds supplied audio; use a different job id for a generated voice")
+        return _voice_multilingual(ctx)
     if supplied_audio.has_record(ctx["dir"]):       # never silently replace a supplied take with a generated voice
         raise Blocked("this job holds supplied audio (supplied-audio/supplied-audio.json) but the pipeline cannot use it yet "
                       "(G3 records provenance and rights only); use a different job id for a generated voice")
@@ -143,9 +176,28 @@ def s_voice(ctx):
     return prim["id"], outs
 
 
-def words_for(wav, workdir, log_path=None):
-    """Word timings from whisper.cpp (via hyperframes). Falls back to even spacing if ASR is unavailable."""
+def words_for(wav, workdir, log_path=None, language=None):
+    """Word timings from whisper.cpp (via hyperframes). Falls back to even spacing if ASR is unavailable.
+    `language` (en/None keeps the original path untouched): any other language is routed to its configured whisper model and an
+    ASR failure is an error, never a silent switch to even spacing, because fake caption timing in Hindi cannot be told from real."""
     workdir.mkdir(exist_ok=True)
+    if language not in (None, "en"):
+        from .lang import asr as _lasr, config as _lc, router as _lr
+        from .lang.errors import LangError as _LE
+        cfg = _lc.load()
+        route = _lr.resolve({"language": language}, None, cfg)
+        try:
+            r = _lasr.route_transcribe(wav, route, cfg)
+        except _LE as e:
+            if e.code == "asr_model_missing" and cfg["languages"][route.language].get("timing_fallback"):
+                # the language config allows measured-duration even spacing; it is recorded, never presented as word timing
+                (workdir / "asr-route.json").write_text(json.dumps({"timing": "even-spacing from measured audio duration, UNVERIFIED word timing",
+                                                                    "reason": str(e), "route_language": route.language}, ensure_ascii=False))
+                return None
+            raise
+        (workdir / "transcript.json").write_text(json.dumps(r["words"], ensure_ascii=False))
+        (workdir / "asr-route.json").write_text(json.dumps({k: r[k] for k in ("model", "asr_model_id", "language", "seconds", "route_language")}))
+        return [(w["text"], w["start"], w["end"]) for w in r["words"]]
     try:
         if log_path:
             sh(hf.command("transcribe", wav, "--json", "-d", workdir), log_path=log_path)
@@ -156,12 +208,16 @@ def words_for(wav, workdir, log_path=None):
         return None
 
 
-def caption_words(toks, asr, d):
+def caption_words(toks, asr, d, language=None):
     """Caption timings for one script line: the SCRIPT words (their spelling is what the caption shows), timed by
     aligning them to the ASR words. asr is [(text,start,end)] from words_for, or None; without it the words are
     spaced evenly over the take. Sequence alignment keeps an ASR insertion/deletion from shifting every later word."""
     if asr:
-        wl, _ = align.align_words(toks, [{"text": w, "start": s, "end": e} for w, s, e in asr])
+        fold = None
+        if language not in (None, "en"):              # Whisper writes English terms in Latin where the script has Devanagari
+            from .lang import lexicon
+            fold = lexicon.fold
+        wl, _ = align.align_words(toks, [{"text": w, "start": s, "end": e} for w, s, e in asr], fold=fold)
         return wl
     step = (d - 0.35) / len(toks)
     return [(w, k * step, (k + 1) * step) for k, w in enumerate(toks)]
@@ -180,6 +236,11 @@ def s_compose(ctx):
         return get_renderer("remotion").compose(ctx)
     if ctx["spec"].get("render") == "mpt":
         return _mpt(mpt.compose, ctx)
+    if ctx["spec"].get("visual_style"):              # opt-in multi-style scene kit; absent key = unchanged path below
+        from .scenekit import compose as _scenekit
+        return _scenekit.compose(ctx, dur=dur, words_for=words_for, caption_words=caption_words, stage=_stage_sh,
+                                 lint_cmd=hf.command("lint"),
+                                 cap_override=_feat.get("captions_hook", ctx["spec"])(ctx, ctx["spec"]))
     spec, W, H = ctx["spec"], *map(int, ctx["res"])
     U = min(W, H)                                    # type scales with the short side, so 16:9 is not set in 1920-wide type
     # Hook 1: style/decision-record resolution (Lane A). No-op when feature off.
@@ -198,10 +259,12 @@ def s_compose(ctx):
         shutil.copy(wav, proj / f"assets/voice/{i:02d}.wav")
         d = round(dur(wav) + 0.35, 2)
         workdir = ctx["dir"] / "audio" / f"tx{i:02d}"
-        asr = (words_for(wav, workdir, log_path=ctx["log_path"])
-               if ctx.get("log_path") else words_for(wav, workdir))
+        _lang = ln.get("lang") or spec.get("language")
+        _kw = {"language": _lang} if _lang not in (None, "en") else {}    # English call shape is unchanged
+        asr = (words_for(wav, workdir, log_path=ctx["log_path"], **_kw)
+               if ctx.get("log_path") else words_for(wav, workdir, **_kw))
         toks = ln["say"].split()                      # captions show the SCRIPT words; ASR supplies timing only
-        wl = caption_words(toks, asr, d)
+        wl = caption_words(toks, asr, d) if not _kw else caption_words(toks, asr, d, **_kw)
         cap = "".join(f'<span id="w{i}_{k}">{html.escape(w)}</span> ' for k, (w, _, _) in enumerate(wl))
         for k, (_, ws, we) in enumerate(wl):
             anim.append(f'tl.set("#w{i}_{k}",{{color:"#fbbf24"}},{t+ws:.2f});tl.set("#w{i}_{k}",{{color:"#fff"}},{t+we:.2f});')
@@ -228,6 +291,9 @@ def s_compose(ctx):
     bottom_padding = int(H * _cap_override["safezone_bottom_padding"]) if _cap_override.get("safezone_bottom_padding") else int(H * 0.16)
     side_padding = _cap_override.get("safezone_side_padding", 70)
     (proj / "hyperframes.json").write_text(json.dumps({"width": W, "height": H, "fps": 30, "duration": total}))
+    from .lang import typography as _typ            # Latin text: empty string, so English output is byte-identical
+    _indic_css = _typ.block(_typ.script_kind(" ".join(f"{ln.get('say', '')} {ln.get('headline', '')} {ln.get('tag', '')}" for ln in spec["script"])),
+                            ["h1", ".tag", ".cap"])
     (proj / "index.html").write_text(f"""<!DOCTYPE html><html><head><meta charset="UTF-8"><title>{html.escape(spec['title'])}</title>
 <script src="./gsap.min.js"></script>
 <style>*{{margin:0;box-sizing:border-box}}body{{width:{W}px;height:{H}px;overflow:hidden;background:#090a0f;font-family:-apple-system,"Helvetica Neue",sans-serif;color:#fff}}
@@ -236,7 +302,7 @@ def s_compose(ctx):
 .head{{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}}
 .tag{{font:700 34px ui-monospace,Menlo,monospace;letter-spacing:3px;color:#a5b4fc;margin-bottom:36px}}
 h1{{font-size:{int(U*0.085)}px;font-weight:900;line-height:1.1;letter-spacing:-1px}}
-.cap{{font-size:{int(U*0.058)}px;font-weight:800;line-height:1.25;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.7)}}.cap span{{display:inline-block;color:#fff}}</style></head>
+.cap{{font-size:{int(U*0.058)}px;font-weight:800;line-height:1.25;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.7)}}.cap span{{display:inline-block;color:#fff}}{_indic_css}</style></head>
 <body><div id="root" data-composition-id="root" data-width="{W}" data-height="{H}" data-duration="{total}">
 {''.join(scenes)}{''.join(audios)}</div>
 <script>const tl=gsap.timeline({{paused:true}});{''.join(anim)}
@@ -359,8 +425,11 @@ def _digest(parts):
 
 def script_digest(spec):
     """What SCRIPT_APPROVED covers: the title and every line's spoken text, exactly as the voice stage will read it."""
-    return _digest([json.dumps({"title": spec.get("title"), "script": [{"say": ln["say"], "tts": ln.get("tts")} for ln in spec["script"]]},
-                               sort_keys=True, ensure_ascii=False)])
+    body = {"title": spec.get("title"), "script": [{"say": ln["say"], "tts": ln.get("tts")} for ln in spec["script"]]}
+    from .lang import router as _lr
+    if not _lr.is_legacy(spec):                       # English digests are unchanged, so existing approvals stay valid
+        body["language"] = {"language": spec.get("language"), "voice": spec.get("voice"), "lines": [ln.get("lang") for ln in spec["script"]]}
+    return _digest([json.dumps(body, sort_keys=True, ensure_ascii=False)])
 
 
 def production_digest(d, spec):

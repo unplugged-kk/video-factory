@@ -1,0 +1,5797 @@
+{
+ "schema": "creative-skills/1",
+ "bundle": "1.0.0",
+ "bundle_manifest_sha256": "5fdf68a0064ed47f6d4cdcc3d8342810be18329b53095aac53943b630a4fadfd",
+ "numbering": "1-based order from source collection; stable within this bundle release",
+ "probe": {
+  "render.hyperframes": {
+   "ok": true,
+   "evidence": "node_modules/.bin/hyperframes present (pinned 0.8.114)"
+  },
+  "media.ffmpeg": {
+   "ok": true,
+   "evidence": "ffmpeg=/Users/kishore/.local/bin/ffmpeg"
+  },
+  "asr.word_timing_en": {
+   "ok": true,
+   "evidence": "whisper-cli=/opt/homebrew/bin/whisper-cli; models=['ggml-large-v3-turbo-q5_0.bin', 'ggml-small.en.bin']"
+  },
+  "asr.word_timing_multilingual": {
+   "ok": true,
+   "evidence": "multilingual models: ['ggml-large-v3-turbo-q5_0.bin']"
+  },
+  "align.forced_mms": {
+   "ok": false,
+   "evidence": "python module torchaudio not installed"
+  },
+  "tts.kokoro_en": {
+   "ok": true,
+   "evidence": "python module kokoro_onnx importable"
+  },
+  "tts.hindi": {
+   "ok": true,
+   "evidence": "Chatterbox Multilingual v3 (MLX) ready: venv, reference recording and cached weights present (python -m contentos.lang doctor)"
+  },
+  "cv.person_matte": {
+   "ok": false,
+   "evidence": "segmentation libs importable: none (mediapipe, rembg, cv2 all missing)"
+  },
+  "cv.face_detect": {
+   "ok": false,
+   "evidence": "face detection needs mediapipe or cv2: missing"
+  },
+  "audio.beat_detect": {
+   "ok": false,
+   "evidence": "python module librosa missing; numpy/scipy exist but no onset code is wired"
+  },
+  "audio.stem_separation": {
+   "ok": false,
+   "evidence": "python module demucs missing"
+  },
+  "3d.blender": {
+   "ok": false,
+   "evidence": "blender=not on PATH"
+  },
+  "data.world_atlas": {
+   "ok": false,
+   "evidence": "node_modules/world-atlas missing (npm package, MIT/ISC not yet vetted)"
+  },
+  "net.yt_dlp": {
+   "ok": false,
+   "evidence": "yt-dlp --version -> OSError"
+  },
+  "render.remotion": {
+   "ok": false,
+   "evidence": "intentionally not a lane (AGENTS.md section 3): only hyperframes and mpt exist"
+  },
+  "image.generate_paid": {
+   "ok": false,
+   "evidence": "no paid generation; AGENTS.md section 1 forbids paid services"
+  },
+  "media.supplied_audio_ingest": {
+   "ok": true,
+   "evidence": "contentos/production/supplied_audio.py (rights record + probe)"
+  },
+  "render.scenekit": {
+   "ok": true,
+   "evidence": "contentos/scenekit (6 styles, 5 data-backed scene types)"
+  }
+ },
+ "skills": [
+  {
+   "id": 1,
+   "name": "anime-reel",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "An anime-style episode with original characters drawn in code and lip-synced to your voice lines, like the Zero Se Freelance series.",
+   "tags": [
+    "anime",
+    "anime-style",
+    "characters",
+    "code",
+    "drawn",
+    "episode",
+    "freelance",
+    "illustration",
+    "lines",
+    "lip-synced",
+    "original",
+    "reel",
+    "series",
+    "stories",
+    "voice",
+    "zero"
+   ],
+   "path": "contentos/skills/library/skills/anime-reel/SKILL.md",
+   "sha256": "3f47361d9cddf10b44457f7451c07a805e0f403f037f9324bf85380ed4c76b15",
+   "inputs_required": [
+    "voiceover_audio",
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names named anime series: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "named anime series",
+   "evidence": null,
+   "invoke": "agent: read skills/anime-reel/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio, script_or_topic"
+  },
+  {
+   "id": 2,
+   "name": "madhubani-kahani",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "A Panchatantra-style story told as a living Madhubani painting: double black outlines, patterned fills, fish-scale water and a red-yellow folk border.",
+   "tags": [
+    "black",
+    "border",
+    "double",
+    "fills",
+    "fish-scale",
+    "folk",
+    "illustration",
+    "kahani",
+    "living",
+    "madhubani",
+    "outlines",
+    "painting",
+    "panchatantra-style",
+    "patterned",
+    "red-yellow",
+    "stories",
+    "story",
+    "told",
+    "water"
+   ],
+   "path": "contentos/skills/library/skills/madhubani-kahani/SKILL.md",
+   "sha256": "32c9b20f0022f4801866b52882d20c6162b7fe38b35b2a372ff4d0d38b1a70c0",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/madhubani-kahani/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 3,
+   "name": "katha-video",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "format",
+   "description": "A pravachan clip turned into an animated story: the characters act out the kahani, the speaker talks from a lip-synced corner badge, and Hindi captions follow every word.",
+   "tags": [
+    "act",
+    "animated",
+    "badge",
+    "captions",
+    "characters",
+    "clip",
+    "content",
+    "corner",
+    "editing",
+    "follow",
+    "hindi",
+    "kahani",
+    "katha",
+    "lip-synced",
+    "out",
+    "pravachan",
+    "speaker",
+    "spoken",
+    "story",
+    "talks",
+    "turned",
+    "video",
+    "word"
+   ],
+   "path": "contentos/skills/library/skills/katha-video/SKILL.md",
+   "sha256": "769caa3421b3bdcacd3fad480e47ec6cc0864637daaca7cd2b04feb51ff7e0ba",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_en",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a real speaker's recording: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "uses third-party/source media: record rights status before any publish (supplied_audio rights record)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a real speaker's recording",
+   "evidence": null,
+   "invoke": "agent: read skills/katha-video/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 4,
+   "name": "lyric-video",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A hand-drawn crayon lyric video on a dark chalkboard: every word writes on as it's sung, and each line gets its own little drawing.",
+   "tags": [
+    "chalkboard",
+    "crayon",
+    "dark",
+    "drawing",
+    "gets",
+    "hand-drawn",
+    "line",
+    "little",
+    "lyric",
+    "lyrics",
+    "music",
+    "own",
+    "sung",
+    "video",
+    "word",
+    "writes"
+   ],
+   "path": "contentos/skills/library/skills/lyric-video/SKILL.md",
+   "sha256": "42807bbd440f641824a8eeb051bbc7f97e24432096373a75657818cc98ae01be",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/lyric-video/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 5,
+   "name": "watercolor-map",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "A painted watercolor world map: a pin drops on the start city, a plane flies the real great-circle route, and the destination washes in with colour.",
+   "tags": [
+    "city",
+    "colour",
+    "destination",
+    "drops",
+    "flies",
+    "great-circle",
+    "illustration",
+    "map",
+    "painted",
+    "pin",
+    "plane",
+    "real",
+    "route",
+    "start",
+    "stories",
+    "washes",
+    "watercolor",
+    "world"
+   ],
+   "path": "contentos/skills/library/skills/watercolor-map/SKILL.md",
+   "sha256": "720cdabe233732eec95e58a98b3b1d942a4fa8554543f0b0e8002be77677c6a4",
+   "inputs_required": [
+    "script_or_topic"
+   ],
+   "requires": [
+    "data.world_atlas",
+    "render.remotion",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "data.world_atlas",
+    "render.remotion"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "blocked-by-dependency",
+   "readiness": "blocked",
+   "fallbacks": [
+    {
+     "capability": "render.remotion",
+     "fallback": "implement the same pure-function-of-time animation as a HyperFrames GSAP timeline (no second renderer)"
+    }
+   ],
+   "blockers": [
+    "data.world_atlas: needs the world-atlas npm dataset for real map boundaries; `npm install` needs owner approval (licence vetting first)"
+   ],
+   "limitations": [
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/watercolor-map/SKILL.md then author a HyperFrames composition (Track B); inputs: script_or_topic"
+  },
+  {
+   "id": 6,
+   "name": "news-report",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "format",
+   "description": "A Hinglish tech-news report in Fireship style: flat dark background, screenshot cards with red boxes and highlights, memes, and a hard cut every two seconds, with you as the anchor.",
+   "tags": [
+    "anchor",
+    "background",
+    "boxes",
+    "cards",
+    "content",
+    "cut",
+    "dark",
+    "editing",
+    "fireship",
+    "flat",
+    "hard",
+    "highlights",
+    "hinglish",
+    "memes",
+    "news",
+    "red",
+    "report",
+    "screenshot",
+    "seconds",
+    "spoken",
+    "style",
+    "tech-news"
+   ],
+   "path": "contentos/skills/library/skills/news-report/SKILL.md",
+   "sha256": "0f991170ab6668a02619674b7a1c804268cb1ae908adbe9d6db61e0ec9d2550a",
+   "inputs_required": [
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_multilingual",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-a-scenekit",
+   "scenekit_style": "kinetic-type",
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "ready-to-run",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "render.scenekit",
+     "fallback": "scenekit style `kinetic-type`: flat dark ground, hard cuts and hard-hitting type; NOT built: screenshot cards with red boxes, memes, the presenter in frame"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "approximation: flat dark ground, hard cuts and hard-hitting type; NOT built: screenshot cards with red boxes, memes, the presenter in frame"
+   ],
+   "ip_sensitive": null,
+   "evidence": {
+    "fidelity": "approximate",
+    "job": "sample-skill-news-report",
+    "note": "router->plan->pipeline(voice,compose,render,qa) on examples/styles/kafka-events script, 9:16, 34 s. qa 8 pass + documented frozen_frames WARN; RuleA pass 3 / 6; hyperframes lint pass; frames inspected"
+   },
+   "invoke": "python -m contentos.skills plan --skill news-report --script SPEC.yaml"
+  },
+  {
+   "id": 7,
+   "name": "talking-head-edit",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "format",
+   "description": "Your raw clip, fully edited: captions on every word, the screen splits into two windows to show what you're talking about, and demo videos play full screen. Your face is never re-coloured.",
+   "tags": [
+    "about",
+    "captions",
+    "clip",
+    "content",
+    "demo",
+    "edit",
+    "edited",
+    "editing",
+    "face",
+    "full",
+    "fully",
+    "head",
+    "never",
+    "play",
+    "raw",
+    "re-coloured",
+    "screen",
+    "show",
+    "splits",
+    "spoken",
+    "talking",
+    "videos",
+    "windows",
+    "word"
+   ],
+   "path": "contentos/skills/library/skills/talking-head-edit/SKILL.md",
+   "sha256": "36649b041c631a6fbd5ac6fbbc6e431f65819eb11596c7de2c445ccd7312a857",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/talking-head-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 8,
+   "name": "podcast-explainer",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "format",
+   "description": "A podcast clip turned into an animated explainer, like the Raj Shamani \u201cTwo Winners\u201d video: simple stick-figure metaphors for every idea, bold kinetic captions, and the host drawn as a cartoon in a live corner window.",
+   "tags": [
+    "animated",
+    "bold",
+    "captions",
+    "cartoon",
+    "clip",
+    "content",
+    "corner",
+    "drawn",
+    "editing",
+    "explainer",
+    "host",
+    "idea",
+    "kinetic",
+    "live",
+    "metaphors",
+    "podcast",
+    "raj",
+    "shamani",
+    "simple",
+    "spoken",
+    "stick-figure",
+    "turned",
+    "video",
+    "window"
+   ],
+   "path": "contentos/skills/library/skills/podcast-explainer/SKILL.md",
+   "sha256": "4b06aea95c93126371340f277f6096a8773fa42d857f07560a07cd4bd78f2915",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names real podcast guests: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "real podcast guests",
+   "evidence": null,
+   "invoke": "agent: read skills/podcast-explainer/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 9,
+   "name": "podcast-comic",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "format",
+   "description": "A podcast clip retold as a 9:16 comic book, like the Raj Shamani \u201cladke ko kab jaanoge\u201d reel: the guest drawn in the studio below (bookshelf, Break the Cage poster, mic), and a new comic panel slams in on top for every point he makes, with a burst word and Hindi speech-bubble captions.",
+   "tags": [
+    "below",
+    "book",
+    "bookshelf",
+    "break",
+    "burst",
+    "cage",
+    "captions",
+    "clip",
+    "comic",
+    "content",
+    "drawn",
+    "editing",
+    "guest",
+    "hindi",
+    "jaanoge",
+    "kab",
+    "ladke",
+    "makes",
+    "mic",
+    "panel",
+    "podcast",
+    "point",
+    "poster",
+    "raj"
+   ],
+   "path": "contentos/skills/library/skills/podcast-comic/SKILL.md",
+   "sha256": "100156a49f7e235ae5f8a7912050f3c0b77e72a689cc98997090672aea7a3897",
+   "inputs_required": [
+    "lyrics",
+    "voiceover_audio",
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names real podcast guests: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "uses third-party/source media: record rights status before any publish (supplied_audio rights record)",
+    "needs user-supplied media: lyrics, voiceover_audio, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "real podcast guests",
+   "evidence": null,
+   "invoke": "agent: read skills/podcast-comic/SKILL.md then author a HyperFrames composition (Track B); inputs: lyrics, voiceover_audio, photos"
+  },
+  {
+   "id": 10,
+   "name": "hindi-lyric-video",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A calm Hindi lyric video like Banjaare's \u201cBarsaat\u201d: Devanagari lines write on over old paper while rain falls and footprints walk across the page with the song.",
+   "tags": [
+    "across",
+    "banjaare",
+    "barsaat",
+    "calm",
+    "devanagari",
+    "falls",
+    "footprints",
+    "hindi",
+    "lines",
+    "lyric",
+    "lyrics",
+    "music",
+    "old",
+    "page",
+    "paper",
+    "rain",
+    "song",
+    "video",
+    "walk",
+    "while",
+    "write"
+   ],
+   "path": "contentos/skills/library/skills/hindi-lyric-video/SKILL.md",
+   "sha256": "8364a94cce6530ac6f85e6a233f832da4110d94ebb2f541782e21b088b1e734f",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/hindi-lyric-video/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 11,
+   "name": "pusho-reel",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "A Puneet Superstar \u201cBaba Pusho\u201d cartoon reel with the full class: Baba Pusho teaching, his students reacting, Hindi captions on every word, a new scene for every line.",
+   "tags": [
+    "baba",
+    "captions",
+    "cartoon",
+    "class",
+    "full",
+    "hindi",
+    "his",
+    "illustration",
+    "line",
+    "puneet",
+    "pusho",
+    "reacting",
+    "reel",
+    "scene",
+    "stories",
+    "students",
+    "superstar",
+    "teaching",
+    "word"
+   ],
+   "path": "contentos/skills/library/skills/pusho-reel/SKILL.md",
+   "sha256": "9fd1b61160290451f0db939a6c0df92fe6b2e9732a0a7694900c628d7696b950",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_en",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a living creator's character: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a living creator's character",
+   "evidence": null,
+   "invoke": "agent: read skills/pusho-reel/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 12,
+   "name": "titan-anime",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "An anime episode set in an Attack on Titan-style world: giant walls, green capes, horses, flags and titans, with your own original characters telling the story.",
+   "tags": [
+    "anime",
+    "attack",
+    "capes",
+    "characters",
+    "episode",
+    "flags",
+    "giant",
+    "green",
+    "horses",
+    "lyrics",
+    "music",
+    "original",
+    "own",
+    "set",
+    "story",
+    "telling",
+    "titan",
+    "titan-style",
+    "titans",
+    "walls",
+    "world"
+   ],
+   "path": "contentos/skills/library/skills/titan-anime/SKILL.md",
+   "sha256": "00ca9b18af1b691f7fc91462c5b5c30c7296eeda56c6f22b75280a1eb444b918",
+   "inputs_required": [
+    "voiceover_audio",
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names Attack on Titan setting: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "Attack on Titan setting",
+   "evidence": null,
+   "invoke": "agent: read skills/titan-anime/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio, script_or_topic"
+  },
+  {
+   "id": 13,
+   "name": "personal-explainer",
+   "kind": "creative",
+   "category": "explainers-and-motion-graphics",
+   "role": "format",
+   "description": "An explainer in your own voice, like \u201cHow will the Tesla fly?\u201d: real footage with credit, clean diagrams that build step by step, numbers that pop, and you as the narrator.",
+   "tags": [
+    "build",
+    "clean",
+    "credit",
+    "diagrams",
+    "explainer",
+    "explainers",
+    "fly",
+    "footage",
+    "graphics",
+    "motion",
+    "narrator",
+    "numbers",
+    "own",
+    "personal",
+    "pop",
+    "real",
+    "step",
+    "tesla",
+    "voice",
+    "will"
+   ],
+   "path": "contentos/skills/library/skills/personal-explainer/SKILL.md",
+   "sha256": "8bfd1ef13762fc1e880c1c53b8a0d55910b16f7c9f9a1a55d43b8914d6b0cb15",
+   "inputs_required": [
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-a-scenekit",
+   "scenekit_style": "clean-explainer",
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "ready-to-run",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "render.scenekit",
+     "fallback": "scenekit style `clean-explainer`: narrated explainer with diagrams, steps, compare and sourced stat scenes; NOT built: embedded real footage with on-screen credit"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "approximation: narrated explainer with diagrams, steps, compare and sourced stat scenes; NOT built: embedded real footage with on-screen credit"
+   ],
+   "ip_sensitive": null,
+   "evidence": {
+    "fidelity": "approximate",
+    "job": "sample-skill-personal-explainer",
+    "note": "router->plan->pipeline(voice,compose,render,qa) on examples/styles/kafka-events script, 9:16, 34 s. qa 8 pass + documented frozen_frames WARN; RuleA pass 3 / 6; hyperframes lint pass; frames inspected"
+   },
+   "invoke": "python -m contentos.skills plan --skill personal-explainer --script SPEC.yaml"
+  },
+  {
+   "id": 14,
+   "name": "sketch-music-video",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A pencil-sketch lyric video like Anuv Jain's \u201cInaam\u201d: soft graphite drawings of the song's story fill the page while the lyrics are handwritten next to them, line by line.",
+   "tags": [
+    "anuv",
+    "drawings",
+    "fill",
+    "graphite",
+    "handwritten",
+    "inaam",
+    "jain",
+    "line",
+    "lyric",
+    "lyrics",
+    "music",
+    "next",
+    "page",
+    "pencil-sketch",
+    "sketch",
+    "soft",
+    "song",
+    "story",
+    "them",
+    "video",
+    "while"
+   ],
+   "path": "contentos/skills/library/skills/sketch-music-video/SKILL.md",
+   "sha256": "0852dd21c270a2866c018296c517a02f4cb0c2fac662515391fca309580d0627",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/sketch-music-video/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 15,
+   "name": "kinetic-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "Big kinetic typography for an English song, like Justin Bieber's \u201cLet Me Love You\u201d: every word punches in on the beat in chunky letters on black, with paint splats and confetti.",
+   "tags": [
+    "beat",
+    "bieber",
+    "big",
+    "black",
+    "chunky",
+    "confetti",
+    "english",
+    "justin",
+    "kinetic",
+    "let",
+    "letters",
+    "love",
+    "lyrics",
+    "music",
+    "paint",
+    "punches",
+    "song",
+    "splats",
+    "typography",
+    "word"
+   ],
+   "path": "contentos/skills/library/skills/kinetic-lyrics/SKILL.md",
+   "sha256": "a2e4573c6ac56b894515203308c64659c8c622941b9a38ef59ccea3d0cae05d7",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/kinetic-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 16,
+   "name": "latent-reel",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "A roast-show clip turned into a cartoon, like Samay Raina's India's Got Latent: the guest at the mic on the left, the host reacting on the right, the show's stage behind them.",
+   "tags": [
+    "behind",
+    "cartoon",
+    "clip",
+    "got",
+    "guest",
+    "host",
+    "illustration",
+    "india",
+    "latent",
+    "left",
+    "mic",
+    "raina",
+    "reacting",
+    "reel",
+    "right",
+    "roast-show",
+    "samay",
+    "show",
+    "stage",
+    "stories",
+    "them",
+    "turned"
+   ],
+   "path": "contentos/skills/library/skills/latent-reel/SKILL.md",
+   "sha256": "89e1f3ab032cf21946c66f79899cdcf60e4d563180072eec742637f0c50b6c1b",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names India's Got Latent people: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "uses third-party/source media: record rights status before any publish (supplied_audio rights record)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "India's Got Latent people",
+   "evidence": null,
+   "invoke": "agent: read skills/latent-reel/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 17,
+   "name": "latent-comic",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "An India's Got Latent clip retold as a 9:16 comic book, like the MC Stan episode reels: Samay Raina and the judges at the show's desk on top, a close-up of whoever is talking below with a gag for every line, halftone dots, bursts and speech-bubble captions.",
+   "tags": [
+    "below",
+    "book",
+    "bursts",
+    "captions",
+    "clip",
+    "close-up",
+    "comic",
+    "desk",
+    "dots",
+    "episode",
+    "gag",
+    "got",
+    "halftone",
+    "illustration",
+    "india",
+    "judges",
+    "latent",
+    "line",
+    "raina",
+    "reels",
+    "retold",
+    "samay",
+    "show",
+    "speech-bubble"
+   ],
+   "path": "contentos/skills/library/skills/latent-comic/SKILL.md",
+   "sha256": "f9dda95b2bbf3a43352258f662709193e8e779e5f2615ec8d1ab82e122fa1a7f",
+   "inputs_required": [
+    "voiceover_audio",
+    "footage"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names India's Got Latent people: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "uses third-party/source media: record rights status before any publish (supplied_audio rights record)",
+    "needs user-supplied media: voiceover_audio, footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "India's Got Latent people",
+   "evidence": null,
+   "invoke": "agent: read skills/latent-comic/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio, footage"
+  },
+  {
+   "id": 18,
+   "name": "comic-reel",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A famous movie scene retold as a comic book, like the Drishyam 3 reel: halftone panels, speed lines, BOOM bursts and speech bubbles for every line of dialogue.",
+   "tags": [
+    "book",
+    "boom",
+    "bubbles",
+    "bursts",
+    "comic",
+    "dialogue",
+    "drishyam",
+    "famous",
+    "halftone",
+    "line",
+    "lines",
+    "lyrics",
+    "movie",
+    "music",
+    "panels",
+    "reel",
+    "retold",
+    "scene",
+    "speech",
+    "speed"
+   ],
+   "path": "contentos/skills/library/skills/comic-reel/SKILL.md",
+   "sha256": "767db398a9feebd12b7127bd5e0002037f63e50b67c1aa39039834c68a1f624a",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names named film scene: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "named film scene",
+   "evidence": null,
+   "invoke": "agent: read skills/comic-reel/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 19,
+   "name": "sketch-to-motion",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "Your rough paper sketches turned into a polished app-promo animation: the sketch stays on the left, the finished motion graphic plays next to it, like the Kulhad chai reel.",
+   "tags": [
+    "animation",
+    "app-promo",
+    "chai",
+    "finished",
+    "graphic",
+    "kulhad",
+    "left",
+    "lyrics",
+    "motion",
+    "music",
+    "next",
+    "paper",
+    "plays",
+    "polished",
+    "reel",
+    "rough",
+    "sketch",
+    "sketches",
+    "stays",
+    "turned"
+   ],
+   "path": "contentos/skills/library/skills/sketch-to-motion/SKILL.md",
+   "sha256": "a189122b6e029ee9651913a7c9d7b5106a293f3db8643f54f23d4e8303df6bd7",
+   "inputs_required": [
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/sketch-to-motion/SKILL.md then author a HyperFrames composition (Track B); inputs: photos"
+  },
+  {
+   "id": 20,
+   "name": "blueprint-explainer",
+   "kind": "creative",
+   "category": "explainers-and-motion-graphics",
+   "role": "format",
+   "description": "A long YouTube explainer drawn like an engineering blueprint, like the Piramal Finance loan video: a blue grid sheet, white line drawings, and numbers that calculate live as you talk.",
+   "tags": [
+    "blue",
+    "blueprint",
+    "calculate",
+    "drawings",
+    "drawn",
+    "engineering",
+    "explainer",
+    "explainers",
+    "finance",
+    "graphics",
+    "grid",
+    "line",
+    "live",
+    "loan",
+    "long",
+    "motion",
+    "numbers",
+    "piramal",
+    "sheet",
+    "talk",
+    "video",
+    "white",
+    "youtube"
+   ],
+   "path": "contentos/skills/library/skills/blueprint-explainer/SKILL.md",
+   "sha256": "763f7ce5ef03ad2ccb6f9b1c4a7971aa7fccdaab7e9100ea0e0a5a5ec70b877c",
+   "inputs_required": [
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-a-scenekit",
+   "scenekit_style": "blueprint-architecture",
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "ready-to-run",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "render.scenekit",
+     "fallback": "scenekit style `blueprint-architecture`: short 9:16 or 16:9 narrated explainer with real diagram, steps and bar-chart scenes; NOT built: sheet title block with numbers, live EMI-style calculation tables, 3-10 minute length"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "approximation: short 9:16 or 16:9 narrated explainer with real diagram, steps and bar-chart scenes; NOT built: sheet title block with numbers, live EMI-style calculation tables, 3-10 minute length"
+   ],
+   "ip_sensitive": null,
+   "evidence": {
+    "fidelity": "approximate",
+    "job": "sample-skill-blueprint-explainer",
+    "note": "router->plan->pipeline(voice,compose,render,qa), kafka script 9:16 34 s, style blueprint-architecture v2 (light drafting paper). qa 8 pass + frozen_frames WARN (static holds, see report 10); Rule A pass 3/6; Rule B pass vs all 5 shipped (v1 dark navy failed it; the look was changed, the rule was not); hyperframes lint pass; frames inspected by the builder (not independent). Also run with language hi via router: sample-skill-bp-hi (Rule A 3/4, Rule B pass)"
+   },
+   "invoke": "python -m contentos.skills plan --skill blueprint-explainer --script SPEC.yaml"
+  },
+  {
+   "id": 21,
+   "name": "podcast-cartoon",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A famous podcast moment turned into a gag: the podcast clip plays, then an original cheeky cartoon kid pops in as a sticker and asks the big question, and you react, like the \u201cmaut ke baare mein sochte ho?\u201d reel.",
+   "tags": [
+    "asks",
+    "baare",
+    "big",
+    "cartoon",
+    "cheeky",
+    "clip",
+    "famous",
+    "gag",
+    "kid",
+    "lyrics",
+    "maut",
+    "mein",
+    "moment",
+    "music",
+    "original",
+    "plays",
+    "podcast",
+    "pops",
+    "question",
+    "react",
+    "reel",
+    "sochte",
+    "sticker",
+    "then"
+   ],
+   "path": "contentos/skills/library/skills/podcast-cartoon/SKILL.md",
+   "sha256": "53c4598f52734d78b87c19e8147573fd0f127cbbe4236af2a4d7555163c1a2be",
+   "inputs_required": [
+    "voiceover_audio",
+    "footage",
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names real podcast guests: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "uses third-party/source media: record rights status before any publish (supplied_audio rights record)",
+    "needs user-supplied media: voiceover_audio, footage, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "real podcast guests",
+   "evidence": null,
+   "invoke": "agent: read skills/podcast-cartoon/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio, footage, photos"
+  },
+  {
+   "id": 22,
+   "name": "ink-line-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A fast lyric video drawn as ONE glowing ink line that never breaks, like the Main Aur Tu reel: the line morphs into a new drawing on every key word, with the camera punching on every kick.",
+   "tags": [
+    "aur",
+    "breaks",
+    "camera",
+    "drawing",
+    "drawn",
+    "fast",
+    "glowing",
+    "ink",
+    "key",
+    "kick",
+    "line",
+    "lyric",
+    "lyrics",
+    "main",
+    "morphs",
+    "music",
+    "never",
+    "punching",
+    "reel",
+    "video",
+    "word"
+   ],
+   "path": "contentos/skills/library/skills/ink-line-lyrics/SKILL.md",
+   "sha256": "35a26ffca87d1da7d7cd19b26118090b5e034bfa7f2047fe7589389d1ad9f45b",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/ink-line-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 23,
+   "name": "mirzapur-video",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A web-series dialogue turned into a comic meme, like the Kaalin Bhaiya \u201cchai piyoge?\u201d reel: a bold comic portrait of the don, halftone backgrounds that change on every beat, and a POV caption.",
+   "tags": [
+    "backgrounds",
+    "beat",
+    "bhaiya",
+    "bold",
+    "caption",
+    "chai",
+    "change",
+    "comic",
+    "dialogue",
+    "don",
+    "halftone",
+    "kaalin",
+    "lyrics",
+    "meme",
+    "mirzapur",
+    "music",
+    "piyoge",
+    "portrait",
+    "pov",
+    "reel",
+    "turned",
+    "video",
+    "web-series"
+   ],
+   "path": "contentos/skills/library/skills/mirzapur-video/SKILL.md",
+   "sha256": "6abaf32a1c82b3e5cba0f77985b8d141d369e7561e33b965ae37b572da61f681",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names Mirzapur characters: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "Mirzapur characters",
+   "evidence": null,
+   "invoke": "agent: read skills/mirzapur-video/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 24,
+   "name": "party-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A loud party-anthem lyric video, like Honey Singh's Casa Tupka: gold and gem 3D lettering, red curtains and lavender smoke, confetti on every beat, and a cartoon of the singer in their signature look.",
+   "tags": [
+    "beat",
+    "cartoon",
+    "casa",
+    "confetti",
+    "curtains",
+    "gem",
+    "gold",
+    "honey",
+    "lavender",
+    "lettering",
+    "look",
+    "loud",
+    "lyric",
+    "lyrics",
+    "music",
+    "party",
+    "party-anthem",
+    "red",
+    "signature",
+    "singer",
+    "singh",
+    "smoke",
+    "their",
+    "tupka"
+   ],
+   "path": "contentos/skills/library/skills/party-lyrics/SKILL.md",
+   "sha256": "e319b1f8949ea9110dc03ad2e1a6a28616f77a9283d2dab49b9d704b3ced94c4",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/party-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 25,
+   "name": "anime-fight",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "An anime fight gag in the one-punch style: a sleepy, unbothered hero ends a giant monster with a single punch, then turns the same punch on something relatable, like Monday morning.",
+   "tags": [
+    "anime",
+    "ends",
+    "fight",
+    "gag",
+    "giant",
+    "hero",
+    "illustration",
+    "monday",
+    "monster",
+    "morning",
+    "one-punch",
+    "punch",
+    "relatable",
+    "same",
+    "single",
+    "sleepy",
+    "something",
+    "stories",
+    "style",
+    "then",
+    "turns",
+    "unbothered"
+   ],
+   "path": "contentos/skills/library/skills/anime-fight/SKILL.md",
+   "sha256": "b9ddd9fd10f770ad43efc268723a30b3ff35db1a884be35404c46149a2337275",
+   "inputs_required": [
+    "voiceover_audio",
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names One-Punch Man style hero: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "One-Punch Man style hero",
+   "evidence": null,
+   "invoke": "agent: read skills/anime-fight/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio, script_or_topic"
+  },
+  {
+   "id": 26,
+   "name": "rap-video",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A full-energy cartoon rap video like Boom Shaka: the rapper drawn as a bold cartoon, BOOM bursts, speed lines and lyrics that slam in on every beat.",
+   "tags": [
+    "beat",
+    "bold",
+    "boom",
+    "bursts",
+    "cartoon",
+    "drawn",
+    "full-energy",
+    "lines",
+    "lyrics",
+    "music",
+    "rap",
+    "rapper",
+    "shaka",
+    "slam",
+    "speed",
+    "video"
+   ],
+   "path": "contentos/skills/library/skills/rap-video/SKILL.md",
+   "sha256": "1b250f13a1a9a01f55c78df84a526582556a44a5dba3c80f74d890201052113c",
+   "inputs_required": [
+    "song",
+    "lyrics",
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a named rapper's look: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: song, lyrics, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a named rapper's look",
+   "evidence": null,
+   "invoke": "agent: read skills/rap-video/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics, photos"
+  },
+  {
+   "id": 27,
+   "name": "aarti-video",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A devotional aarti video full of fire and light, like the Shiv aarti: glowing diyas, flames, a damru rhythm and the aarti lines in Devanagari.",
+   "tags": [
+    "aarti",
+    "damru",
+    "devanagari",
+    "devotional",
+    "diyas",
+    "fire",
+    "flames",
+    "full",
+    "glowing",
+    "light",
+    "lines",
+    "lyrics",
+    "music",
+    "rhythm",
+    "shiv",
+    "video"
+   ],
+   "path": "contentos/skills/library/skills/aarti-video/SKILL.md",
+   "sha256": "17c140b60a5370ec5d9b9c8bd8358a22bf40cd993e54961230cb23ae48bfe44d",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/aarti-video/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 28,
+   "name": "shadow-puppet",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "A kids story told like tholu bommalata shadow puppets: black cut-out characters with pin joints moving against a glowing orange screen.",
+   "tags": [
+    "against",
+    "black",
+    "bommalata",
+    "characters",
+    "cut-out",
+    "glowing",
+    "illustration",
+    "joints",
+    "kids",
+    "moving",
+    "orange",
+    "pin",
+    "puppet",
+    "puppets",
+    "screen",
+    "shadow",
+    "stories",
+    "story",
+    "tholu",
+    "told"
+   ],
+   "path": "contentos/skills/library/skills/shadow-puppet/SKILL.md",
+   "sha256": "56840995e29c688ddd404ef0b0c26406374370c0b3d3826b2e862c6889843e3e",
+   "inputs_required": [
+    "voiceover_audio",
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/shadow-puppet/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio, script_or_topic"
+  },
+  {
+   "id": 29,
+   "name": "kids-story",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "A bright 60-second kids story like Pyaasi Chidiya: soft rounded characters, a sunny world, Hindi speech bubbles and a little reacting companion in the corner.",
+   "tags": [
+    "bright",
+    "bubbles",
+    "characters",
+    "chidiya",
+    "companion",
+    "corner",
+    "hindi",
+    "illustration",
+    "kids",
+    "little",
+    "pyaasi",
+    "reacting",
+    "rounded",
+    "second",
+    "soft",
+    "speech",
+    "stories",
+    "story",
+    "sunny",
+    "world"
+   ],
+   "path": "contentos/skills/library/skills/kids-story/SKILL.md",
+   "sha256": "c858e45d3bb0494b15cc8cddd3b09be9342d82a6173db48defdf0415debc34db",
+   "inputs_required": [
+    "voiceover_audio",
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a named children's story: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a named children's story",
+   "evidence": null,
+   "invoke": "agent: read skills/kids-story/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio, script_or_topic"
+  },
+  {
+   "id": 30,
+   "name": "neon-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A synthwave rap lyric video like KR$NA's \u201cI Guess\u201d: a neon grid, a big retro sun, a cartoon of the rapper in a varsity jacket and glowing Hindi lyrics.",
+   "tags": [
+    "big",
+    "cartoon",
+    "glowing",
+    "grid",
+    "guess",
+    "hindi",
+    "jacket",
+    "lyric",
+    "lyrics",
+    "music",
+    "neon",
+    "rap",
+    "rapper",
+    "retro",
+    "sun",
+    "synthwave",
+    "varsity",
+    "video"
+   ],
+   "path": "contentos/skills/library/skills/neon-lyrics/SKILL.md",
+   "sha256": "0101d5785057b60d8d5888c13d5380ca63a351fcc9a54559b1b5b28a4b92fe33",
+   "inputs_required": [
+    "song",
+    "lyrics",
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a named rapper's look: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: song, lyrics, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a named rapper's look",
+   "evidence": null,
+   "invoke": "agent: read skills/neon-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics, photos"
+  },
+  {
+   "id": 31,
+   "name": "paper-cutout",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A paper-cutout music video like Jaadoo: hand-cut paper characters, floating islands and lyric tags that pop on their words, moving in 15 fps stop-motion.",
+   "tags": [
+    "characters",
+    "cutout",
+    "floating",
+    "fps",
+    "hand-cut",
+    "islands",
+    "jaadoo",
+    "lyric",
+    "lyrics",
+    "moving",
+    "music",
+    "paper",
+    "paper-cutout",
+    "pop",
+    "stop-motion",
+    "tags",
+    "their",
+    "video",
+    "words"
+   ],
+   "path": "contentos/skills/library/skills/paper-cutout/SKILL.md",
+   "sha256": "12799f2575abfe00b78ecc206f047cbfa337e4eb21514ad2a9b726c4bd3df865",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/paper-cutout/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 32,
+   "name": "street-interview",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "format",
+   "description": "A funny street interview turned into a cartoon, like the bad day interview: the interviewee drawn as a flat cartoon, night-street background and big caption words on the punchlines.",
+   "tags": [
+    "background",
+    "bad",
+    "big",
+    "caption",
+    "cartoon",
+    "content",
+    "day",
+    "drawn",
+    "editing",
+    "flat",
+    "funny",
+    "interview",
+    "interviewee",
+    "night-street",
+    "punchlines",
+    "spoken",
+    "street",
+    "turned",
+    "words"
+   ],
+   "path": "contentos/skills/library/skills/street-interview/SKILL.md",
+   "sha256": "1425ea9abd8dfc9b59c3e0708cbf5abed6c2250700363c678e76f0c70bdd7aa1",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names real interviewees (consent): use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "uses third-party/source media: record rights status before any publish (supplied_audio rights record)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "real interviewees (consent)",
+   "evidence": null,
+   "invoke": "agent: read skills/street-interview/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 33,
+   "name": "bairan-style",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A romantic lyric video like the Bairan reel: watercolour-painted characters cut out like paper stickers, polaroids, a sunflower and a beating heart popping in, every move fast in and slowly settling.",
+   "tags": [
+    "bairan",
+    "beating",
+    "characters",
+    "cut",
+    "fast",
+    "heart",
+    "lyric",
+    "lyrics",
+    "move",
+    "music",
+    "out",
+    "paper",
+    "polaroids",
+    "popping",
+    "reel",
+    "romantic",
+    "settling",
+    "slowly",
+    "stickers",
+    "style",
+    "sunflower",
+    "video",
+    "watercolour-painted"
+   ],
+   "path": "contentos/skills/library/skills/bairan-style/SKILL.md",
+   "sha256": "4f48910c4f600f9a7f55134ec8a7034f571610f73c68044908d5f81e38d5625a",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "cv.person_matte",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "cv.person_matte"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a named song: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a named song",
+   "evidence": null,
+   "invoke": "agent: read skills/bairan-style/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 34,
+   "name": "3d-explainer",
+   "kind": "creative",
+   "category": "explainers-and-motion-graphics",
+   "role": "format",
+   "description": "A 3D animated news explainer built in Blender, like the Professor of Claude ISRO and Cyclone Arnab reels: Claude builds every 3D shot in code (rockets on launch pads, a 3D India map with pins, a storm spiralling over the sea, Earth from space), cuts the camera on your words and pops the numbers in as you say them.",
+   "tags": [
+    "animated",
+    "arnab",
+    "blender",
+    "builds",
+    "built",
+    "camera",
+    "claude",
+    "code",
+    "cuts",
+    "cyclone",
+    "earth",
+    "explainer",
+    "explainers",
+    "graphics",
+    "india",
+    "isro",
+    "launch",
+    "map",
+    "motion",
+    "news",
+    "numbers",
+    "pads",
+    "pins",
+    "pops"
+   ],
+   "path": "contentos/skills/library/skills/3d-explainer/SKILL.md",
+   "sha256": "e565146535e87a6793da8a7e1c32531432d622be9408bcc5cc4a9158b38b2e12",
+   "inputs_required": [
+    "voiceover_audio",
+    "script_or_topic"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_en",
+    "3d.blender",
+    "data.world_atlas",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "3d.blender",
+    "data.world_atlas"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "blocked-by-dependency",
+   "readiness": "blocked",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [
+    "3d.blender: Blender is not installed and a 3D look cannot be faked in HyperFrames; install needs owner approval (GPL, ~300 MB)",
+    "data.world_atlas: needs the world-atlas npm dataset for real map boundaries; `npm install` needs owner approval (licence vetting first)"
+   ],
+   "limitations": [
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/3d-explainer/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio, script_or_topic"
+  },
+  {
+   "id": 35,
+   "name": "beat-transition-edit",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "The trending beat edit from the How to do this with Claude series (Ep 1): your dance or twirl video in smooth slow motion, cutting to your photos on every music hit with a quick zoom-blur dissolve and a warm film grade, copied from any reference reel.",
+   "tags": [
+    "any",
+    "beat",
+    "claude",
+    "copied",
+    "cutting",
+    "dance",
+    "dissolve",
+    "edit",
+    "film",
+    "grade",
+    "hit",
+    "lyrics",
+    "motion",
+    "music",
+    "photos",
+    "quick",
+    "reel",
+    "reference",
+    "series",
+    "slow",
+    "smooth",
+    "transition",
+    "trending",
+    "twirl"
+   ],
+   "path": "contentos/skills/library/skills/beat-transition-edit/SKILL.md",
+   "sha256": "b7fae4107f58aa54229463ed09ba8309f68561e4d4d085d79b5f71f0a2779bf3",
+   "inputs_required": [
+    "song",
+    "footage",
+    "photos"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, footage, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/beat-transition-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: song, footage, photos"
+  },
+  {
+   "id": 36,
+   "name": "scribble-edit",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "Your own clip covered in live marker doodles, like the Justin Bieber \u201cWhere Are \u00dc Now\u201d video from How to do this with Claude (Ep 5): the wall behind you fills with hand-drawn stars, rockets, cats and lightning, crowns and shades stick to your face as you move, a neon line traces your body, and the whole look changes on every beat.",
+   "tags": [
+    "beat",
+    "behind",
+    "bieber",
+    "body",
+    "cats",
+    "changes",
+    "claude",
+    "clip",
+    "covered",
+    "crowns",
+    "doodles",
+    "edit",
+    "face",
+    "fills",
+    "hand-drawn",
+    "justin",
+    "lightning",
+    "line",
+    "live",
+    "look",
+    "lyrics",
+    "marker",
+    "move",
+    "music"
+   ],
+   "path": "contentos/skills/library/skills/scribble-edit/SKILL.md",
+   "sha256": "340c8e5ce499c1e921415c40167aa88bb4d12e63f4f64f3f0c92115f2bb54cf8",
+   "inputs_required": [
+    "song",
+    "footage"
+   ],
+   "requires": [
+    "cv.person_matte",
+    "cv.face_detect",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.person_matte",
+    "cv.face_detect",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    },
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/scribble-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: song, footage"
+  },
+  {
+   "id": 37,
+   "name": "sketch-doodle-edit",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "One photo turned into the trending sketch doodle edit from How to do this with Claude (Ep 4): the people flicker between the real photo and a pencil sketch on the beat, white wind lines swoosh across the sky, a scribble outline draws around them and a handwritten line writes itself in.",
+   "tags": [
+    "across",
+    "around",
+    "beat",
+    "between",
+    "claude",
+    "doodle",
+    "draws",
+    "edit",
+    "flicker",
+    "handwritten",
+    "itself",
+    "line",
+    "lines",
+    "lyrics",
+    "music",
+    "outline",
+    "pencil",
+    "people",
+    "photo",
+    "real",
+    "scribble",
+    "sketch",
+    "sky",
+    "swoosh"
+   ],
+   "path": "contentos/skills/library/skills/sketch-doodle-edit/SKILL.md",
+   "sha256": "90fdd43892a0eccf0e1c319fd49ff3689d05e131bfa396e2533b0a7627d0c45e",
+   "inputs_required": [
+    "song"
+   ],
+   "requires": [
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/sketch-doodle-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: song"
+  },
+  {
+   "id": 38,
+   "name": "crayon-carousel",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "format",
+   "description": "The trending crayon carousel from How to do this with Claude (Ep 3): every slide puts a crayon drawing of your photo on top, labelled \u201cOne day\u201d, over the real photo labelled \u201cDay one\u201d, ready to post as an Instagram carousel.",
+   "tags": [
+    "carousel",
+    "claude",
+    "crayon",
+    "day",
+    "drawing",
+    "effects",
+    "formats",
+    "instagram",
+    "labelled",
+    "motion",
+    "photo",
+    "post",
+    "puts",
+    "ready",
+    "real",
+    "slide",
+    "top",
+    "trending"
+   ],
+   "path": "contentos/skills/library/skills/crayon-carousel/SKILL.md",
+   "sha256": "57751b35c650259c9b780eadcff1ede79c2c80855046eba867239026330a1cdd",
+   "inputs_required": [
+    "photos"
+   ],
+   "requires": [
+    "cv.face_detect",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/crayon-carousel/SKILL.md then author a HyperFrames composition (Track B); inputs: photos"
+  },
+  {
+   "id": 39,
+   "name": "painted-beat-edit",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A viral footage edit remade with no footage at all, like the Shiv aarti reel from How to do this with Claude (Ep 2): Claude paints the images in code in an acrylic mural style and cuts between them on every half-beat with a slow zoom.",
+   "tags": [
+    "aarti",
+    "acrylic",
+    "all",
+    "beat",
+    "between",
+    "claude",
+    "code",
+    "cuts",
+    "edit",
+    "footage",
+    "half-beat",
+    "images",
+    "lyrics",
+    "mural",
+    "music",
+    "painted",
+    "paints",
+    "reel",
+    "remade",
+    "shiv",
+    "slow",
+    "style",
+    "them",
+    "viral"
+   ],
+   "path": "contentos/skills/library/skills/painted-beat-edit/SKILL.md",
+   "sha256": "57f1d5035170a6a10e92f562a523e35dacc554efba587286b53915069259071e",
+   "inputs_required": [
+    "song"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/painted-beat-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: song"
+  },
+  {
+   "id": 40,
+   "name": "glow-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A dreamy lyric video like MITRAZ's Khwahish from Ye likho ye milega Part 7: flat vector scenes at purple dusk, silhouettes that tell the story (a boy alone on a bench, the girl he misses glowing inside a golden birdcage), soft bloom on every light, and the lyric line glowing in word by word.",
+   "tags": [
+    "alone",
+    "bench",
+    "birdcage",
+    "bloom",
+    "boy",
+    "dreamy",
+    "dusk",
+    "flat",
+    "girl",
+    "glow",
+    "glowing",
+    "golden",
+    "inside",
+    "khwahish",
+    "light",
+    "likho",
+    "line",
+    "lyric",
+    "lyrics",
+    "milega",
+    "misses",
+    "mitraz",
+    "music",
+    "part"
+   ],
+   "path": "contentos/skills/library/skills/glow-lyrics/SKILL.md",
+   "sha256": "9a848211164d839fbdda7c1d760ccb3febaaf56c4a795a8a907ec379fc347a2a",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/glow-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 41,
+   "name": "minimal-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A quiet, minimal lyric video like Bayaan's Safar from Ye likho ye milega Part 7: a flat horizon, a lone silhouette walking, wind drawn as sweeping streak lines, and a sky whose colour follows the mood of each line, with one small serif lyric line at the bottom.",
+   "tags": [
+    "bayaan",
+    "bottom",
+    "colour",
+    "drawn",
+    "flat",
+    "follows",
+    "horizon",
+    "likho",
+    "line",
+    "lines",
+    "lone",
+    "lyric",
+    "lyrics",
+    "milega",
+    "minimal",
+    "mood",
+    "music",
+    "part",
+    "quiet",
+    "safar",
+    "serif",
+    "silhouette",
+    "sky",
+    "small"
+   ],
+   "path": "contentos/skills/library/skills/minimal-lyrics/SKILL.md",
+   "sha256": "4b0a4d7ad95fd257dcb1d11a4278b3cb04f57c2365c1aacc97eeb5d458ab37f6",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/minimal-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 42,
+   "name": "watercolor-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A soft lyric video like Ashu Shukla's Phir Se Shuru from Ye likho ye milega Part 7: the camera pans right across warm paper while autumn watercolour scenes of one couple draw themselves in (ink lines first, then the wash blooms), leaves fall, and the lyric lines write on word by word.",
+   "tags": [
+    "across",
+    "ashu",
+    "autumn",
+    "blooms",
+    "camera",
+    "couple",
+    "draw",
+    "fall",
+    "first",
+    "ink",
+    "leaves",
+    "likho",
+    "lines",
+    "lyric",
+    "lyrics",
+    "milega",
+    "music",
+    "pans",
+    "paper",
+    "part",
+    "phir",
+    "right",
+    "scenes",
+    "shukla"
+   ],
+   "path": "contentos/skills/library/skills/watercolor-lyrics/SKILL.md",
+   "sha256": "b14ea0bd536974cae88cc89d44b51fc181a6c7fc7c1468bee1267cc849e79ecc",
+   "inputs_required": [
+    "song",
+    "lyrics",
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/watercolor-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics, photos"
+  },
+  {
+   "id": 43,
+   "name": "spotify-particle-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A 16:9 lyric video in four looks, like the Kalyani (ARJN \u00d7 KDS \u00d7 Fifty4 \u00d7 Ronn ft. Shreya Ghoshal) video: a tilted Spotify lyrics card where every sung word lights up with glowing sparks, then the artists' photo turned into a monochrome particle portrait that morphs into a second photo while red-and-white lyrics pop on the right and dance on the beat, then gold motion-graphic lyrics with fast blur word changes for the singer's part, and a black-and-white rain-on-glass music player to end.",
+   "tags": [
+    "arjn",
+    "artists",
+    "beat",
+    "black-and-white",
+    "blur",
+    "card",
+    "changes",
+    "dance",
+    "end",
+    "fast",
+    "fifty4",
+    "four",
+    "ghoshal",
+    "glowing",
+    "gold",
+    "kalyani",
+    "kds",
+    "lights",
+    "looks",
+    "lyric",
+    "lyrics",
+    "monochrome",
+    "morphs",
+    "motion-graphic"
+   ],
+   "path": "contentos/skills/library/skills/spotify-particle-lyrics/SKILL.md",
+   "sha256": "0ba72efab1faecdf23fbc446c304e6da31d278a7c6f78f99cb49ca1e9e0897d6",
+   "inputs_required": [
+    "song",
+    "lyrics",
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/spotify-particle-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics, photos"
+  },
+  {
+   "id": 44,
+   "name": "pink-spotify-clip-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A poetic 16:9 lyric video like the Alfaaz (Hamza Malik \u00d7 Zain Zohaib) video: a tilted pink Spotify lyrics card, then motion graphics that follow the meaning of each line (a rose that draws itself, letters cut out of the clip, a cinema letterbox, a dotted footstep path with the words along it, and a split screen for the last line), with my emotional clips playing softly behind the lyrics so both the video and the words stay readable.",
+   "tags": [
+    "alfaaz",
+    "along",
+    "behind",
+    "both",
+    "card",
+    "cinema",
+    "clip",
+    "clips",
+    "cut",
+    "dotted",
+    "draws",
+    "emotional",
+    "follow",
+    "footstep",
+    "graphics",
+    "hamza",
+    "itself",
+    "last",
+    "letterbox",
+    "letters",
+    "line",
+    "lyric",
+    "lyrics",
+    "malik"
+   ],
+   "path": "contentos/skills/library/skills/pink-spotify-clip-lyrics/SKILL.md",
+   "sha256": "77d957aae3613cd9bcedfd03087da4f6ee22a9acee2d418bdaee59cd5bd0be38",
+   "inputs_required": [
+    "song",
+    "lyrics",
+    "footage",
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "cv.person_matte",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "cv.person_matte",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics, footage, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/pink-spotify-clip-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics, footage, photos"
+  },
+  {
+   "id": 45,
+   "name": "night-glow-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A 16:9 lyric video that makes people feel the song, like the Dooron Dooron (Paresh Pahuja ft. Harleen Sethi) video: one night-blue look with glowing white light, emotional clips that follow the story of each line, an Instagram post that dives into the title, and lyrics that change style with the music (small tracked caps + one huge serif word for the key lines, simple bottom lines in between), ending with the last line turning to light.",
+   "tags": [
+    "between",
+    "bottom",
+    "caps",
+    "change",
+    "clips",
+    "dives",
+    "dooron",
+    "emotional",
+    "ending",
+    "feel",
+    "follow",
+    "glow",
+    "glowing",
+    "harleen",
+    "huge",
+    "instagram",
+    "key",
+    "last",
+    "light",
+    "line",
+    "lines",
+    "look",
+    "lyric",
+    "lyrics"
+   ],
+   "path": "contentos/skills/library/skills/night-glow-lyrics/SKILL.md",
+   "sha256": "1b05bd36138e4baef49ed7bccf9ade5d484e812aa1829301567aed95dc961df1",
+   "inputs_required": [
+    "song",
+    "lyrics",
+    "footage"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics, footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/night-glow-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics, footage"
+  },
+  {
+   "id": 46,
+   "name": "red-rap-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A fast rap lyric video in one red grade, like the Hola Amigo (KR$NA ft. Seedhe Maut) video: a red glass lyrics card that peels in like a page over a tilted wall of lyric words, then neon words standing on a rainy street with ripple reflections, then the rapper's photo turned into a monochrome particle portrait with stacked italic lyrics lighting up word by word, and a 3D tower of words where the camera eases to every new word, ending on a DAMN! slam.",
+   "tags": [
+    "amigo",
+    "camera",
+    "card",
+    "damn",
+    "eases",
+    "ending",
+    "fast",
+    "glass",
+    "grade",
+    "hola",
+    "italic",
+    "lighting",
+    "lyric",
+    "lyrics",
+    "maut",
+    "monochrome",
+    "music",
+    "neon",
+    "page",
+    "particle",
+    "peels",
+    "photo",
+    "portrait",
+    "rainy"
+   ],
+   "path": "contentos/skills/library/skills/red-rap-lyrics/SKILL.md",
+   "sha256": "446f529eb08a052f32c95aebea57d47b36775b36c49aee67748f2e185b2d1a9c",
+   "inputs_required": [
+    "song",
+    "lyrics"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a named artist: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: song, lyrics (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a named artist",
+   "evidence": null,
+   "invoke": "agent: read skills/red-rap-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics"
+  },
+  {
+   "id": 47,
+   "name": "glass-to-neon-lyrics",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "An emotional 16:9 lyric video that keeps changing mood with the song, like the Arz Kiya Hai (Anuv Jain \u00d7 Lost Stories) video: a red glass Apple-Music-style lyrics card over a wall of giant red words that cracks and shatters, then full-screen clips with the lyrics standing in the empty space (a starry red field with twinkling and shooting stars, a sunny hill, a man against the clouds), a key line cut out as giant letters with fire burning inside them, and a pink neon ending where lyrics fall in, splash and reflect in water while it rains.",
+   "tags": [
+    "against",
+    "anuv",
+    "apple-music-style",
+    "arz",
+    "burning",
+    "card",
+    "changing",
+    "clips",
+    "clouds",
+    "cracks",
+    "cut",
+    "emotional",
+    "empty",
+    "ending",
+    "fall",
+    "field",
+    "fire",
+    "full-screen",
+    "giant",
+    "glass",
+    "hai",
+    "hill",
+    "inside",
+    "jain"
+   ],
+   "path": "contentos/skills/library/skills/glass-to-neon-lyrics/SKILL.md",
+   "sha256": "f9de6d85dc6012202d2d9b7e331f63889ef1c09e64687451d425f2ca9cadb031",
+   "inputs_required": [
+    "song",
+    "lyrics",
+    "footage",
+    "photos"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "cv.person_matte",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "cv.person_matte",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: song, lyrics, footage, photos (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/glass-to-neon-lyrics/SKILL.md then author a HyperFrames composition (Track B); inputs: song, lyrics, footage, photos"
+  },
+  {
+   "id": 48,
+   "name": "maut-ke-bare-mai-sochte-ho",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A podcast moment retold as a comic page, like the Ranveer \u00d7 Honey Singh \u201cmanzil kya hai? \u2026 Death.\u201d clip from Ye likho ye milega Part 8: the host's big question in a speech bubble, a long silent beat, then DEATH. slams in on black with a skull and the guest gulps in an inset panel.",
+   "tags": [
+    "bare",
+    "beat",
+    "big",
+    "black",
+    "bubble",
+    "clip",
+    "comic",
+    "death",
+    "guest",
+    "gulps",
+    "hai",
+    "honey",
+    "host",
+    "inset",
+    "kya",
+    "likho",
+    "long",
+    "lyrics",
+    "mai",
+    "manzil",
+    "maut",
+    "milega",
+    "moment",
+    "music"
+   ],
+   "path": "contentos/skills/library/skills/maut-ke-bare-mai-sochte-ho/SKILL.md",
+   "sha256": "69e6c7ff359ab0425f673af4235d6b766db5b794ed94e123d0f115338b7da2dd",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names real podcast guests: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "real podcast guests",
+   "evidence": null,
+   "invoke": "agent: read skills/maut-ke-bare-mai-sochte-ho/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 49,
+   "name": "madira-peekar-soo-gaye",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "A famous movie dialogue turned into a comic-book scene, like the Drishyam 3 \u201cmadira peekar so gaye\u201d clip from Ye likho ye milega Part 8: one character delivers the line in a speech bubble word by word, then the other explodes in close-up with speed lines and a colour flash.",
+   "tags": [
+    "bubble",
+    "character",
+    "clip",
+    "close-up",
+    "colour",
+    "comic-book",
+    "delivers",
+    "dialogue",
+    "drishyam",
+    "explodes",
+    "famous",
+    "flash",
+    "gaye",
+    "illustration",
+    "likho",
+    "line",
+    "lines",
+    "madira",
+    "milega",
+    "movie",
+    "other",
+    "part",
+    "peekar",
+    "scene"
+   ],
+   "path": "contentos/skills/library/skills/madira-peekar-soo-gaye/SKILL.md",
+   "sha256": "6dcd4f3bc86a08685270766a57658bdb96de70f423cd6af9718bc5da59317461",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names named film dialogue: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "named film dialogue",
+   "evidence": null,
+   "invoke": "agent: read skills/madira-peekar-soo-gaye/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 50,
+   "name": "baba-pusho",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "format",
+   "description": "A Puneet Superstar \u201cBaba Pusho\u201d clip as a cartoon class, like Ye likho ye milega Part 8: Pusho preaches from his desk under a big Om, his fixed class of students reacts, and every Hindi line gets a caption plus a scene of its own.",
+   "tags": [
+    "baba",
+    "big",
+    "caption",
+    "cartoon",
+    "class",
+    "clip",
+    "desk",
+    "fixed",
+    "gets",
+    "hindi",
+    "his",
+    "illustration",
+    "likho",
+    "line",
+    "milega",
+    "own",
+    "part",
+    "plus",
+    "preaches",
+    "puneet",
+    "pusho",
+    "reacts",
+    "scene",
+    "stories"
+   ],
+   "path": "contentos/skills/library/skills/baba-pusho/SKILL.md",
+   "sha256": "07bbb52d52cd7a6a10796ae92d436c56ec3b4eb1781f3dd81b1b288c77bd7a76",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a living creator's character: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a living creator's character",
+   "evidence": null,
+   "invoke": "agent: read skills/baba-pusho/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 51,
+   "name": "woof-woof",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "format",
+   "description": "A streamer's live moment as a cartoon, like the IShowSpeed \u201cwoof woof\u201d clip from Ye likho ye milega Part 8: he stares into the camera, then barks on every beat while WOOF! bursts fly, the live chat floods with woofs and the viewer count shoots up.",
+   "tags": [
+    "barks",
+    "beat",
+    "bursts",
+    "camera",
+    "cartoon",
+    "chat",
+    "clip",
+    "count",
+    "floods",
+    "fly",
+    "ishowspeed",
+    "likho",
+    "live",
+    "lyrics",
+    "milega",
+    "moment",
+    "music",
+    "part",
+    "shoots",
+    "stares",
+    "streamer",
+    "then",
+    "viewer",
+    "while"
+   ],
+   "path": "contentos/skills/library/skills/woof-woof/SKILL.md",
+   "sha256": "04df2d73e22e571cc441ade3e3e33f4939f3289e1c805748c2484efc7cf6ab2a",
+   "inputs_required": [
+    "voiceover_audio"
+   ],
+   "requires": [
+    "align.forced_mms",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "align.forced_mms",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "align.forced_mms",
+     "fallback": "whisper.cpp word timing (English model only) via `hyperframes transcribe` + production/align.py; lines in other languages get author-supplied timing labelled unverified"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "names a living streamer: use original characters and assets only (bundle AGENTS.md; no copying a living creator's signature)",
+    "needs user-supplied media: voiceover_audio (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": "a living streamer",
+   "evidence": null,
+   "invoke": "agent: read skills/woof-woof/SKILL.md then author a HyperFrames composition (Track B); inputs: voiceover_audio"
+  },
+  {
+   "id": 52,
+   "name": "personal-short-form-reels",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "effect",
+   "description": "A fast personal reel with my own B-roll and word-by-word captions.",
+   "tags": [
+    "b-roll",
+    "captions",
+    "effects",
+    "fast",
+    "form",
+    "formats",
+    "motion",
+    "own",
+    "personal",
+    "reel",
+    "reels",
+    "short",
+    "word-by-word"
+   ],
+   "path": "contentos/skills/library/skills/personal-short-form-reels/SKILL.md",
+   "sha256": "38e647ed07c71d562853272915e1bc2c39736ec12fb14bdd80b044314538fef0",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/personal-short-form-reels/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 53,
+   "name": "personal-broll-library",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "effect",
+   "description": "Search my own B-roll folder in plain English (\"me walking at night\") and return the best matching clips.",
+   "tags": [
+    "b-roll",
+    "best",
+    "broll",
+    "clips",
+    "effects",
+    "english",
+    "folder",
+    "formats",
+    "library",
+    "matching",
+    "motion",
+    "night",
+    "own",
+    "personal",
+    "plain",
+    "return",
+    "search",
+    "walking"
+   ],
+   "path": "contentos/skills/library/skills/personal-broll-library/SKILL.md",
+   "sha256": "9beddb0a118ff390b3448e5685d552b4b8b733d655b5d23e8be46ad84d2dc71d",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/personal-broll-library/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 54,
+   "name": "depth-ui-reel",
+   "kind": "creative",
+   "category": "visual-treatments-and-edit-styles",
+   "role": "effect",
+   "description": "Floating app interfaces that sit behind my head, with my body cut out in front of them.",
+   "tags": [
+    "app",
+    "behind",
+    "body",
+    "cut",
+    "depth",
+    "edit",
+    "floating",
+    "front",
+    "head",
+    "interfaces",
+    "out",
+    "reel",
+    "sit",
+    "styles",
+    "them",
+    "treatments",
+    "visual"
+   ],
+   "path": "contentos/skills/library/skills/depth-ui-reel/SKILL.md",
+   "sha256": "b06452e19fab1206e2c5ad45c72996c157bd22da607a4fa4d8a202e84c267454",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.person_matte",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.person_matte",
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    },
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/depth-ui-reel/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 55,
+   "name": "youtube-clips",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "effect",
+   "description": "Find the best moments in a long YouTube video and turn each into a vertical clip.",
+   "tags": [
+    "best",
+    "clip",
+    "clips",
+    "effects",
+    "find",
+    "formats",
+    "long",
+    "moments",
+    "motion",
+    "turn",
+    "vertical",
+    "video",
+    "youtube"
+   ],
+   "path": "contentos/skills/library/skills/youtube-clips/SKILL.md",
+   "sha256": "476a5ac95246d0fad9ded3c6cfef436446119d335866b3162a9d6fb9e649ae75",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "net.yt_dlp",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect",
+    "net.yt_dlp"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "blocked-by-dependency",
+   "readiness": "blocked",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [
+    "net.yt_dlp: yt-dlp on PATH is an x86 build that dies with 'bad CPU type'; `brew install yt-dlp` (arm64) needs approval. Also downloads third-party video: rights gate applies"
+   ],
+   "limitations": [
+    "uses third-party/source media: record rights status before any publish (supplied_audio rights record)",
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/youtube-clips/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 56,
+   "name": "educational-youtube-editor",
+   "kind": "creative",
+   "category": "explainers-and-motion-graphics",
+   "role": "effect",
+   "description": "Turn a long lesson recording into a clean, chaptered YouTube edit.",
+   "tags": [
+    "chaptered",
+    "clean",
+    "edit",
+    "editor",
+    "educational",
+    "explainers",
+    "graphics",
+    "lesson",
+    "long",
+    "motion",
+    "recording",
+    "turn",
+    "youtube"
+   ],
+   "path": "contentos/skills/library/skills/educational-youtube-editor/SKILL.md",
+   "sha256": "72072c3da15eb857e4d5446528e214b85947dfc3be2c2dfb3dd248adef02c939",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/educational-youtube-editor/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 57,
+   "name": "ranking-format",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "effect",
+   "description": "A tier-list reel: items ranked one by one, S to F.",
+   "tags": [
+    "effects",
+    "format",
+    "formats",
+    "items",
+    "motion",
+    "ranked",
+    "ranking",
+    "reel",
+    "tier-list"
+   ],
+   "path": "contentos/skills/library/skills/ranking-format/SKILL.md",
+   "sha256": "12a9b8f525409934bdac8188d7fae5b78a016c7faac93f048862ff7f10a890b1",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/ranking-format/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 58,
+   "name": "business-short-form-reels",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "effect",
+   "description": "A reel for business topics, with docs, decks and screen recordings as B-roll.",
+   "tags": [
+    "b-roll",
+    "business",
+    "decks",
+    "docs",
+    "effects",
+    "form",
+    "formats",
+    "motion",
+    "recordings",
+    "reel",
+    "reels",
+    "screen",
+    "short",
+    "topics"
+   ],
+   "path": "contentos/skills/library/skills/business-short-form-reels/SKILL.md",
+   "sha256": "b1b7c503e5444a9c021aedb3cded862a3509efc48b7a6c0503cf56ebe2b341df",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/business-short-form-reels/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 59,
+   "name": "match-cut",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "effect",
+   "description": "The same word on a new page, landing in exactly the same spot on screen.",
+   "tags": [
+    "cut",
+    "exactly",
+    "landing",
+    "lyrics",
+    "match",
+    "music",
+    "page",
+    "same",
+    "screen",
+    "spot",
+    "word"
+   ],
+   "path": "contentos/skills/library/skills/match-cut/SKILL.md",
+   "sha256": "7197bd054b1ab7e3641dd4cdf6cdc3c8fe31d3d121069d0a004c00f26b8cb44f",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/match-cut/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 60,
+   "name": "shutter-stack",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "effect",
+   "description": "Photo cards that drop in on a camera flash, stacking up.",
+   "tags": [
+    "camera",
+    "cards",
+    "drop",
+    "flash",
+    "lyrics",
+    "music",
+    "photo",
+    "shutter",
+    "stack",
+    "stacking"
+   ],
+   "path": "contentos/skills/library/skills/shutter-stack/SKILL.md",
+   "sha256": "f6062fc7b4b6de6f85487168a5fa13d473a1e104bfc3279306fabbac78f0d957",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/shutter-stack/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 61,
+   "name": "led-matrix-text",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "effect",
+   "description": "Big dot-matrix words, one per beat, like a stadium screen.",
+   "tags": [
+    "beat",
+    "big",
+    "dot-matrix",
+    "led",
+    "lyrics",
+    "matrix",
+    "music",
+    "per",
+    "screen",
+    "stadium",
+    "text",
+    "words"
+   ],
+   "path": "contentos/skills/library/skills/led-matrix-text/SKILL.md",
+   "sha256": "9f79ee372d2c6b59fd14599a11773e3298a43687919484d77216e7e27613fb27",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/led-matrix-text/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 62,
+   "name": "glass-stat-card",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "effect",
+   "description": "A frosted-glass card with a number that counts up live.",
+   "tags": [
+    "card",
+    "counts",
+    "effects",
+    "formats",
+    "frosted-glass",
+    "glass",
+    "live",
+    "motion",
+    "number",
+    "stat"
+   ],
+   "path": "contentos/skills/library/skills/glass-stat-card/SKILL.md",
+   "sha256": "498a3d1d11f58bedd20475b081a17aea41d7b4acbbdc3bdcc36346081ceaf9b9",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/glass-stat-card/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 63,
+   "name": "particle-chart",
+   "kind": "creative",
+   "category": "explainers-and-motion-graphics",
+   "role": "effect",
+   "description": "Particles pour down and pile up into a bar chart.",
+   "tags": [
+    "bar",
+    "chart",
+    "down",
+    "explainers",
+    "graphics",
+    "motion",
+    "particle",
+    "particles",
+    "pile",
+    "pour"
+   ],
+   "path": "contentos/skills/library/skills/particle-chart/SKILL.md",
+   "sha256": "70ed5a251d996c639a51d9c1906ff5095256af713291648169dd351fe3bfb5ec",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/particle-chart/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 64,
+   "name": "particle-text",
+   "kind": "creative",
+   "category": "music-and-lyrics",
+   "role": "effect",
+   "description": "Words built out of falling dots that assemble on the beat.",
+   "tags": [
+    "assemble",
+    "beat",
+    "built",
+    "dots",
+    "falling",
+    "lyrics",
+    "music",
+    "out",
+    "particle",
+    "text",
+    "words"
+   ],
+   "path": "contentos/skills/library/skills/particle-text/SKILL.md",
+   "sha256": "2fc7a31a6312d9071d50e5847c1a206f4f7af88b12685fe7a56dd5c0a2906c92",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "audio.beat_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect",
+    "audio.beat_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    },
+    {
+     "capability": "audio.beat_detect",
+     "fallback": "owner-supplied beat times in the spec, or word onsets from ASR; beat sync is labelled unverified"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/particle-text/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 65,
+   "name": "price-tag-zoom",
+   "kind": "creative",
+   "category": "explainers-and-motion-graphics",
+   "role": "effect",
+   "description": "A slow push-in on a product with a floating price tag.",
+   "tags": [
+    "explainers",
+    "floating",
+    "graphics",
+    "motion",
+    "price",
+    "product",
+    "push-in",
+    "slow",
+    "tag",
+    "zoom"
+   ],
+   "path": "contentos/skills/library/skills/price-tag-zoom/SKILL.md",
+   "sha256": "b6649e14b7988f8ac52ac8d3e951d1da0c3fdc2e6982742f96c0481754a44bbb",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/price-tag-zoom/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 66,
+   "name": "podcast-reel-edit",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "effect",
+   "description": "Tight cuts, a clean headline and punch-ins, podcast-clip style.",
+   "tags": [
+    "clean",
+    "content",
+    "cuts",
+    "edit",
+    "editing",
+    "headline",
+    "podcast",
+    "podcast-clip",
+    "punch-ins",
+    "reel",
+    "spoken",
+    "style",
+    "tight"
+   ],
+   "path": "contentos/skills/library/skills/podcast-reel-edit/SKILL.md",
+   "sha256": "e0fbe89ed226bd801865d80c9b54c15cb8df36dc28bf70c8e42903a4c1828321",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/podcast-reel-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 67,
+   "name": "dark-red-timeline-motion-graphics",
+   "kind": "creative",
+   "category": "explainers-and-motion-graphics",
+   "role": "effect",
+   "description": "A dark red grade, a blinking REC tag and an animated timeline.",
+   "tags": [
+    "animated",
+    "blinking",
+    "dark",
+    "explainers",
+    "grade",
+    "graphics",
+    "motion",
+    "rec",
+    "red",
+    "tag",
+    "timeline"
+   ],
+   "path": "contentos/skills/library/skills/dark-red-timeline-motion-graphics/SKILL.md",
+   "sha256": "d1c1c23bb976f8a946107ea10aece4c3206bc186dbeff6a44dc9d3966e78712a",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/dark-red-timeline-motion-graphics/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 68,
+   "name": "instagram-ui-hinglish",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "effect",
+   "description": "Instagram profile grids behind me, with tick-mark chips for each point.",
+   "tags": [
+    "behind",
+    "chips",
+    "effects",
+    "formats",
+    "grids",
+    "hinglish",
+    "instagram",
+    "motion",
+    "point",
+    "profile",
+    "tick-mark"
+   ],
+   "path": "contentos/skills/library/skills/instagram-ui-hinglish/SKILL.md",
+   "sha256": "a80f31bdcb46d84e35901a8aacc0c83667f1c9d84dac692a83b4ca9de5de22c9",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.person_matte",
+    "cv.face_detect",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.person_matte",
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    },
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/instagram-ui-hinglish/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 69,
+   "name": "hindi-pastel-reel-edit",
+   "kind": "creative",
+   "category": "motion-effects-and-formats",
+   "role": "effect",
+   "description": "A soft pastel set with one giant word behind my head.",
+   "tags": [
+    "behind",
+    "edit",
+    "effects",
+    "formats",
+    "giant",
+    "head",
+    "hindi",
+    "motion",
+    "pastel",
+    "reel",
+    "set",
+    "soft",
+    "word"
+   ],
+   "path": "contentos/skills/library/skills/hindi-pastel-reel-edit/SKILL.md",
+   "sha256": "740074464cd0327232b01b8e5a745e4e991fdb28b24e44cc1c4a8b5945600e05",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.person_matte",
+    "cv.face_detect",
+    "asr.word_timing_multilingual",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.person_matte",
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    },
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/hindi-pastel-reel-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 70,
+   "name": "kinetic-talking-head-edit",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "effect",
+   "description": "A cream panel with green highlight typography that moves with my words.",
+   "tags": [
+    "content",
+    "cream",
+    "edit",
+    "editing",
+    "green",
+    "head",
+    "highlight",
+    "kinetic",
+    "moves",
+    "panel",
+    "spoken",
+    "talking",
+    "typography",
+    "words"
+   ],
+   "path": "contentos/skills/library/skills/kinetic-talking-head-edit/SKILL.md",
+   "sha256": "cf58b79cc45acc19557797eee6034cbc659be0b52cfe33f03f1de7eedbfb9b8b",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/kinetic-talking-head-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 71,
+   "name": "red-kinetic-collage-edit",
+   "kind": "creative",
+   "category": "visual-treatments-and-edit-styles",
+   "role": "effect",
+   "description": "Black-and-white footage with one glowing red word and collage-style type.",
+   "tags": [
+    "black-and-white",
+    "collage",
+    "collage-style",
+    "edit",
+    "footage",
+    "glowing",
+    "kinetic",
+    "red",
+    "styles",
+    "treatments",
+    "type",
+    "visual",
+    "word"
+   ],
+   "path": "contentos/skills/library/skills/red-kinetic-collage-edit/SKILL.md",
+   "sha256": "9afaedf398d114023e4bc554b72837007d8573bb289ff8e3259b7af0bed681b2",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/red-kinetic-collage-edit/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 72,
+   "name": "iphone-style-by-aansh",
+   "kind": "creative",
+   "category": "visual-treatments-and-edit-styles",
+   "role": "effect",
+   "description": "Frosted iOS widgets and notifications floating over my footage.",
+   "tags": [
+    "aansh",
+    "edit",
+    "floating",
+    "footage",
+    "frosted",
+    "ios",
+    "iphone",
+    "notifications",
+    "style",
+    "styles",
+    "treatments",
+    "visual",
+    "widgets"
+   ],
+   "path": "contentos/skills/library/skills/iphone-style-by-aansh/SKILL.md",
+   "sha256": "6d0543fa9cfdabdc88c55a1f62bbb7488f6ee013ad7b5047611192f51400739e",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/iphone-style-by-aansh/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 73,
+   "name": "rgb-glitch-live",
+   "kind": "creative",
+   "category": "visual-treatments-and-edit-styles",
+   "role": "effect",
+   "description": "Split colour channels, torn slices and a live news chyron.",
+   "tags": [
+    "channels",
+    "chyron",
+    "colour",
+    "edit",
+    "glitch",
+    "live",
+    "news",
+    "rgb",
+    "slices",
+    "split",
+    "styles",
+    "torn",
+    "treatments",
+    "visual"
+   ],
+   "path": "contentos/skills/library/skills/rgb-glitch-live/SKILL.md",
+   "sha256": "54494426da53ed76cfdaebaec8cc65b0fd526148bdfaed61cc09a12d28f7b838",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/rgb-glitch-live/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 74,
+   "name": "magazine-cover",
+   "kind": "creative",
+   "category": "visual-treatments-and-edit-styles",
+   "role": "effect",
+   "description": "A magazine masthead behind my head, with cover lines around me.",
+   "tags": [
+    "around",
+    "behind",
+    "cover",
+    "edit",
+    "head",
+    "lines",
+    "magazine",
+    "masthead",
+    "styles",
+    "treatments",
+    "visual"
+   ],
+   "path": "contentos/skills/library/skills/magazine-cover/SKILL.md",
+   "sha256": "42ef307d13839fbaed73487d1858aecdb680d2a1f4cbd807b4b6e4a160299a22",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.person_matte",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.person_matte",
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    },
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/magazine-cover/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 75,
+   "name": "comic-halftone",
+   "kind": "creative",
+   "category": "stories-and-illustration",
+   "role": "effect",
+   "description": "Halftone dots, a comic panel border, speech bubbles and POW words.",
+   "tags": [
+    "border",
+    "bubbles",
+    "comic",
+    "dots",
+    "halftone",
+    "illustration",
+    "panel",
+    "pow",
+    "speech",
+    "stories",
+    "words"
+   ],
+   "path": "contentos/skills/library/skills/comic-halftone/SKILL.md",
+   "sha256": "b809c1687f6ef502c8a01fe0e6f41512088621e581aadb141ee463ab8e70da62",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/comic-halftone/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 76,
+   "name": "breaking-news",
+   "kind": "creative",
+   "category": "spoken-content-and-editing",
+   "role": "effect",
+   "description": "A TV-news lower third, a scrolling ticker and a channel bug.",
+   "tags": [
+    "breaking",
+    "bug",
+    "channel",
+    "content",
+    "editing",
+    "lower",
+    "news",
+    "scrolling",
+    "spoken",
+    "third",
+    "ticker",
+    "tv-news"
+   ],
+   "path": "contentos/skills/library/skills/breaking-news/SKILL.md",
+   "sha256": "d840413e5a7ad149ac69051e16246035f272b420c434f3807cb947c34f4833f2",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/breaking-news/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 77,
+   "name": "neon-outline",
+   "kind": "creative",
+   "category": "visual-treatments-and-edit-styles",
+   "role": "effect",
+   "description": "A glowing neon outline around me, with neon words.",
+   "tags": [
+    "around",
+    "edit",
+    "glowing",
+    "neon",
+    "outline",
+    "styles",
+    "treatments",
+    "visual",
+    "words"
+   ],
+   "path": "contentos/skills/library/skills/neon-outline/SKILL.md",
+   "sha256": "6aa58f663c1e62bc254a4e64552d8b29fa9de7724d37489e163c8ba998876aa1",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.person_matte",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.person_matte",
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.person_matte",
+     "fallback": "no-matte variant: put the graphic beside or above the speaker instead of behind them; never fake a matte"
+    },
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/neon-outline/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 78,
+   "name": "cinema-scope",
+   "kind": "creative",
+   "category": "visual-treatments-and-edit-styles",
+   "role": "effect",
+   "description": "2.39:1 film bars, film grain and a title card.",
+   "tags": [
+    "bars",
+    "card",
+    "cinema",
+    "edit",
+    "film",
+    "grain",
+    "scope",
+    "styles",
+    "title",
+    "treatments",
+    "visual"
+   ],
+   "path": "contentos/skills/library/skills/cinema-scope/SKILL.md",
+   "sha256": "c7ce3c12ee689da6228e7b249f52b17a49a14e47d8fe568a0863bf2c2ff4ad6d",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/cinema-scope/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": 79,
+   "name": "triptych-timecode",
+   "kind": "creative",
+   "category": "visual-treatments-and-edit-styles",
+   "role": "effect",
+   "description": "Three clips side by side, each with its own live timecode.",
+   "tags": [
+    "clips",
+    "edit",
+    "live",
+    "own",
+    "side",
+    "styles",
+    "three",
+    "timecode",
+    "treatments",
+    "triptych",
+    "visual"
+   ],
+   "path": "contentos/skills/library/skills/triptych-timecode/SKILL.md",
+   "sha256": "7cc26c31611562a4cd42a45b9bd485df745e9855db963507df0c515394f085f4",
+   "inputs_required": [
+    "footage"
+   ],
+   "requires": [
+    "asr.word_timing_en",
+    "cv.face_detect",
+    "media.supplied_audio_ingest",
+    "render.hyperframes"
+   ],
+   "missing": [
+    "cv.face_detect"
+   ],
+   "execution": "track-b-agent-authored",
+   "scenekit_style": null,
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "needs-user-media",
+   "fallbacks": [
+    {
+     "capability": "cv.face_detect",
+     "fallback": "fixed face-safe zones from the platform safe-zone config; reviewer checks the contact sheet by eye"
+    }
+   ],
+   "blockers": [],
+   "limitations": [
+    "needs user-supplied media: footage (none is in the repo, so no end-to-end render was possible)",
+    "recipe registered and routable, but never rendered by this integration: treat its output quality as unknown"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "agent: read skills/triptych-timecode/SKILL.md then author a HyperFrames composition (Track B); inputs: footage"
+  },
+  {
+   "id": "core:video-director",
+   "name": "video-director",
+   "kind": "core-workflow",
+   "category": "core-workflow",
+   "role": "workflow",
+   "description": "Routes any topic, script, audio, clip, or reference to the right Video Factory workflow and skills.",
+   "tags": [
+    "any",
+    "audio",
+    "clip",
+    "core",
+    "director",
+    "factory",
+    "reference",
+    "right",
+    "routes",
+    "script",
+    "skills",
+    "topic",
+    "video",
+    "workflow"
+   ],
+   "path": "contentos/skills/library/core-skills/video-director/SKILL.md",
+   "sha256": "63747a45d6f7015e3a26ef4a45a79b6f198195cdfe3694201cad025a9807bfc7",
+   "inputs_required": [],
+   "requires": [
+    "render.hyperframes"
+   ],
+   "missing": [],
+   "execution": "existing-implementation",
+   "renderer": "hyperframes",
+   "status": "already-supported",
+   "readiness": "ready-to-run",
+   "fallbacks": [],
+   "blockers": [],
+   "limitations": [
+    "The factory's own video-director (sceneplan/1 + registry validation) is authoritative. The bundle copy is a reference only and is NOT installed under .claude/skills (name collision)."
+   ],
+   "implementation": [
+    ".claude/skills/video-director/SKILL.md",
+    "contentos/production/direction.py",
+    "contentos/production/director.py"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "see implementation: .claude/skills/video-director/SKILL.md"
+  },
+  {
+   "id": "core:script-to-storyboard",
+   "name": "script-to-storyboard",
+   "kind": "core-workflow",
+   "category": "core-workflow",
+   "role": "workflow",
+   "description": "Analyzes a script and creates a style-aware, technically grounded scene plan before rendering.",
+   "tags": [
+    "analyzes",
+    "before",
+    "core",
+    "creates",
+    "grounded",
+    "plan",
+    "rendering",
+    "scene",
+    "script",
+    "storyboard",
+    "style-aware",
+    "technically",
+    "workflow"
+   ],
+   "path": "contentos/skills/library/core-skills/script-to-storyboard/SKILL.md",
+   "sha256": "038fafa15cc73e38ab0f1c32bff713344b3f86bd7ef8f7197b93ee6879089a80",
+   "inputs_required": [],
+   "requires": [
+    "render.hyperframes"
+   ],
+   "missing": [],
+   "execution": "existing-implementation",
+   "renderer": "hyperframes",
+   "status": "already-supported",
+   "readiness": "ready-to-run",
+   "fallbacks": [],
+   "blockers": [],
+   "limitations": [
+    "Script lines become timed scenes with intent classification, authored visuals and a visual-plan.json; word alignment via production/align.py."
+   ],
+   "implementation": [
+    "contentos/production/sceneplan.py",
+    "contentos/scenekit/planner.py"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "see implementation: contentos/production/sceneplan.py"
+  },
+  {
+   "id": "core:style-architect",
+   "name": "style-architect",
+   "kind": "core-workflow",
+   "category": "core-workflow",
+   "role": "workflow",
+   "description": "Selects and evolves distinct video styles using versioned style cards and checkable visual signatures.",
+   "tags": [
+    "architect",
+    "cards",
+    "checkable",
+    "core",
+    "distinct",
+    "evolves",
+    "selects",
+    "signatures",
+    "style",
+    "styles",
+    "using",
+    "versioned",
+    "video",
+    "visual",
+    "workflow"
+   ],
+   "path": "contentos/skills/library/core-skills/style-architect/SKILL.md",
+   "sha256": "dd4f2b5d57420d4acdf11f306bdec868deca8a801337edd936aa1b649e80e385",
+   "inputs_required": [],
+   "requires": [
+    "render.hyperframes"
+   ],
+   "missing": [],
+   "execution": "existing-implementation",
+   "renderer": "hyperframes",
+   "status": "already-supported",
+   "readiness": "ready-to-run",
+   "fallbacks": [],
+   "blockers": [],
+   "limitations": [
+    "Three registries already exist (design library, style cards, scenekit styles). The bundle style-registry is mapped onto them (`styles` section), not added as a fourth."
+   ],
+   "implementation": [
+    "contentos/intelligence/designs.py",
+    "contentos/intelligence/styles.py",
+    "contentos/scenekit/styles.py",
+    "config/design-library.json"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "see implementation: contentos/intelligence/designs.py"
+  },
+  {
+   "id": "core:reference-video-analyzer",
+   "name": "reference-video-analyzer",
+   "kind": "core-workflow",
+   "category": "core-workflow",
+   "role": "workflow",
+   "description": "Breaks down an accessible reference video into reusable timing, motion, composition, and storytelling techniques.",
+   "tags": [
+    "accessible",
+    "analyzer",
+    "breaks",
+    "composition",
+    "core",
+    "down",
+    "motion",
+    "reference",
+    "reusable",
+    "storytelling",
+    "techniques",
+    "timing",
+    "video",
+    "workflow"
+   ],
+   "path": "contentos/skills/library/core-skills/reference-video-analyzer/SKILL.md",
+   "sha256": "adae1eb8638f5e2e778db69762f5832c08bafa145e6ef4efb3c62884a5c4975f",
+   "inputs_required": [],
+   "requires": [
+    "render.hyperframes"
+   ],
+   "missing": [],
+   "execution": "existing-implementation",
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "ready-to-run",
+   "fallbacks": [],
+   "blockers": [],
+   "limitations": [
+    "Local file analysis implemented (cuts, pacing, loudness, palette, contact sheet). URL analysis needs yt-dlp, whose installed binary is broken (x86 'bad CPU type'); no typography/OCR or transcript extraction."
+   ],
+   "implementation": [
+    "contentos/skills/analyze.py",
+    "contentos/competitor.py"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "see implementation: contentos/skills/analyze.py"
+  },
+  {
+   "id": "core:factory-skill-integrator",
+   "name": "factory-skill-integrator",
+   "kind": "core-workflow",
+   "category": "core-workflow",
+   "role": "workflow",
+   "description": "Integrates a new skill into the existing Video Factory without duplicating renderers, timelines, or QA.",
+   "tags": [
+    "core",
+    "duplicating",
+    "existing",
+    "factory",
+    "integrates",
+    "integrator",
+    "renderers",
+    "skill",
+    "timelines",
+    "video",
+    "without",
+    "workflow"
+   ],
+   "path": "contentos/skills/library/core-skills/factory-skill-integrator/SKILL.md",
+   "sha256": "ba487795408d791949130d7ef04131d61892ec51a7c44d9170f11a975a042818",
+   "inputs_required": [],
+   "requires": [
+    "render.hyperframes"
+   ],
+   "missing": [],
+   "execution": "existing-implementation",
+   "renderer": "hyperframes",
+   "status": "integrated-and-tested",
+   "readiness": "ready-to-run",
+   "fallbacks": [],
+   "blockers": [],
+   "limitations": [
+    "This registry, probe, router and verifier are the integrator."
+   ],
+   "implementation": [
+    "contentos/skills/registry.py",
+    "contentos/skills/probe.py",
+    "tests/test_creative_skills.py"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "see implementation: contentos/skills/registry.py"
+  },
+  {
+   "id": "core:video-qa-critic",
+   "name": "video-qa-critic",
+   "kind": "core-workflow",
+   "category": "core-workflow",
+   "role": "workflow",
+   "description": "Independently reviews rendered video for technical validity, visual quality, audio, captions, style coherence, and accuracy.",
+   "tags": [
+    "accuracy",
+    "audio",
+    "captions",
+    "coherence",
+    "core",
+    "critic",
+    "independently",
+    "quality",
+    "rendered",
+    "reviews",
+    "style",
+    "technical",
+    "validity",
+    "video",
+    "visual",
+    "workflow"
+   ],
+   "path": "contentos/skills/library/core-skills/video-qa-critic/SKILL.md",
+   "sha256": "79e8d2176586d500f5f2d58a87b4b33617af1135eb570a1f9f7de817e714267a",
+   "inputs_required": [],
+   "requires": [
+    "render.hyperframes"
+   ],
+   "missing": [],
+   "execution": "existing-implementation",
+   "renderer": "hyperframes",
+   "status": "already-supported",
+   "readiness": "ready-to-run",
+   "fallbacks": [],
+   "blockers": [],
+   "limitations": [
+    "Existing critic, 9-check QA and visual gate are authoritative; scenekit adds variety-report.json. No second QA system was added."
+   ],
+   "implementation": [
+    "contentos/production/critic.py",
+    "contentos/qa.py",
+    "contentos/production/visual_gate.py",
+    ".claude/skills/explainer-visual-qa/SKILL.md"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "see implementation: contentos/production/critic.py"
+  },
+  {
+   "id": "core:publishing-packager",
+   "name": "publishing-packager",
+   "kind": "core-workflow",
+   "category": "core-workflow",
+   "role": "workflow",
+   "description": "Prepares platform-specific titles, descriptions, thumbnail concepts, tags, attribution, and a pre-publish checklist.",
+   "tags": [
+    "attribution",
+    "checklist",
+    "concepts",
+    "core",
+    "descriptions",
+    "packager",
+    "platform-specific",
+    "pre-publish",
+    "prepares",
+    "publishing",
+    "tags",
+    "thumbnail",
+    "titles",
+    "workflow"
+   ],
+   "path": "contentos/skills/library/core-skills/publishing-packager/SKILL.md",
+   "sha256": "1d95717ee0846a6143508ec76151e1fe09e00782919421862f595a49119332d3",
+   "inputs_required": [],
+   "requires": [
+    "render.hyperframes"
+   ],
+   "missing": [],
+   "execution": "existing-implementation",
+   "renderer": "hyperframes",
+   "status": "adapted-with-fallback",
+   "readiness": "ready-to-run",
+   "fallbacks": [],
+   "blockers": [],
+   "limitations": [
+    "s_package/s_export write title, description, tags, sidecar; publish is a dry run. Thumbnail images are not built (capabilities.json: planned)."
+   ],
+   "implementation": [
+    "contentos/pipeline.py",
+    "contentos/export.py",
+    "contentos/production/platforms.py"
+   ],
+   "ip_sensitive": null,
+   "evidence": null,
+   "invoke": "see implementation: contentos/pipeline.py"
+  }
+ ],
+ "styles": [
+  {
+   "id": "technical-explainer",
+   "label": "Clean Technical Explainer",
+   "use_for": [
+    "concepts",
+    "architecture",
+    "how-it-works",
+    "cloud",
+    "Kubernetes"
+   ],
+   "signature": [
+    "clear hierarchy",
+    "diagram-led composition",
+    "progressive disclosure",
+    "restrained motion"
+   ],
+   "scene_families": [
+    "animated-diagram",
+    "callout",
+    "comparison",
+    "step-sequence"
+   ],
+   "factory": {
+    "scenekit": "clean-explainer"
+   }
+  },
+  {
+   "id": "code-first",
+   "label": "Code-First Developer Tutorial",
+   "use_for": [
+    "programming",
+    "CLI",
+    "debugging",
+    "configuration"
+   ],
+   "signature": [
+    "readable code panels",
+    "terminal steps",
+    "highlighted lines",
+    "execution-result transitions"
+   ],
+   "scene_families": [
+    "code-reveal",
+    "terminal-demo",
+    "diff-view",
+    "callout"
+   ],
+   "factory": {
+    "scenekit": "code-first"
+   }
+  },
+  {
+   "id": "cinematic-documentary",
+   "label": "Cinematic Tech Documentary",
+   "use_for": [
+    "technology history",
+    "industry stories",
+    "AI narratives"
+   ],
+   "signature": [
+    "dramatic framing",
+    "controlled camera movement",
+    "narrative reveals",
+    "atmospheric but legible visuals"
+   ],
+   "scene_families": [
+    "hero-shot",
+    "timeline",
+    "visual-metaphor",
+    "reveal"
+   ],
+   "factory": {
+    "scenekit": "cinematic-documentary",
+    "card": "slow-parallax-story"
+   }
+  },
+  {
+   "id": "kinetic-type",
+   "label": "Kinetic Typography",
+   "use_for": [
+    "short hooks",
+    "definitions",
+    "punchy summaries"
+   ],
+   "signature": [
+    "typography is the primary visual",
+    "word emphasis tied to narration",
+    "rhythmic but readable movement"
+   ],
+   "scene_families": [
+    "word-reveal",
+    "type-transition",
+    "emphasis-card"
+   ],
+   "factory": {
+    "scenekit": "kinetic-type",
+    "card": "kinetic-typography"
+   }
+  },
+  {
+   "id": "editorial-collage",
+   "label": "Editorial / Collage",
+   "use_for": [
+    "research summaries",
+    "product stories",
+    "opinion explainers"
+   ],
+   "signature": [
+    "layered paper/editorial composition",
+    "cutout transitions",
+    "annotations",
+    "deliberate texture"
+   ],
+   "scene_families": [
+    "collage-build",
+    "annotated-image",
+    "split-comparison"
+   ],
+   "factory": {
+    "scenekit": "editorial-magazine",
+    "note": "editorial layout only; paper collage texture and cutout transitions are not built"
+   }
+  },
+  {
+   "id": "data-visualization",
+   "label": "Data and System Visualization",
+   "use_for": [
+    "metrics",
+    "data flows",
+    "distributed systems",
+    "processes"
+   ],
+   "signature": [
+    "accurate relationships",
+    "animated paths",
+    "measured chart reveals",
+    "clear labels"
+   ],
+   "scene_families": [
+    "flow-diagram",
+    "chart-reveal",
+    "timeline",
+    "network-animation"
+   ],
+   "factory": {
+    "scenekit": "blueprint-architecture",
+    "card": "blueprint-diagram"
+   }
+  },
+  {
+   "id": "illustrated-story",
+   "label": "Illustrated Story",
+   "use_for": [
+    "fiction",
+    "folk stories",
+    "educational narrative"
+   ],
+   "signature": [
+    "consistent character sheets",
+    "scene continuity",
+    "illustration-led motion",
+    "narrative staging"
+   ],
+   "scene_families": [
+    "character-action",
+    "establishing-scene",
+    "dialogue",
+    "payoff"
+   ],
+   "factory": {
+    "scenekit": null,
+    "note": "no illustration/character primitives exist; Track B agent-authored only"
+   }
+  },
+  {
+   "id": "music-lyric",
+   "label": "Music and Lyric Visuals",
+   "use_for": [
+    "user-provided songs",
+    "lyric videos",
+    "audio visualizers"
+   ],
+   "signature": [
+    "audio-synchronized motion",
+    "measured beat or word timing",
+    "readable lyric treatment"
+   ],
+   "scene_families": [
+    "lyric-reveal",
+    "beat-pulse",
+    "visualizer",
+    "line-transition"
+   ],
+   "factory": {
+    "scenekit": null,
+    "note": "needs audio-synchronised lyric timing; no lyric scene type exists; Track B agent-authored with supplied audio"
+   }
+  },
+  {
+   "id": "news-editorial",
+   "label": "News / Report",
+   "use_for": [
+    "news explainers",
+    "event summaries",
+    "briefings"
+   ],
+   "signature": [
+    "source-led facts",
+    "clear timestamps",
+    "neutral visual hierarchy",
+    "visible source context"
+   ],
+   "scene_families": [
+    "headline",
+    "timeline",
+    "quote-card",
+    "fact-graphic"
+   ],
+   "factory": {
+    "scenekit": "kinetic-type",
+    "note": "approximation only; no lower third / ticker primitive"
+   }
+  },
+  {
+   "id": "experimental-motion",
+   "label": "Experimental Motion",
+   "use_for": [
+    "style experiments",
+    "abstract concepts",
+    "visual tests"
+   ],
+   "signature": [
+    "explicit experiment hypothesis",
+    "controlled motion language",
+    "measurable review criteria"
+   ],
+   "scene_families": [
+    "procedural-animation",
+    "morph",
+    "shader-treatment",
+    "camera-study"
+   ],
+   "factory": {
+    "scenekit": null,
+    "note": "experiments only, outside production"
+   }
+  }
+ ]
+}

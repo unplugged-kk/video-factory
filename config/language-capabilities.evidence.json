@@ -1,0 +1,109 @@
+{
+  "en": {
+    "production_history": "shipped episodes exist (jobs under ~/Desktop/VideoFactory-Workspace, finals under ~/Desktop/Video-Publishing/ready); Kokoro + small.en unchanged",
+    "end_to_end_render": {
+      "status": "pass",
+      "jobs": [
+        "sample-ml-en-regress"
+      ],
+      "note": "byte-identical audio and frame-identical video vs the pre-change baseline"
+    },
+    "automated_tests": {
+      "status": "pass",
+      "where": "tests/ (full suite) and tests/test_lang.py"
+    },
+    "human_audio_review": {
+      "status": "not-applicable",
+      "note": "existing production voice"
+    },
+    "unicode_subtitles": {
+      "status": "pass",
+      "note": "Latin"
+    },
+    "limitations": []
+  },
+  "hi": {
+    "end_to_end_render": {
+      "status": "pass",
+      "jobs": [
+        "sample-ml-hi-001",
+        "sample-skill-bp-hi"
+      ],
+      "note": "voice, compose, render, qa; ASR round trip folded WER 0.023 on the benchmark text"
+    },
+    "automated_tests": {
+      "status": "pass",
+      "where": "tests/test_lang.py"
+    },
+    "human_audio_review": {
+      "status": "not-done",
+      "note": "no fluent listener has reviewed the audio; the reference voice is a synthetic Kokoro clip"
+    },
+    "max_status": {
+      "status": "experimental",
+      "reason": "no fluent listener has approved pronunciation or naturalness"
+    },
+    "unicode_subtitles": {
+      "status": "pass",
+      "note": "Devanagari in Kohinoor Devanagari, frames inspected"
+    },
+    "limitations": [
+      "no human listening review",
+      "caption word timing is partly interpolated (match ratio 0.69-0.90)",
+      "Chatterbox needs an Apple-silicon Mac (about 5 GB)"
+    ]
+  },
+  "hi-en": {
+    "end_to_end_render": {
+      "status": "pass",
+      "jobs": [
+        "sample-ml-hien-001"
+      ],
+      "note": "voice, compose, render, qa"
+    },
+    "automated_tests": {
+      "status": "pass",
+      "where": "tests/test_lang.py"
+    },
+    "human_audio_review": {
+      "status": "not-done"
+    },
+    "unicode_subtitles": {
+      "status": "pass",
+      "note": "mixed Devanagari and Latin captions, frames inspected"
+    },
+    "max_status": {
+      "status": "experimental",
+      "reason": "segment-level routing was not evaluated, one benchmark sample cannot separate the mixed-script and transliteration policies, and Chatterbox misread one English term ('fail')"
+    },
+    "limitations": [
+      "Roman-script Hinglish is not supported (Devanagari required)",
+      "no human listening review",
+      "one benchmark sample"
+    ]
+  },
+  "or": {
+    "end_to_end_render": {
+      "status": "not-run",
+      "note": "no TTS backend can run: both candidates are gated and need PyTorch"
+    },
+    "automated_tests": {
+      "status": "partial",
+      "where": "tests/test_lang.py (routing, script validation, blocked-backend error); no audio tests are possible"
+    },
+    "human_audio_review": {
+      "status": "not-done",
+      "note": "needs a fluent Odia speaker once audio exists"
+    },
+    "limitations": [
+      "no working TTS: IndicF5 and Indic Parler-TTS are gated on Hugging Face and need PyTorch (owner approval)",
+      "no ASR: whisper.cpp has no Odia language id; Vaani Odia Whisper needs conversion",
+      "Sarvavox Odia publishes no weights; MMS-TTS-ory is CC-BY-NC (excluded for monetized video)"
+    ],
+    "unicode_subtitles": {
+      "status": "pass",
+      "note": "glyph/layout test with SILENT placeholder audio (not narration): Odia headline, caption highlight and steps render with intact conjuncts in Oriya Sangam MN; hyperframes lint 0 errors; text correctness not reviewed by a fluent speaker",
+      "frames": "experiments/multilingual/render/odia_glyph_test.png"
+    }
+  }
+}

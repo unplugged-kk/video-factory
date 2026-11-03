@@ -1,0 +1,21 @@
+{
+  "note": "Original narration written for this benchmark. Same meaning in three registers. Reference transcripts are the exact input text.",
+  "samples": {
+    "en": {
+      "lang": "en",
+      "text": "A Kubernetes pod is the smallest unit you can deploy. It can hold one or more containers that share the same network and storage. If a pod fails, the scheduler starts a new one on a healthy node.",
+      "technical_terms": ["Kubernetes", "pod", "containers", "network", "storage", "scheduler", "node"]
+    },
+    "hi": {
+      "lang": "hi",
+      "text": "कुबेरनेट्स में पॉड सबसे छोटी इकाई है जिसे आप डिप्लॉय कर सकते हैं। एक पॉड में एक या उससे ज़्यादा कंटेनर हो सकते हैं, जो एक ही नेटवर्क और स्टोरेज साझा करते हैं। अगर कोई पॉड फेल हो जाए, तो शेड्यूलर एक स्वस्थ नोड पर नया पॉड शुरू कर देता है।",
+      "technical_terms": ["कुबेरनेट्स", "पॉड", "कंटेनर", "नेटवर्क", "स्टोरेज", "शेड्यूलर", "नोड"]
+    },
+    "hi-en": {
+      "lang": "hi-en",
+      "text": "Kubernetes में pod सबसे छोटी unit है जिसे आप deploy कर सकते हैं। एक pod में एक या उससे ज़्यादा container हो सकते हैं, जो same network और storage share करते हैं। अगर कोई pod fail हो जाए, तो scheduler एक healthy node पर नया pod start कर देता है।",
+      "technical_terms": ["Kubernetes", "pod", "container", "network", "storage", "scheduler", "node", "deploy", "fail"]
+    }
+  },
+  "reference_voice_text_hi": "नमस्ते, यह एक छोटा सा परीक्षण है। आज हम सीखेंगे कि सर्वर कैसे काम करते हैं, और हर कदम को आसान भाषा में समझाएँगे। ध्यान से सुनिए, क्योंकि हर बात का अपना महत्व है।"
+}

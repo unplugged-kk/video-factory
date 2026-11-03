@@ -1,0 +1,39 @@
+# Hinglish narration (Hindi with English technical terms). Text policy translit_known: lexicon terms become Devanagari for the voice;
+# captions keep the script's own spelling. Sample content, never published.
+content_id: sample-ml-hien-001
+title: "Kubernetes में pod क्या है"
+thumb_text: "POD क्या है"
+description: "Kubernetes pod, container और scheduler, Hinglish में।"
+tags: [kubernetes, hinglish, devops]
+format: "9:16"
+kind: short
+language: hi-en
+visual_style: {id: clean-explainer, seed: 5}
+script:
+  - say: "Kubernetes में pod सबसे छोटी unit है जिसे आप deploy कर सकते हैं।"
+    headline: "Pod क्या है"
+    tag: Intro
+  - say: "एक pod में एक या उससे ज़्यादा container हो सकते हैं, जो same network और storage share करते हैं।"
+    headline: "Containers साथ में"
+    tag: Structure
+    visual:
+      type: diagram
+      nodes:
+        - {id: pod, label: Pod}
+        - {id: c1, label: Container 1}
+        - {id: c2, label: Container 2}
+        - {id: st, label: Shared storage}
+      edges:
+        - [pod, c1]
+        - [pod, c2]
+        - [c1, st]
+        - [c2, st]
+  - say: "अगर कोई pod fail हो जाए, तो scheduler एक healthy node पर नया pod start कर देता है।"
+    headline: "Fail होने पर"
+    tag: Recovery
+    visual:
+      type: steps
+      steps: [Pod fail होता है, Scheduler node चुनता है, नया pod start होता है]
+  - say: "अगले video में हम देखेंगे कि service, traffic को pod तक कैसे पहुँचाती है।"
+    headline: "Next: Service"
+    tag: Next

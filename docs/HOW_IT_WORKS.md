@@ -151,7 +151,7 @@ Working: the Track A pipeline, Kokoro voice, whisper captions, multi-renderer ar
 New and in shadow mode: `production/sheet.py` (timeline-labelled contact sheets, `sheet/1`) and `production/timeline.py` (`timeline/1`). Nothing imports the timeline yet, and the labelled sheet needs an ffmpeg built with `drawtext`: the `/opt/homebrew` build on this Mac has no freetype, so there it fails closed and the plain `preview --sheet` is the fallback. `--allow-unlabelled` produces an unlabelled sheet, which is not the same artifact; the labelled path enters the QA workflow only after a labelled sheet has been generated on this Mac and its labels inspected. Nothing invokes the timeline: `visual_gate captions --timing` reads scenes with `start`/`end`, so a `timeline/1` file (`t0`/`t1`) yields no windows and a misleading `visible_ratio: 0.0`. `visual scenes --timing` is the tool that does accept `t0`.
 Built but not wired into the builder: scene-plan consumption (Track B composition is agent-built).
 Tested only as a dry run: the `video-director` plan for "What Happens When an AI Agent Uses a Tool?" (`workspace/experiments/m2-director-dryrun-001/`, not rendered).
-Not built: a YouTube uploader and OAuth, multi-platform publishing, niche discovery, analytics ingestion, thumbnails, Odia/Hindi voices, automatic skill triggering tests.
+Not built: a YouTube uploader and OAuth, multi-platform publishing, niche discovery, analytics ingestion, thumbnails, Odia, a human-reviewed Hindi voice (Hindi/Hinglish generation exists: docs/MULTILINGUAL.md), automatic skill triggering tests.
 
 ## 11. Recommended next steps
 1. M3: build the dry-run plan for real (voice, alignment, composition, lint, two renders, visual QA) to test legibility and cue timing.

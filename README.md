@@ -7,7 +7,7 @@ every stage in a SQLite ledger, and refuses to publish without a gate.
 **New here, or an agent?** [AGENTS.md](AGENTS.md) is the contract every coding agent follows (gates, hard
 stops, the production loop). Then read [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) for how the factory works
 end to end and [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the step-by-step rules. Driving it from Cursor:
-[docs/CURSOR.md](docs/CURSOR.md).
+[docs/CURSOR.md](docs/CURSOR.md). Hindi and Hinglish narration (language routing, ASR models, benchmark, limits): [docs/MULTILINGUAL.md](docs/MULTILINGUAL.md).
 
 ```bash
 ./scripts/bootstrap-mac.sh                      # idempotent installs + doctor

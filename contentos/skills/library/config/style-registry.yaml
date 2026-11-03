@@ -1,0 +1,57 @@
+version: 1
+purpose: "Starter registry; reconcile with the live Video Factory design library before use."
+selection:
+  mode: "recommend_then_approve"
+  avoid_superficial_variants: true
+  deterministic_rendering: true
+styles:
+  - id: technical-explainer
+    label: "Clean Technical Explainer"
+    use_for: ["concepts", "architecture", "how-it-works", "cloud", "Kubernetes"]
+    signature: ["clear hierarchy", "diagram-led composition", "progressive disclosure", "restrained motion"]
+    scene_families: ["animated-diagram", "callout", "comparison", "step-sequence"]
+  - id: code-first
+    label: "Code-First Developer Tutorial"
+    use_for: ["programming", "CLI", "debugging", "configuration"]
+    signature: ["readable code panels", "terminal steps", "highlighted lines", "execution-result transitions"]
+    scene_families: ["code-reveal", "terminal-demo", "diff-view", "callout"]
+  - id: cinematic-documentary
+    label: "Cinematic Tech Documentary"
+    use_for: ["technology history", "industry stories", "AI narratives"]
+    signature: ["dramatic framing", "controlled camera movement", "narrative reveals", "atmospheric but legible visuals"]
+    scene_families: ["hero-shot", "timeline", "visual-metaphor", "reveal"]
+  - id: kinetic-type
+    label: "Kinetic Typography"
+    use_for: ["short hooks", "definitions", "punchy summaries"]
+    signature: ["typography is the primary visual", "word emphasis tied to narration", "rhythmic but readable movement"]
+    scene_families: ["word-reveal", "type-transition", "emphasis-card"]
+  - id: editorial-collage
+    label: "Editorial / Collage"
+    use_for: ["research summaries", "product stories", "opinion explainers"]
+    signature: ["layered paper/editorial composition", "cutout transitions", "annotations", "deliberate texture"]
+    scene_families: ["collage-build", "annotated-image", "split-comparison"]
+  - id: data-visualization
+    label: "Data and System Visualization"
+    use_for: ["metrics", "data flows", "distributed systems", "processes"]
+    signature: ["accurate relationships", "animated paths", "measured chart reveals", "clear labels"]
+    scene_families: ["flow-diagram", "chart-reveal", "timeline", "network-animation"]
+  - id: illustrated-story
+    label: "Illustrated Story"
+    use_for: ["fiction", "folk stories", "educational narrative"]
+    signature: ["consistent character sheets", "scene continuity", "illustration-led motion", "narrative staging"]
+    scene_families: ["character-action", "establishing-scene", "dialogue", "payoff"]
+  - id: music-lyric
+    label: "Music and Lyric Visuals"
+    use_for: ["user-provided songs", "lyric videos", "audio visualizers"]
+    signature: ["audio-synchronized motion", "measured beat or word timing", "readable lyric treatment"]
+    scene_families: ["lyric-reveal", "beat-pulse", "visualizer", "line-transition"]
+  - id: news-editorial
+    label: "News / Report"
+    use_for: ["news explainers", "event summaries", "briefings"]
+    signature: ["source-led facts", "clear timestamps", "neutral visual hierarchy", "visible source context"]
+    scene_families: ["headline", "timeline", "quote-card", "fact-graphic"]
+  - id: experimental-motion
+    label: "Experimental Motion"
+    use_for: ["style experiments", "abstract concepts", "visual tests"]
+    signature: ["explicit experiment hypothesis", "controlled motion language", "measurable review criteria"]
+    scene_families: ["procedural-animation", "morph", "shader-treatment", "camera-study"]

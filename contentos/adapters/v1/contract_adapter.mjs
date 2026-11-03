@@ -15,6 +15,21 @@ export const KOKORO_VOICE_IDS = new Set(
   JSON.parse(readFileSync(new URL("../../kokoro_voice_ids.json", import.meta.url), "utf8")),
 );
 
+/** Machine-readable capability matrix written by `python -m contentos.lang matrix --write`. Read at call time so a refresh needs no restart. */
+const CAPS_URL = new URL("../../../config/language-capabilities.json", import.meta.url);
+
+export function loadLanguageCaps(url = CAPS_URL) {   // url is a seam for tests; production always reads the repo snapshot
+  return JSON.parse(readFileSync(url, "utf8"));
+}
+
+/** Share of letters (and combining marks) that fall in the language's Unicode ranges, as the Python validator computes it. */
+export function scriptShare(text, ranges) {
+  const bounds = ranges.map((r) => r.split("-").map((h) => parseInt(h, 16)));
+  const letters = [...text.normalize("NFC")].filter((c) => /[\p{L}\p{M}]/u.test(c));
+  if (!letters.length || !bounds.length) return 0;
+  return letters.filter((c) => bounds.some(([a, b]) => c.codePointAt(0) >= a && c.codePointAt(0) <= b)).length / letters.length;
+}
+
 const JOB_ID_RE = /^cfvg-[1-9][0-9]{0,9}$/;
 
 const QUALITY_TO_HYPERFRAMES = {
@@ -62,9 +77,33 @@ export function adaptV1Contract(raw, opts = {}) {
     return permanent("voiceless_not_supported", "voiceless jobs are not supported; voice.enabled must be true");
   }
 
-  const voiceId = typeof voice.id === "string" && voice.id.trim() ? voice.id.trim() : "af_heart";
-  if (!KOKORO_VOICE_IDS.has(voiceId)) {
+  // Language: absent means English and takes exactly the original path. Others are gated by the capability matrix.
+  const langField = record.language;
+  const languageCode = langField === undefined || langField === null ? "en" : typeof langField === "string" ? langField : String(langField?.code ?? "");
+  let caps = null;
+  if (languageCode !== "en") {
+    let matrix;
+    try {
+      matrix = opts.languageCaps ?? loadLanguageCaps(opts.languageCapsUrl);
+    } catch (e) {
+      return permanent("language_matrix_unavailable", `cannot read config/language-capabilities.json: ${e.message}`);
+    }
+    caps = matrix.languages?.[languageCode];
+    if (!caps) {
+      return permanent("unsupported_language", `language "${languageCode.slice(0, 12)}" is not supported; supported: ${["en", ...Object.keys(matrix.languages ?? {}).filter((k) => k !== "en")].join(", ")}`);
+    }
+    if (caps.status === "blocked") {
+      return permanent("language_blocked", `${caps.name} (${languageCode}) cannot be produced on this factory yet: ${String(caps.status_reason).slice(0, 400)}`);
+    }
+  }
+
+  const defaultVoice = caps ? caps.default_voice : "af_heart";
+  const voiceId = typeof voice.id === "string" && voice.id.trim() ? voice.id.trim() : defaultVoice;
+  if (!caps && !KOKORO_VOICE_IDS.has(voiceId)) {
     return permanent("unknown_voice_id", `Kokoro voice id "${voiceId}" is not in the factory allowlist`);
+  }
+  if (caps && !caps.voices.includes(voiceId)) {
+    return permanent("invalid_voice", `voice "${voiceId}" is not valid for ${caps.name}; valid: ${caps.voices.join(", ")}`);
   }
 
   const render = record.render && typeof record.render === "object" ? record.render : {};
@@ -85,9 +124,21 @@ export function adaptV1Contract(raw, opts = {}) {
     brief,
     script: record.script ?? null,
     storyboard: record.storyboard ?? null,
+    language: languageCode,
   });
   if (!script.length) {
     return permanent("empty_derivation", "scene derivation produced no script lines");
+  }
+  if (caps && caps.subtitle.min_script_share > 0) {
+    const bad = script
+      .map((ln, i) => [i + 1, scriptShare(ln.say, caps.subtitle.unicode_ranges)])
+      .filter(([, share]) => share < caps.subtitle.min_script_share);
+    if (bad.length) {
+      return permanent(
+        "script_language_mismatch",
+        `the script is not in ${caps.name}: scene ${bad.map(([n, s]) => `${n} (${Math.round(s * 100)}% ${caps.subtitle.script})`).join(", ")}; needs at least ${Math.round(caps.subtitle.min_script_share * 100)}% of letters in ${caps.subtitle.script} script`,
+      );
+    }
   }
 
   const advisoryDurationMs =
@@ -104,6 +155,7 @@ export function adaptV1Contract(raw, opts = {}) {
     title,
     format,
     voice: voiceId,
+    ...(caps ? { language: languageCode } : {}),
     script,
     /** Passed through to render stage by factory worker (not standalone pipeline today). */
     _v1_hyperframes_quality: hyperframesQuality,
@@ -114,6 +166,8 @@ export function adaptV1Contract(raw, opts = {}) {
     jobId,
     format,
     voiceId,
+    language: languageCode,
+    languageStatus: caps ? caps.status : "production-ready",
     contractRenderQuality: contractQuality,
     hyperframesQuality,
     advisoryDurationMs,

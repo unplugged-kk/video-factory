@@ -4,10 +4,16 @@ sequence alignment, so an ASR insertion/deletion shifts only the words around it
 Also reports a word error rate so a bad transcript (wrong audio, wrong script) fails loudly rather than drifting."""
 import difflib
 import re
+import unicodedata
 
 
 def norm(w):
-    return re.sub(r"[^a-z0-9']+", "", w.lower())
+    w = w.lower()
+    if w.isascii():                                   # English path: byte-for-byte the original behaviour
+        return re.sub(r"[^a-z0-9']+", "", w)
+    # other scripts: keep letters, combining marks (Devanagari matras) and digits; fold the nukta so ज़/ज match
+    w = unicodedata.normalize("NFC", w).replace("\u093c", "")
+    return "".join(c for c in w if c == "'" or unicodedata.category(c)[0] in "LMN")
 
 
 def wer(ref, hyp):
@@ -24,11 +30,12 @@ def wer(ref, hyp):
     return prev[-1] / len(a)
 
 
-def align_words(script_words, asr):
+def align_words(script_words, asr, fold=None):
     """script_words: list[str]. asr: list of {text,start,end} (hyperframes transcript.json).
     Returns (words, stats): words = [(word, start, end)] monotonic, one per script word."""
-    a = [norm(w) for w in script_words]
-    b = [norm(x["text"]) for x in asr]
+    f = fold or (lambda x: x)                         # fold: optional script folding (Latin terms <-> Devanagari) for non-English
+    a = [norm(f(w)) for w in script_words]
+    b = [norm(f(x["text"])) for x in asr]
     sm = difflib.SequenceMatcher(a=a, b=b, autojunk=False)
     t = [None] * len(a)
     matched = 0

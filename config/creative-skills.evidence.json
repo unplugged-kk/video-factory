@@ -1,0 +1,17 @@
+{
+ "blueprint-explainer": {
+  "fidelity": "approximate",
+  "job": "sample-skill-blueprint-explainer",
+  "note": "router->plan->pipeline(voice,compose,render,qa), kafka script 9:16 34 s, style blueprint-architecture v2 (light drafting paper). qa 8 pass + frozen_frames WARN (static holds, see report 10); Rule A pass 3/6; Rule B pass vs all 5 shipped (v1 dark navy failed it; the look was changed, the rule was not); hyperframes lint pass; frames inspected by the builder (not independent). Also run with language hi via router: sample-skill-bp-hi (Rule A 3/4, Rule B pass)"
+ },
+ "news-report": {
+  "fidelity": "approximate",
+  "job": "sample-skill-news-report",
+  "note": "router->plan->pipeline(voice,compose,render,qa) on examples/styles/kafka-events script, 9:16, 34 s. qa 8 pass + documented frozen_frames WARN; RuleA pass 3 / 6; hyperframes lint pass; frames inspected"
+ },
+ "personal-explainer": {
+  "fidelity": "approximate",
+  "job": "sample-skill-personal-explainer",
+  "note": "router->plan->pipeline(voice,compose,render,qa) on examples/styles/kafka-events script, 9:16, 34 s. qa 8 pass + documented frozen_frames WARN; RuleA pass 3 / 6; hyperframes lint pass; frames inspected"
+ }
+}

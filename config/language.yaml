@@ -1,0 +1,95 @@
+# Language routing registry (contentos.lang). One place that says which TTS backend, voice, ASR model and text policy
+# each narration language uses. English keeps the original Kokoro + whisper small.en path unchanged.
+# Specs select a language with `language: en | hi | hi-en | auto` (default: default_language). Per-line `lang:` overrides one
+# script line. Routing happens per narration line / video, never per token.
+version: 1
+default_language: en
+
+paths:                                   # ~ is expanded; nothing here is inside the repo
+  mlx_python: ~/.contentos/venv-mlx-audio/bin/python   # isolated mlx-audio 0.6.4 venv (not the production venv)
+  hf_home: ~/.cache/contentos/huggingface              # Hugging Face cache for the Chatterbox checkpoint (~3 GB)
+  whisper_models: ~/.cache/hyperframes/whisper/models  # the directory hyperframes already uses
+  voices: ~/.contentos/voices                          # reference recordings for voice-conditioned TTS
+
+# Per-language script rules, used by script validation, subtitle fonts and the cloud adapter. min_script_share is the minimum share
+# of LETTERS that must fall in unicode_ranges (hex code point ranges); Latin technical terms inside Hindi/Odia text are allowed.
+language_profiles:
+  en:    {name: English,  script: latin,      unicode_ranges: [],          min_script_share: 0.0, fonts: [],                                         normalization: NFC}
+  hi:    {name: Hindi,    script: devanagari, unicode_ranges: ["0900-097F"], min_script_share: 0.6, fonts: ["Kohinoor Devanagari", "Devanagari Sangam MN"], normalization: NFC}
+  hi-en: {name: Hinglish, script: devanagari, unicode_ranges: ["0900-097F"], min_script_share: 0.3, fonts: ["Kohinoor Devanagari", "Devanagari Sangam MN"], normalization: NFC,
+          note: "Hindi words in Devanagari with English terms in Latin. Roman-script Hindi is not supported (the voice needs Devanagari)."}
+  or:    {name: Odia,     script: odia,       unicode_ranges: ["0B00-0B7F"], min_script_share: 0.6, fonts: ["Oriya Sangam MN", "Noto Sans Oriya"],        normalization: NFC}
+
+languages:
+  en:    {tts: kokoro,        asr: whisper_small_en, asr_language: en, text_policy: as_is,          fallback_tts: null}
+  hi:    {tts: chatterbox_v3, asr: whisper_turbo_q5, asr_language: hi, text_policy: as_is,          fallback_tts: null}
+  # Hinglish: evidence in docs/MULTILINGUAL.md. Known lexicon terms are transliterated to Devanagari, unknown Latin words are
+  # passed through (Chatterbox pronounces them natively). `mixed` passes everything through unchanged.
+  hi-en: {tts: chatterbox_v3, asr: whisper_turbo_q5, asr_language: hi, text_policy: translit_known, fallback_tts: null}
+
+  # Odia: no working backend yet. Both TTS candidates are gated on Hugging Face and need PyTorch (a major framework install that needs the
+  # owner's approval); see tts_backends.indic_parler_odia / indic_f5_odia and docs/MULTILINGUAL.md. Captions use measured audio duration
+  # with even word spacing, labelled unverified, because no ASR model can transcribe Odia here (timing_fallback).
+  or:    {tts: indic_parler_odia, asr: odia_asr_vaani_whisper, asr_language: or, text_policy: as_is, fallback_tts: null, timing_fallback: even_spacing}
+
+auto:                                    # `language: auto` is accepted only with reliable metadata
+  accept_declared: true                  # spec.language_metadata = {language: hi, source: declared}
+  min_detected_confidence: 0.9           # spec.language_metadata = {language: hi, source: detected, confidence: 0.95}
+
+tts_backends:
+  kokoro:                                # the production English backend: `hyperframes tts` + loudnorm, exactly as before
+    kind: hyperframes_cli
+    languages: [en]
+    default_voice: af_heart
+  kokoro_hindi:                          # Kokoro's own Hindi voices (installed in voices-v1.0.bin). Opt-in only: poor on mixed script
+    kind: hyperframes_cli
+    languages: [hi]
+    lang_arg: hi
+    voices: [hf_alpha, hf_beta, hm_omega, hm_psi]
+    default_voice: hf_alpha
+  chatterbox_v3:                         # Chatterbox Multilingual v3, MLX. MIT. This checkpoint has NO default voice: a reference is required
+    kind: mlx_worker
+    languages: [hi, hi-en]
+    lang_code: hi
+    model: mlx-community/chatterbox-multilingual-v3
+    exaggeration: 0.5
+    default_voice: hindi-default
+    voice_profiles:
+      hindi-default:
+        reference: ~/.contentos/voices/hi_reference.wav
+        provenance: "synthetic: Kokoro hf_alpha speaking original text (no real person's voice is cloned)"
+
+  indic_parler_odia:                     # candidate 1 for Odia. Apache-2.0 metadata, gated on HF (token + accepted terms), 3.75 GB, PyTorch
+    kind: torch_worker
+    languages: [or]
+    model: ai4bharat/indic-parler-tts
+    blocked: "not installed: needs (1) a Hugging Face token whose account accepted the model terms and (2) an isolated PyTorch venv, which is a major environment change that needs owner approval"
+    default_voice: odia-default
+    voice_profiles:
+      odia-default: {description: "Parler prompt-described voice, no reference recording needed (to be verified)", provenance: "unverified"}
+  indic_f5_odia:                         # candidate 2 for Odia. MIT, gated, 1.4 GB, PyTorch, needs a reference recording AND its transcript
+    kind: torch_worker
+    languages: [or]
+    model: ai4bharat/IndicF5
+    blocked: "not installed: gated on Hugging Face and needs PyTorch (owner approval); also needs an Odia reference recording and its exact transcript"
+    default_voice: odia-reference
+    voice_profiles:
+      odia-reference: {reference: ~/.contentos/voices/or_reference.wav, provenance: "none yet: needs a consenting Odia speaker"}
+
+asr_models:
+  whisper_small_en:                      # existing English model, unchanged
+    file: ggml-small.en.bin
+    size_bytes: 487614201
+    multilingual: false
+  whisper_turbo_q5:                      # official whisper.cpp artifact, MIT
+    file: ggml-large-v3-turbo-q5_0.bin
+    size_bytes: 574041195
+    sha256: 394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2
+    source: https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin
+    multilingual: true
+  odia_asr_vaani_whisper:                # Odia ASR candidate: ungated, Apache-2.0, 6.2 GB PyTorch checkpoint; whisper.cpp would need a ggml conversion
+    file: ggml-vaani-odia.bin            # NOT PRESENT. whisper.cpp 1.9.5 has no Odia language id, so the stock turbo model cannot be used for `or`
+    size_bytes: 0
+    multilingual: true
+    source: https://huggingface.co/ARTPARK-IISc/whisper-large-v3-vaani-odia
+    optional: true
