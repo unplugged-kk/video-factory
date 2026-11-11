@@ -18,8 +18,9 @@ Run, in order, and keep the raw output:
    when the labels are the point of the audit.
 4. Rendered-frame gate for what lint cannot see:
    `python -m contentos.production.visual_gate layers <target>`,
-   `... captions <video>`,
-   `... transitions <video> --at <seconds>` (repeat `--at` per cut), `... log <render log>`.
+   `... captions <video> --project <job>/project --timing <timing.json>` (the timing file is required; a
+   `timeline/1` file is not read here — use `visual scenes --timing` for `t0`),
+   `... transitions <video> --at start:duration[:kind]` (repeat `--at` per cut), `... log <render log>`.
 5. Apply the `explainer-visual-qa` skill and score the video as an **independent** critic — you did not
    build it, so you write the report. Validate it with
    `python -m contentos.production.critic report.json`; a `reject` or `revise` verdict means it goes back to

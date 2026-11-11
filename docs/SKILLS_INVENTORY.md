@@ -8,8 +8,8 @@ listed as usable only when its `SKILL.md` exists and its dependencies were check
 
 | Location | Count | Role |
 |---|---|---|
-| `.claude/skills/` | 13 dirs: 10 factory-owned + 3 pinned upstream + `_upstream` | **canonical project skills** |
-| `.agents/skills/` | 13 dirs (a mirror of `.claude/skills` + 4 generated `source-command-*`) | per-agent mirror, gitignored; never edit as source |
+| `.claude/skills/` | 14 dirs: 10 factory-owned + 3 pinned upstream + `_upstream` | **canonical project skills** |
+| `.agents/skills/` | 13 dirs: a stale mirror + 4 generated `source-command-*`; missing the 5 universal-entry skills | per-agent mirror, gitignored; regenerate, never edit as source |
 | `.commandcode/skills/` | 16 | Command Code-specific pack, including `hyperframes-creative`, `hyperframes-registry`, `media-use`; invisible to Claude Code |
 | `~/.claude/skills/` | 633 | global personal pack |
 | `~/.agents/skills/` | 633 | same personal pack, mirrored for other agents |

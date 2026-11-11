@@ -154,7 +154,8 @@ fallback.
 Missing by design: publish, `PUBLISH_APPROVED`, `--allow-paid`, `--approve-private`, cancel, worker start/stop,
 storage `--apply`, research, competitor, ContentForge.
 
-Known Studio issues: requeue preserves a row's earlier `--approve-private` flag without showing it; the SSE
+The jobs list tolerates legacy project folders (they are skipped; migrate with `storage adopt`). Known Studio
+issues: requeue preserves a row's earlier `--approve-private` flag without showing it; the SSE
 and `/health?refresh=1` read endpoints are unauthenticated (local work amplification only, no data
 exfiltration); the Review tab enables approval when a video **or** frames exist, which is weaker than the
 screen spec. The log-stage, duration and storage-label field mismatches and the stale polling watcher were
@@ -204,11 +205,45 @@ npx playwright install && npx playwright test            # browser binaries are 
 ```
 
 The Python suite is hermetic; skips name their precondition (pinned HyperFrames skills, Remotion, ffmpeg,
-gitignored fixtures). Baseline before the recovery: 1023 passed, 8 skipped; after the fixes: 1083 passed, 8 skipped. The Node suite
+gitignored fixtures). Baseline before the recovery: 1023 passed, 8 skipped; after the fixes: 1084 passed, 8 skipped. The Node suite
 has 91 tests (25 UI + the ContentForge worker). Playwright has 6 journeys against fixture data.
 
-Rendered-video verification for this mission: see the final delivery report; the commands are
-`./contentos.sh qa VIDEO.mp4` and `./contentos.sh preview VIDEO --at 2,10,30 --out DIR --sheet`.
+**Rendered sample (2026-11-11).** `recovery-smoke-20261111`, a two-line English 9:16 short, ran all nine
+stages on this Mac (`pipeline run --approve-private`, sample id only): brief 0.0 s, script 0.1 s, voice 4.2 s,
+compose 2.1 s, render 11.9 s, qa 0.4 s, package 0.1 s, export 0.5 s, publish 0.0 s. Job:
+`~/Desktop/VideoFactory-Workspace/jobs/2026/11/11/recovery-smoke-20261111/`.
+
+QA: 8 PASS and one expected WARN — `render_integrity 7.3 s`, `resolution 1080x1920`, `frame_rate 30`, `audio
+aac`, `loudness -13.7 LUFS`, `clipping -1.5 dBFS`, `black_frames 0`, `frozen_frames 1 segment >3 s` (the
+documented text-slide WARN). Export:
+`ready/recovery/2026/11/recovery-smoke-test__recovery-smoke-20261111.mp4` plus its `.publish.json`; publish
+returned `DRY_RUN` with `publish.enabled=false`.
+
+Frame inspected at 5.0 s: 1080x1920, dark gradient, `2 / 2` tag, white "Local only" headline, and the spoken
+caption with the word "render" highlighted in amber. Legible at phone size; no clipping or black frame.
+
+Two visual-gate calibration findings, not render failures: `visual_gate safezone --times 2,5` returns
+`ok:false` because the legacy template's default bottom padding is 307 px (16% of 1920) while the gate's
+default bottom zone is 350 px; the documented 460 px applies only when `captions_hook` is enabled.
+`visual_gate transitions --at 3.7:0.4` also returns `ok:false` for the legacy crossfade; only a `blend`
+verdict is `ok`, and a slow fade needs the real cut window and the skill's `--at start:duration[:kind]`
+form. Read the verdict and frames, not just the boolean.
+
+**Hindi sample (2026-11-11).** `contentos.lang speak --lang hi` produced 3.44 s, 24 kHz mono PCM through
+`mlx-community/chatterbox-multilingual-v3`, 3.23 s generation, 4.64 GB peak, synthetic reference (no real
+person's voice). `contentos.lang transcribe --lang hi` returned in 0.84 s but the text was
+"कुबैनिट्स में पॉट सबसे छुटी ही काई है।" — real ASR spelling errors. The pipeline keeps the script's spelling
+and uses ASR only for timing, but this is why Hindi/Hinglish stay `experimental` until a fluent listener
+reviews them.
+
+**Full Hindi render (2026-11-11).** `recovery-hi-smoke-20261111`, two Devanagari lines, ran all nine stages:
+brief 0.0 s, script 0.1 s, voice 10.5 s, compose 1.8 s, render 10.9 s, qa 0.4 s, package 0.0 s, export 0.5 s.
+QA: 8 PASS and the expected `frozen_frames` WARN; `loudness -11.9 LUFS`, `clipping -1.5 dBFS`. The frame at
+4.0 s shows the Devanagari headline "कंटेनर" and the spoken caption with "पॉड" highlighted; conjuncts and
+matras render correctly and nothing clips. `audio/voice-languages.json` records `hi: experimental` and the
+synthetic reference provenance. Export:
+`ready/recovery/2026/11/recovery-hi-smoke-20261111__recovery-hi-smoke-20261111.mp4`. This proves the language
+path, not narration quality: no fluent listener has approved the audio.
 
 ## 12. Known bugs and debt (not fixed here)
 
@@ -238,6 +273,12 @@ Rendered-video verification for this mission: see the final delivery report; the
 14. **No uploader, thumbnails, analytics, niche discovery, or multi-platform packaging.**
 15. **`metadata.yaml` is produced but not consumed by export**; the sidecar takes title/description/tags from
     the manifest.
+16. **Legacy project folders are skipped by the Studio jobs list.** `/api/v1/jobs` used to crash with an empty
+    reply on the old `pilot-001-agent-tool-use` manifest; it now skips any folder whose manifest is not
+    `jobmanifest/1`. Run `contentos storage adopt` to migrate one deliberately.
+17. **Visual-gate calibration.** `safezone` defaults to a 350 px bottom zone while the legacy template uses
+    307 px; the 460 px figure is feature-gated. `transitions` marks only `blend` as `ok`, so a slow crossfade
+    can read `ok:false`. These are heuristic signals, not render failures; inspect the frame and the verdict.
 
 ## 13. Roadmap and next task
 

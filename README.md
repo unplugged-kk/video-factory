@@ -155,7 +155,7 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 | OpenMontage | running in Dory (Backlot :4750), no contentos adapter; manual handoff only |
 | Captions | word-highlight captions from whisper.cpp timings (warm 2.9 s per 27 s audio, WER 1.4% on synthetic speech) |
 | Multilingual (verified 2026-11-11) | English production-ready; Hindi and Hinglish `experimental` (generation and renders exist, no fluent listener has approved the audio); Odia `blocked`. `python -m contentos.lang doctor --require en,hi,hi-en` |
-| Creator Studio (verified 2026-11-11) | live on `127.0.0.1`, served by the stdlib server: `/api/v1` read models, digest-bound approvals, one-stage rerun with downstream invalidation, stage logs, SSE invalidation hints with polling fallback. 1083 pytest and 91 Node tests pass; the 6 Playwright journeys need `npx playwright install` first |
+| Creator Studio (verified 2026-11-11) | live on `127.0.0.1`, served by the stdlib server: `/api/v1` read models, digest-bound approvals, one-stage rerun with downstream invalidation, stage logs, SSE invalidation hints with polling fallback. 1084 pytest and 91 Node tests pass; the 6 Playwright journeys need `npx playwright install` first |
 | Studio spec validation (verified 2026-11-11) | `./contentos.sh validate SPEC` returns one JSON object: field errors plus a narration estimate. It checks the Studio's Track A field set, including `language` and per-line `lang`/`voice`; it is not a full pipeline-spec validator |
 | Niche discovery, analytics, multi-platform, thumbnails, n8n | planned, not built |
 
