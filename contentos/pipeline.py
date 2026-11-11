@@ -1,4 +1,4 @@
-"""Artifact-first pipeline. Every stage writes a durable file under <workspace>/jobs/YYYY/MM/<content_id>/
+"""Artifact-first pipeline. Every stage writes a durable file under <workspace>/jobs/YYYY/MM/DD/<content_id>/
 (the workspace is outside the repository; see contentos/storage.py) and one ledger row. Re-running skips stages whose artifact already exists (resume)."""
 import hashlib
 import html
@@ -643,13 +643,21 @@ def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
         ctx["log_path"] = log_path
         _append_log(log_path, f"\n--- stage {st} run {rid} ---\n")
         ledger.record(rid, cid, st, "-", "RUNNING", t0)   # in-flight marker for the dashboard
-        try:
-            if gate:
-                if approve_private and gate == "PRODUCTION_APPROVED":   # the composition did not exist when the private grant was made; bind it now
-                    cur = production_digest(d, spec)
-                    if cur and ledger.check_gate(cid, gate, cur)[0] != "ok":
-                        ledger.approve(cid, gate, **grant, subject_sha256=cur)
+        if gate:
+            if approve_private and gate == "PRODUCTION_APPROVED":   # the composition did not exist when the private grant was made; bind it now
+                cur = production_digest(d, spec)
+                if cur and ledger.check_gate(cid, gate, cur)[0] != "ok":
+                    ledger.approve(cid, gate, **grant, subject_sha256=cur)
+            try:
                 _check_gate(cid, gate, d, spec)
+            except Blocked as e:
+                # A gate refusal is not a failed stage: the existing sentinel is the reviewed artifact and must survive
+                # so a forced rerun cannot destroy work the gate just protected.
+                _append_log(log_path, f"[stage BLOCKED] {e}\n")
+                ledger.record(rid, cid, st, "-", "BLOCKED", t0, error=str(e))
+                report.append((st, f"BLOCKED: {e}", time.time() - t0))
+                break
+        try:
             prov, arts = FN[st](ctx)
             ledger.record(rid, cid, st, prov, "OK", t0, arts)
             _append_log(log_path, f"[stage OK provider={prov}]\n")

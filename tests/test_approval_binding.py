@@ -111,6 +111,16 @@ def test_edited_script_blocks_voice_and_names_both_digests(env):
     assert env.calls == []                                         # the voice stage never ran
 
 
+def test_blocked_gate_never_deletes_the_reviewed_artifact(env):
+    ledger.approve("ab1", "SCRIPT_APPROVED", subject_sha256=pipeline.script_digest(spec_dict()))
+    assert run(env, "voice")[0][1] == "OK"
+    wav = next(storage.workspace_root().glob("jobs/**/ab1/audio/01.wav"))
+    before = wav.read_bytes()
+    edit_spec(env, "Hello there my friend.")
+    assert run(env, "voice", force=True)[0][1].startswith("BLOCKED")
+    assert wav.exists() and wav.read_bytes() == before          # the gate protected it; a refusal must not delete it
+
+
 def test_reapproving_the_edited_script_passes(env):
     ledger.approve("ab1", "SCRIPT_APPROVED", subject_sha256=pipeline.script_digest(spec_dict()))
     edit_spec(env, "Hello there my friend.")
