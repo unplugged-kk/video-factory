@@ -24,6 +24,12 @@ playwright-report/
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
 
+# per-agent skill mirrors: generated from .claude/skills and .cursor/commands, never the source of truth.
+.agents/
+
+# local agent/session state
+*.ses
+
 # pinned third-party skills: reproducible from config/upstream-skills.lock.json (scripts/upstream_skills.py sync)
 .claude/skills/hyperframes-*/
 .claude/skills/_upstream/

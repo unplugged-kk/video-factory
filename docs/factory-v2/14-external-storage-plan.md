@@ -11,7 +11,7 @@ Written 2026-10-11 after inspecting the repository. Final behaviour is documente
 - QA already runs ffprobe/ffmpeg (`qa.run_qa`): integrity, resolution, fps, duration, audio, loudness, black and frozen frames. Publish is a dry run.
 
 ## 2. Changes
-1. `contentos/storage.py` (stdlib only): resolve and validate the workspace and publishing roots (env vars, then `config/storage.yaml`, then macOS defaults); never fall back to the repo; refuse roots inside the repo; job directories at `jobs/YYYY/MM/<job-id>/`; slug and job-id sanitising; atomic JSON writes; job manifest.
+1. `contentos/storage.py` (stdlib only): resolve and validate the workspace and publishing roots (env vars, then `config/storage.yaml`, then macOS defaults); never fall back to the repo; refuse roots inside the repo; job directories at `jobs/YYYY/MM/DD/<job-id>/`; slug and job-id sanitising; atomic JSON writes; job manifest.
 2. Route every hardcoded path through `storage`. Keep test seams (`ledger.WS`, `core.PROJECTS`, `mpt.PROJECTS`) working as optional overrides.
 3. Add an `export` stage between `package` and `publish`: validate the final video, stage it in `Video-Publishing/.staging/`, promote atomically into `ready/`, write the sidecar last, record the result in the manifest.
 4. `contentos/handoff.py`: what a scheduler needs (discover, claim, transition, archive) without touching factory state.

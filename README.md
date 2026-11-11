@@ -4,10 +4,12 @@ Local-first YouTube content pipeline for an Apple Silicon Mac. Thin Python CLI t
 tools you already have (hyperframes, ffmpeg, Kokoro, whisper.cpp, the `yt-*` Agent Skills), records
 every stage in a SQLite ledger, and refuses to publish without a gate.
 
-**New here, or an agent?** Set the machine up from [docs/AGENT_SETUP.md](docs/AGENT_SETUP.md), then read [docs/CAPABILITIES.md](docs/CAPABILITIES.md). [AGENTS.md](AGENTS.md) is the contract every coding agent follows (gates, hard
+**New here, or an agent?** Set the machine up from [docs/AGENT_SETUP.md](docs/AGENT_SETUP.md), then read [docs/CURRENT_STATE.md](docs/CURRENT_STATE.md) for the authoritative handover and [docs/CAPABILITIES.md](docs/CAPABILITIES.md) for what works today. [AGENTS.md](AGENTS.md) is the contract every coding agent follows (gates, hard
 stops, the production loop). Then read [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) for how the factory works
-end to end and [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the step-by-step rules. Driving it from Cursor:
-[docs/CURSOR.md](docs/CURSOR.md). Hindi and Hinglish narration (language routing, ASR models, benchmark, limits): [docs/MULTILINGUAL.md](docs/MULTILINGUAL.md).
+end to end and [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the step-by-step rules. The ticket-shaped plan is
+[docs/ROADMAP.md](docs/ROADMAP.md); the verified skill map is [docs/SKILLS_INVENTORY.md](docs/SKILLS_INVENTORY.md).
+Driving it from Cursor: [docs/CURSOR.md](docs/CURSOR.md). Hindi and Hinglish narration (language routing, ASR
+models, benchmark, limits): [docs/MULTILINGUAL.md](docs/MULTILINGUAL.md).
 
 ```bash
 ./scripts/bootstrap-mac.sh                      # Apple Silicon: English, Hindi, Hinglish
@@ -134,7 +136,7 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 - Schedulers read `ready/`, claim with `python -m contentos.handoff claim`, and own `.state/claims/`; agents do not edit sidecars or claim files.
 - Full guide: [docs/STORAGE.md](docs/STORAGE.md). Check setup with `./contentos.sh storage paths --check`.
 
-## Status (measured 2026-10-03, M5 Pro, 24 GB)
+## Status (measured 2026-11-11, M5 Pro, 24 GB)
 
 | Piece | State |
 |---|---|
@@ -152,8 +154,9 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 | MPT lane | live for `mpt.source: local` (full pipeline, QA all PASS, resumes, shows on the dashboard). Pexels/Pixabay/Coverr wired but UNTESTED: no key set, so the per-clip rights record is unverified |
 | OpenMontage | running in Dory (Backlot :4750), no contentos adapter; manual handoff only |
 | Captions | word-highlight captions from whisper.cpp timings (warm 2.9 s per 27 s audio, WER 1.4% on synthetic speech) |
-| Creator Studio (verified 2026-11-02) | live on `127.0.0.1`, served by the stdlib server: `/api/v1` read models, digest-bound approvals, one-stage rerun with downstream invalidation, stage logs, SSE invalidation hints with polling fallback. 884 pytest and 69 Node tests pass; the 6 Playwright journeys need `npx playwright install` first |
-| Studio spec validation (verified 2026-11-02) | `./contentos.sh validate SPEC` returns one JSON object: field errors plus a narration estimate. It checks the Studio's Track A field set, not every optional spec key |
+| Multilingual (verified 2026-11-11) | English production-ready; Hindi and Hinglish `experimental` (generation and renders exist, no fluent listener has approved the audio); Odia `blocked`. `python -m contentos.lang doctor --require en,hi,hi-en` |
+| Creator Studio (verified 2026-11-11) | live on `127.0.0.1`, served by the stdlib server: `/api/v1` read models, digest-bound approvals, one-stage rerun with downstream invalidation, stage logs, SSE invalidation hints with polling fallback. 1083 pytest and 91 Node tests pass; the 6 Playwright journeys need `npx playwright install` first |
+| Studio spec validation (verified 2026-11-11) | `./contentos.sh validate SPEC` returns one JSON object: field errors plus a narration estimate. It checks the Studio's Track A field set, including `language` and per-line `lang`/`voice`; it is not a full pipeline-spec validator |
 | Niche discovery, analytics, multi-platform, thumbnails, n8n | planned, not built |
 
 ## Known problems
@@ -161,7 +164,7 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 - `/usr/local/bin/ffmpeg` and `timeout` are x86_64 and die with "bad CPU type" (no Rosetta). `contentos.sh` puts `/opt/homebrew/bin` first. Remove the stale ones when convenient.
 - Template now has word captions but is still minimal (no brand styling, B-roll or thumbnails).
 - `frozen_frames` is a WARN on text slides; expected, tune in `config/quality.yaml`.
-- `validate` (and the Studio New Job form) accept only `content_id`, `title`, `format`, `voice`, `script`, `render`, `kind` and `platform_targets`. A full spec carrying `description`, `tags` or `thumb_text` is reported as unsupported even though `pipeline run` accepts those keys.
+- `validate` (and the Studio New Job form) accept only `content_id`, `title`, `format`, `voice`, `script`, `render`, `kind`, `platform_targets` and `language`; a script line may carry `say`, `headline`, `tag`, `lang` and `voice`. A full spec carrying `description`, `tags` or `thumb_text` is reported as unsupported even though `pipeline run` accepts those keys.
 - Playwright browser binaries are not installed on this Mac; `npx playwright install` is required before `npx playwright test`.
 - Old chatterbox voice-clone venv (`~/.voice-clone-venv`) and `~/Desktop/voice-sample.wav` are missing.
 

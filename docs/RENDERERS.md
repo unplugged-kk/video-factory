@@ -130,7 +130,7 @@ Two human/operator approval gates protect the production line:
 ./contentos.sh pipeline run path/to/spec.yaml
 
 # 5. Inspect QA metrics on the rendered MP4
-./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/<content_id>/video.mp4
+./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/DD/<content_id>/video.mp4
 ```
 
 ---

@@ -65,8 +65,8 @@ Skill-first: read `.claude/skills/video-production-orchestrator/SKILL.md` and fo
   then a hand-authored HyperFrames composition, render, independent visual QA. The builder does not consume
   scene plans yet, so an agent writes the composition with the HyperFrames skills.
 
-Render lanes are chosen by `render:` in the spec, and only two exist in code: `hyperframes` (default) and
-`mpt`. OpenMontage is a manual handoff, not a lane.
+Render lanes are chosen by `render:` in the spec, and three exist in code: `hyperframes` (default), `remotion`
+and `mpt`. OpenMontage is a manual handoff, not a lane.
 
 ## 4. Commands worth knowing
 
@@ -176,6 +176,9 @@ claim completion before the artifacts exist and the checks pass.
 
 | Question | Read |
 |---|---|
+| What exists now, what was recovered, and how to start as the next agent? | `docs/CURRENT_STATE.md` |
+| What should be built next, as independent tickets? | `docs/ROADMAP.md` |
+| Which skill should I use, and which one is broken or duplicated? | `docs/SKILLS_INVENTORY.md` |
 | How does the factory work end to end, and what is built vs. planned? | `docs/HOW_IT_WORKS.md` |
 | What must an agent do, step by step, with the copy-paste prompt? | `docs/AGENT_BRIEF.md` |
 | Storage, export, sidecar, scheduler contract | `docs/STORAGE.md` |
@@ -184,7 +187,7 @@ claim completion before the artifacts exist and the checks pass.
 | Skill design, known failures KF-001…KF-006, evidence | `docs/video-intelligence/` |
 | Program history, audits, licensing, platform limits | `docs/factory-v2/` |
 | Presets, the workflow selector, the old-spec migration map, verification evidence | `docs/generic-video/` |
-| Current uncommitted work on this branch | `git status` and `docs/video-intelligence/04-visual-reliability-gate.md` |
+| Current work recovered in the 2026-11-11 pass | `docs/CURRENT_STATE.md` and `git log` |
 
 ## 10. Known limits (verified 2026-10-11)
 

@@ -30,7 +30,7 @@ Both fail closed: do not compose over a failing check; change the look.
 User brief and owner decisions > `hyperframes-core` > `explainer-motion-craft` > `video-director` > this skill > official `hyperframes-animation`/`-keyframes`. Existing gates, `config/*.json` registries and the HyperFrames pin are not yours to change.
 
 ## Where things live
-Generated files go to `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<job>/`, finals to `$VIDEO_FACTORY_PUBLISH_DIR/ready/` through the `export` stage (`docs/STORAGE.md`). Run ledgers live in `<workspace>/intelligence/`. Nothing generated goes into Git.
+Generated files go to `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/DD/<job>/`, finals to `$VIDEO_FACTORY_PUBLISH_DIR/ready/` through the `export` stage (`docs/STORAGE.md`). Run ledgers live in `<workspace>/intelligence/`. Nothing generated goes into Git.
 
 ## References (load only what the phase needs)
 `decision-engine.md` (classes, format scoring, record) · `motion-selection.md` (purpose to technique) · `parallel-phases.md` · `quality-rubric.md` · `experiments.md` · `evolution.md` · `knowledge-base.md`.

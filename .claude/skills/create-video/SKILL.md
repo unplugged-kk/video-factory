@@ -14,7 +14,7 @@ Collect: objective, supplied files and links, language, audience, platform, dura
 ```
 ./contentos.sh videojob select [--intent create|edit|lyric|repurpose|assets|news] --input topic:"..." --input audio:song.mp3 --input lyrics:l.txt [--duration SECONDS]
 ```
-Exit 1 means a blocker (say what is needed); `warnings` must be repeated to the user. The result is the capability list, in order, with a reason for each. Run only those. Record the result in `videojob.json` (`videojob.new_job` / `videojob.write`) inside the job folder under `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<job>/`, never in the repo and never over an existing file.
+Exit 1 means a blocker (say what is needed); `warnings` must be repeated to the user. The result is the capability list, in order, with a reason for each. Run only those. Record the result in `videojob.json` (`videojob.new_job` / `videojob.write`) inside the job folder under `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/DD/<job>/`, never in the repo and never over an existing file.
 
 ## 3. Capabilities and their current state
 State is data, not prose: the selector prints each capability with `state` (`exists` or `planned`), the artifact that implements it (`by`), the reason it was chosen and any `note` limit. Run the command and report what it says instead of copying a list from here.

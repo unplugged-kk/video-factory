@@ -15,7 +15,7 @@
  * working on for VIDEO_FACTORY_STALE_MS goes back to queue/; a job taken over more than MAX_RECLAIMS times is failed.
  * SIGTERM/SIGINT stop the pipeline and leave the job in work/ for the next start.
  *
- * Test seams: VIDEO_FACTORY_WORKSPACE (default ~/Desktop/VideoFactory-Workspace, the same as the pipeline; jobs live in jobs/YYYY/MM/<id>),
+ * Test seams: VIDEO_FACTORY_WORKSPACE (default ~/Desktop/VideoFactory-Workspace, the same as the pipeline; jobs live in jobs/YYYY/MM/DD/<id>),
  * VIDEO_FACTORY_CONTENTOS (the launcher to run), VIDEO_FACTORY_POLL_MS, VIDEO_FACTORY_HEARTBEAT_MS,
  * VIDEO_FACTORY_STALE_MS, VIDEO_FACTORY_JOB_TIMEOUT_MS.
  * Delete with contentos/adapters/v1/ when contract v2 ships.

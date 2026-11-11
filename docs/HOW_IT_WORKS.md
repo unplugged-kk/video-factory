@@ -42,8 +42,8 @@ There are two tracks. They share the voice, QA and gates but differ in how much 
 
 | Stage | What happens | Gate |
 |---|---|---|
-| brief | records the spec and sources | RESEARCH_APPROVED |
-| script | stores the script from the spec (no local LLM yet) | SCRIPT_APPROVED |
+| brief | records the spec and sources | — |
+| script | stores the script from the spec (no local LLM yet) | `SCRIPT_APPROVED` blocks voice |
 | voice | Kokoro speaks each line to a WAV | needs SCRIPT_APPROVED |
 | compose | builds a HyperFrames project (or Remotion React project if `render: remotion`): scenes timed to the audio, captions from whisper word timings, safezone enforcement (460px bottom, 190px right), then lints it | |
 | render | HyperFrames or Remotion CLI renders `video.mp4` | needs PRODUCTION_APPROVED |
@@ -74,6 +74,8 @@ Failed voice, compose or render stages are retried twice (after 15 s and 45 s); 
 12. **Report.** Video path, QA table, open risks, claims still to verify. Publishing stays off.
 
 ## 5. The agent toolkit
+The verified skill map — what exists, where, what is tested, and what must not be used — is
+[SKILLS_INVENTORY.md](SKILLS_INVENTORY.md). The short version:
 - **Skills** (`.claude/skills/`)
   - `video-production-orchestrator`: runs a whole video end to end, or audits a finished one — the phase order (P0-P11), the two background rules and the gates. Start here for any complete video (this repo's own).
   - `video-director`: planning (this repo's own).
@@ -162,8 +164,7 @@ Tested only as a dry run: the `video-director` plan for "What Happens When an AI
 Not built: a YouTube uploader and OAuth, multi-platform publishing, niche discovery, analytics ingestion, thumbnails, Odia, a human-reviewed Hindi voice (Hindi/Hinglish generation exists: docs/MULTILINGUAL.md), automatic skill triggering tests.
 
 ## 11. Recommended next steps
-1. M3: build the dry-run plan for real (voice, alignment, composition, lint, two renders, visual QA) to test legibility and cue timing.
-2. Wire scene plans into the ContentOS builder only after M3 succeeds.
-3. Research the remaining platforms and decide long-form length.
-4. Decide on a publishing adapter per platform behind the existing gate.
-5. Wire the chosen look into the builder (`features/style_card.py` feeding `features/visual_layer.py`) so a named style changes the render, then take on a remaining planned capability: `talking-head-editor` or `lyric-video-engine`.
+The authoritative ticket list is [ROADMAP.md](ROADMAP.md). The next development task is **P1-1: make one
+chosen `look/1` preset change real frames**, then render a short and inspect it. After that, P1-2 wires
+validated scene plans into the builder. Historical next steps (M3 dry-run, platform research, a publishing
+adapter) remain in the roadmap as P1/P3 work; do not start them ahead of P0 items.

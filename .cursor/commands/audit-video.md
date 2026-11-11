@@ -1,7 +1,7 @@
 Audit a finished video. Read-only: no re-render, no export, no edits to sidecars.
 
 Read `AGENTS.md` first. The target is what I typed after the command: a `video.mp4`, a job folder under
-`$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<job-id>/`, or an entry in the publishing library. If I typed
+`$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/DD/<job-id>/`, or an entry in the publishing library. If I typed
 nothing, find the most recent job under the workspace and tell me which one you picked.
 
 Run, in order, and keep the raw output:
