@@ -97,6 +97,22 @@ def test_path_traversal_and_caller_paths_are_rejected(workspace):
     assert storage.read_manifest(storage.find_job_dir("tb-path")) is None
 
 
+def test_align_routes_a_non_english_script_through_the_language_asr(workspace, monkeypatch):
+    directory = plant("tb-lang", scene={"schema": "sceneplan/1", "scenes": [{"backdrop": "ink"}, {"backdrop": "paper"}]})
+    (directory / "script.yaml").write_text(
+        "title: Hindi\nformat: '9:16'\nlanguage: hi\nscript:\n  - say: नमस्ते दुनिया\n    headline: नमस्ते\n",
+        encoding="utf-8",
+    )
+    (directory / "audio").mkdir(exist_ok=True)
+    (directory / "audio" / "01.wav").write_bytes(b"RIFF")
+    assert post("/api/v1/jobs/tb-lang/track-b/intake").status == 200
+    seen = []
+    monkeypatch.setattr("contentos.pipeline.words_for", lambda *a, **kw: seen.append(("words", kw.get("language"))) or [("नमस्ते", 0.0, 0.2)])
+    monkeypatch.setattr("contentos.pipeline.caption_words", lambda toks, asr, d, **kw: seen.append(("caption", kw.get("language"))) or [(w, 0.0, 0.2) for w in toks])
+    assert track_b.align("tb-lang")["status"] == "OK"
+    assert seen == [("words", "hi"), ("caption", "hi")]
+
+
 def test_missing_composition_is_refused(workspace):
     plant("tb-missing", composition=False)
     response = post("/api/v1/jobs/tb-missing/track-b/intake")

@@ -99,6 +99,12 @@ def _errs(spec):
     return {e["path"] for e in specs.validate_spec(spec)["errors"]}
 
 
+def test_studio_validation_accepts_the_language_fields_the_pipeline_uses():
+    spec = {"content_id": "x", "title": "t", "format": "9:16", "language": "hi",
+            "script": [{"say": "नमस्ते दुनिया", "headline": "नमस्ते", "lang": "hi"}]}
+    assert specs.validate_spec(spec)["ok"]
+
+
 def test_spec_language_validation():
     assert "language" in _errs(sp("xx"))
     assert "voice" not in _errs(sp("hi", voice=None))
@@ -160,6 +166,17 @@ def test_invalid_asr_model_path_fails_clearly(tmp_path):
     assert e.value.code == "asr_model_missing"                               # a truncated download is also refused
 
 
+def test_a_partial_tts_cache_is_not_ready(tmp_path):
+    hub = tmp_path / "models--mlx-community--chatterbox-multilingual-v3"
+    assert T.weights_cached(hub) is False
+    (hub / "blobs").mkdir(parents=True)
+    (hub / "snapshots" / "abc").mkdir(parents=True)
+    (hub / "blobs" / "model.incomplete").write_bytes(b"x")
+    assert T.weights_cached(hub) is False                      # an unfinished blob is not a usable cache
+    (hub / "blobs" / "model.incomplete").unlink()
+    assert T.weights_cached(hub) is True
+
+
 # ---- adapter contract (worker faked; real ffmpeg normalisation) ---------------------------------------------------------
 
 def _fake_worker(calls):
@@ -198,6 +215,23 @@ def test_english_only_scripts_never_touch_the_mlx_worker(tmp_path, monkeypatch, 
     monkeypatch.setattr(T, "_kokoro", lambda text, route, out, cfg, t0: (out.write_bytes(b"x"), T.TTSResult(text, "en", "kokoro", "k", route.voice, str(out), 24000, 1, "pcm_s16le", 1.0, 0.0))[1])
     res = T.synthesize_lines(sp("en"), tmp_path, CFG)
     assert [r.backend for r in res] == ["kokoro", "kokoro"]
+
+
+def test_a_wav_without_metadata_is_regenerated_on_resume(tmp_path, monkeypatch, ready):
+    calls = []
+
+    def fake(text, route, out, cfg, t0):
+        calls.append(out.name)
+        out.write_bytes(b"x")
+        return T.TTSResult(text, "en", "kokoro", "k", route.voice, str(out), 24000, 1, "pcm_s16le", 1.0, 0.0)
+
+    monkeypatch.setattr(T, "_kokoro", fake)
+    audio = tmp_path / "audio"
+    audio.mkdir()
+    (audio / "01.wav").write_bytes(b"stale")                    # audio left by an interrupted run, no 01.tts.json
+    res = T.synthesize_lines(sp("en", n=1), audio, CFG)
+    assert calls == ["01.wav"] and len(res) == 1                # regenerated instead of dropped from the result
+    assert (audio / "01.tts.json").exists()
 
 
 def test_generation_failure_does_not_silently_use_another_backend(tmp_path, monkeypatch, ready):

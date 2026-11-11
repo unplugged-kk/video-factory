@@ -16,9 +16,9 @@ from .production import platforms
 VOICE_IDS_FILE = Path(__file__).with_name("kokoro_voice_ids.json")
 KOKORO_VOICE_IDS = frozenset(json.loads(VOICE_IDS_FILE.read_text(encoding="utf-8")))
 TOP_LEVEL_FIELDS = frozenset({
-    "content_id", "title", "format", "voice", "script", "render", "kind", "platform_targets",
+    "content_id", "title", "format", "voice", "script", "render", "kind", "platform_targets", "language",
 })
-SCRIPT_LINE_FIELDS = frozenset({"say", "headline", "tag"})
+SCRIPT_LINE_FIELDS = frozenset({"say", "headline", "tag", "lang", "voice"})
 FORMATS = frozenset({"9:16", "16:9"})
 WORDS_PER_SECOND = 2.5
 _WORD = re.compile(r"\b[\w]+(?:['’\-][\w]+)*\b", re.UNICODE)

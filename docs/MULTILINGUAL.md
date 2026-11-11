@@ -118,18 +118,17 @@ To change a language's engine, edit its `languages:` row (for example `hi: {tts:
 ```bash
 cd ~/git/video-factory; export PATH=/opt/homebrew/bin:$PATH; P=~/.contentos/venv/bin/python
 
-# setup (already done on this Mac; shown for rebuilding)
-uv venv --python 3.12 ~/.contentos/venv-mlx-audio
-uv pip install --python ~/.contentos/venv-mlx-audio/bin/python "mlx-audio==0.6.4"            # 38 packages, ~465 MB
-curl -L -o /tmp/m.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin
-shasum -a 256 /tmp/m.bin      # must equal 394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2 (574041195 bytes)
-mv -n /tmp/m.bin ~/.cache/hyperframes/whisper/models/ggml-large-v3-turbo-q5_0.bin               # -n: never overwrite
-$P -m contentos.lang reference --make                  # synthetic reference voice (refuses to overwrite)
-$P -m contentos.lang download-tts                      # pre-fetch the 2.7 GB checkpoint (network); otherwise the first Hindi job does it
+# setup (idempotent; Apple Silicon installs English, Hindi, Hinglish; Odia stays blocked)
+$P -m contentos.lang setup
+# manual equivalent if you need to repair one piece:
+#   uv venv --python 3.12 ~/.contentos/venv-mlx-audio
+#   uv pip install --python ~/.contentos/venv-mlx-audio/bin/python "mlx-audio==0.6.4"
+#   $P -m contentos.lang reference --make      # synthetic reference voice (refuses to overwrite)
+#   $P -m contentos.lang download-tts          # pre-fetch the checkpoint; otherwise the first Hindi job does it
 
 # inspect
 $P -m contentos.lang routes
-$P -m contentos.lang doctor                            # READY / NOT READY per language, with the exact fix
+$P -m contentos.lang doctor --require en,hi,hi-en      # READY / NOT READY; Odia blocked is expected
 $P -m contentos.lang verify-models                     # size + sha256 vs config
 
 # speak and transcribe one segment

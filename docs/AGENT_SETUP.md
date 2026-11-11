@@ -42,7 +42,7 @@ It does not install MLX, Chatterbox, or an Odia model. `python -m contentos.lang
 export PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
 export HYPERFRAMES_PYTHON="$HOME/.contentos/venv/bin/python"
 ./contentos.sh doctor
-"$HYPERFRAMES_PYTHON" -m contentos.lang doctor
+"$HYPERFRAMES_PYTHON" -m contentos.lang doctor --require en,hi,hi-en   # Ubuntu: --require en
 "$HYPERFRAMES_PYTHON" -m contentos.lang matrix
 ./contentos.sh storage paths --check
 ```

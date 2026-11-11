@@ -11,6 +11,7 @@ from .errors import LangError
 ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT = ROOT / "config" / "language.yaml"
 MODES = ("en", "hi", "hi-en", "or", "auto")
+MIN_ASR_BYTES = 10_000_000          # a real whisper model is far larger; a truncated file must never read as ready
 
 
 def load(path: str | Path | None = None) -> dict:

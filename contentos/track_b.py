@@ -75,8 +75,9 @@ def _lines(document):
         if not isinstance(row, dict) or not str(row.get("say") or "").strip():
             return None
         line = {"say": str(row["say"]), "headline": str(row.get("headline") or "")}
-        if row.get("tts"):
-            line["tts"] = str(row["tts"])
+        for key in ("tts", "lang", "voice", "tag"):
+            if row.get(key):
+                line[key] = str(row[key])
         lines.append(line)
     return lines
 
@@ -91,7 +92,7 @@ def discover_script(directory):
         lines = _lines(document)
         if lines is None:
             raise TrackBError(409, "INVALID_SCRIPT", f"{name} needs spoken lines")
-        return {
+        spec = {
             "content_id": directory.name,
             "title": str(document.get("title") or directory.name),
             "format": str(document.get("format") or "9:16"),
@@ -99,6 +100,9 @@ def discover_script(directory):
             "render": "hyperframes",
             "script": lines,
         }
+        if document.get("language"):
+            spec["language"] = str(document["language"])
+        return spec
     return None
 
 
@@ -470,10 +474,12 @@ def align(job_id):
         wav = directory / "audio" / f"{index:02d}.wav"
         if not wav.is_file() or wav.is_symlink():
             raise TrackBError(409, "ARTIFACT_NOT_READY", f"Alignment needs audio/{index:02d}.wav")
-        asr = pipeline.words_for(wav, directory / "work" / f"align-{index:02d}", _log(directory))
+        language = line.get("lang") or spec.get("language")
+        kw = {"language": language} if language not in (None, "en") else {}
+        asr = pipeline.words_for(wav, directory / "work" / f"align-{index:02d}", _log(directory), **kw)
         tokens = line["say"].split()
         duration = 1.0 if asr else pipeline.dur(wav)
-        timed = pipeline.caption_words(tokens, asr, duration) if tokens else []
+        timed = pipeline.caption_words(tokens, asr, duration, **kw) if tokens else []
         lines.append({
             "say": line["say"],
             "words": [{"text": word, "start": start, "end": end} for word, start, end in timed],

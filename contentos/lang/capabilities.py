@@ -39,7 +39,7 @@ def _ready(route, cfg):
 def _asr(route, cfg):
     m = cfg["asr_models"][route.asr_model]
     p = C.asr_model_path(cfg, route.asr_model)
-    if p.is_file() and p.stat().st_size >= 10_000_000:
+    if p.is_file() and p.stat().st_size >= C.MIN_ASR_BYTES:
         return {"status": "ready", "model": m["file"], "detail": f"{p} ({p.stat().st_size} bytes)"}
     fb = cfg["languages"][route.language].get("timing_fallback")
     if fb:

@@ -90,6 +90,22 @@ def _normalise(raw: Path, out: Path):
 
 # ---- readiness (explicit, actionable errors) -------------------------------------------------------------------------
 
+def weights_dir(cfg: dict, be: dict) -> Path:
+    return C.path(cfg, "hf_home") / "hub" / ("models--" + be["model"].replace("/", "--"))
+
+
+def weights_cached(hub: Path) -> bool:
+    """A cache directory is not a complete download: huggingface_hub creates it before the blobs finish.
+
+    Treat an in-progress blob or an empty `snapshots/` as missing so a retry actually retries instead of reporting
+    Hindi READY and failing later at model load.
+    """
+    if not hub.is_dir() or any(hub.rglob("*.incomplete")):
+        return False
+    snapshots = hub / "snapshots"
+    return snapshots.is_dir() and any(snapshots.iterdir())
+
+
 def check_ready(route: Route, cfg: dict):
     be = cfg["tts_backends"][route.tts_backend]
     if be.get("blocked"):
@@ -109,8 +125,8 @@ def check_ready(route: Route, cfg: dict):
         if not ref.is_file():
             raise LangError(f"reference recording missing: {ref}; Chatterbox v3 (MLX) has no default voice", code="reference_missing",
                             hint="python -m contentos.lang reference --make   (synthetic Kokoro reference) or supply your own recording with consent")
-        hub = C.path(cfg, "hf_home") / "hub" / ("models--" + be["model"].replace("/", "--"))
-        if not hub.exists():
+        hub = weights_dir(cfg, be)
+        if not weights_cached(hub):
             raise LangError(f"model weights not in cache: {be['model']} ({hub})", code="weights_missing",
                             hint="first use downloads ~3 GB: python -m contentos.lang download-tts   (needs network)")
 
@@ -161,6 +177,8 @@ def _chatterbox_many(items: list[tuple[str, Route, Path]], cfg: dict) -> list[TT
         spoken.append(s); warns.append(w)
     t0 = time.time()
     j = _run_worker([{"text": s, "out": str(o.with_suffix(".raw.wav"))} for s, (_, _, o) in zip(spoken, items)], route, cfg)
+    if len(j.get("items", [])) != len(items):
+        raise LangError(f"chatterbox returned {len(j.get('items', []))} results for {len(items)} line(s)", code="generation_failed")
     res = []
     for (text, rt, out), s, w, it in zip(items, spoken, warns, j["items"]):
         raw = out.with_suffix(".raw.wav")
@@ -187,10 +205,13 @@ def synthesize_lines(spec: dict, out_dir: Path, cfg: dict | None = None, names=N
     for i, text, rt, out in plan:
         groups.setdefault(rt.tts_backend, []).append((i, text, rt, out))
     for backend, items in groups.items():
-        todo = [(i, t, rt, o) for i, t, rt, o in items if not o.exists()]
+        todo = []
         for i, t, rt, o in items:
-            if o.exists():
-                results[i] = _load_meta(o) or None
+            meta = _load_meta(o) if o.exists() else None
+            if meta is None:
+                todo.append((i, t, rt, o))     # a wav without metadata is a half-finished take: regenerate it
+            else:
+                results[i] = meta
         if not todo:
             continue
         try:

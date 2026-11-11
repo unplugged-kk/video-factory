@@ -43,8 +43,9 @@ def _sha(p):
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="contentos.lang", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for n in ("routes", "doctor", "verify-models", "download-tts", "setup"):
+    for n in ("routes", "verify-models", "download-tts", "setup"):
         sub.add_parser(n)
+    p = sub.add_parser("doctor"); p.add_argument("--require", help="comma-separated languages that must be READY; others are informational")
     p = sub.add_parser("matrix"); p.add_argument("--write", action="store_true"); p.add_argument("--check", action="store_true"); p.add_argument("--json", action="store_true")
     p = sub.add_parser("validate-script"); p.add_argument("lang"); p.add_argument("file")
     p = sub.add_parser("reference"); p.add_argument("--make", action="store_true"); p.add_argument("--from", dest="src")
@@ -90,6 +91,11 @@ def main(argv=None) -> int:
                 bad += not (size_ok and sha_ok is not False)
             return 1 if bad else 0
         if a.cmd == "doctor":
+            required = set(a.require.split(",")) if a.require else None
+            unknown = (required or set()) - set(cfg["languages"])
+            if unknown:
+                print(f"unknown language in --require: {', '.join(sorted(unknown))}; known: {', '.join(cfg['languages'])}")
+                return 2
             rc = 0
             for l in cfg["languages"]:
                 r = R.resolve({"language": l}, None, cfg)
@@ -98,11 +104,14 @@ def main(argv=None) -> int:
                     T.check_ready(r, cfg)
                 except LangError as e:
                     issues.append(str(e))
-                if not C.asr_model_path(cfg, r.asr_model).exists():
-                    issues.append(f"[asr_model_missing] {C.asr_model_path(cfg, r.asr_model)}")
+                model = C.asr_model_path(cfg, r.asr_model)
+                if not model.is_file() or model.stat().st_size < C.MIN_ASR_BYTES:
+                    issues.append(f"[asr_model_missing] {model} (missing or truncated)")
                 print(f"{l:6} {'READY' if not issues else 'NOT READY'}  tts={r.tts_backend} asr={r.asr_model}")
                 for i in issues:
-                    print("       " + i); rc = 1
+                    print("       " + i)
+                    if required is None or l in required:
+                        rc = 1
             return rc
         if a.cmd == "reference":
             dest = Path(os.path.expanduser(cfg["tts_backends"]["chatterbox_v3"]["voice_profiles"]["hindi-default"]["reference"]))

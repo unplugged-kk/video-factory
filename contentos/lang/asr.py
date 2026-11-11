@@ -15,6 +15,7 @@ import tempfile
 import time
 from pathlib import Path
 
+from . import config as C
 from .errors import LangError
 
 BREW = "/opt/homebrew/bin"
@@ -31,7 +32,7 @@ def _bin():
 def transcribe(wav: str | Path, model: str | Path, language: str, timeout: float = 900) -> dict:
     """Return {words:[{text,start,end}], text, model, language, seconds, binary}. Raises LangError, never substitutes a model."""
     model, wav = Path(model).expanduser(), Path(wav)
-    if not model.is_file() or model.stat().st_size < 10_000_000:
+    if not model.is_file() or model.stat().st_size < C.MIN_ASR_BYTES:
         raise LangError(f"ASR model missing or truncated: {model}", code="asr_model_missing",
                         hint="download per docs/MULTILINGUAL.md (checksum-verified) into ~/.cache/hyperframes/whisper/models")
     if not wav.is_file():

@@ -41,10 +41,14 @@ def artifact_ok(path: Path, size: int, sha: str | None = None) -> bool:
     return h.hexdigest() == sha
 
 
-def ensure_asr_models(cfg: dict) -> list[str]:
-    """Download configured ASR files that have a source URL and are missing or the wrong size. Returns what changed."""
+def ensure_asr_models(cfg: dict, languages=None) -> list[str]:
+    """Download ASR files for `languages` (all configured when None). Returns what changed."""
+    from . import router as R
+    needed = None if languages is None else {R.resolve({"language": lang}, None, cfg).asr_model for lang in languages}
     done = []
     for key, spec in cfg["asr_models"].items():
+        if needed is not None and key not in needed:
+            continue
         source = spec.get("source")
         size = int(spec.get("size_bytes") or 0)
         if not source or size <= 0:
@@ -54,7 +58,11 @@ def ensure_asr_models(cfg: dict) -> list[str]:
             continue
         dest.parent.mkdir(parents=True, exist_ok=True)
         tmp = dest.with_suffix(dest.suffix + ".partial")
-        urllib.request.urlretrieve(source, tmp)
+        try:
+            urllib.request.urlretrieve(source, tmp)
+        except OSError as exc:
+            tmp.unlink(missing_ok=True)
+            raise LangError(f"could not download {key} from {source}: {exc}", code="asr_download_failed") from exc
         if not artifact_ok(tmp, size, spec.get("sha256")):
             tmp.unlink(missing_ok=True)
             raise LangError(f"downloaded {key} from {source} but size or sha256 did not match config/language.yaml", code="asr_download_bad")
@@ -69,26 +77,35 @@ def ensure_mlx(cfg: dict) -> str:
         return "present"
     if not shutil.which("uv"):
         raise LangError("uv is not on PATH; install it with `brew install uv` and rerun setup", code="runtime_missing")
-    py.parent.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(["uv", "venv", "--python", "3.12", str(py.parent.parent)], check=True)
-    subprocess.run(["uv", "pip", "install", "--python", str(py), MLX_PIN], check=True)
+    try:
+        py.parent.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["uv", "venv", "--python", "3.12", str(py.parent.parent)], check=True)
+        subprocess.run(["uv", "pip", "install", "--python", str(py), MLX_PIN], check=True)
+    except (subprocess.CalledProcessError, OSError) as exc:
+        raise LangError(f"could not prepare the MLX runtime at {py}: {exc}", code="runtime_missing") from exc
     return "installed"
 
 
 def ensure_storage() -> None:
     from contentos import storage
-    for root in (storage.workspace_root(), storage.publish_root()):
-        root.mkdir(parents=True, exist_ok=True)
-    storage.preflight()
+    try:
+        for root in (storage.workspace_root(), storage.publish_root()):
+            root.mkdir(parents=True, exist_ok=True)
+        storage.preflight()
+    except storage.StorageError as exc:
+        raise LangError(str(exc), code="storage_not_ready") from exc
 
 
 def _weights_dir(cfg: dict) -> Path:
-    model = cfg["tts_backends"]["chatterbox_v3"]["model"]
-    return C.path(cfg, "hf_home") / "hub" / ("models--" + model.replace("/", "--"))
+    from . import router as R
+    from . import tts as T
+    route = R.resolve({"language": "hi"}, None, cfg)
+    return T.weights_dir(cfg, cfg["tts_backends"][route.tts_backend])
 
 
 def _weights_cached(cfg: dict) -> bool:
-    return _weights_dir(cfg).exists()
+    from . import tts as T
+    return T.weights_cached(_weights_dir(cfg))
 
 
 def _make_reference(cfg: dict, dest: Path) -> None:
@@ -104,8 +121,10 @@ def _make_reference(cfg: dict, dest: Path) -> None:
 
 
 def _download_tts(cfg: dict) -> None:
+    from . import router as R
     from . import tts as T
-    be = cfg["tts_backends"]["chatterbox_v3"]
+    route = R.resolve({"language": "hi"}, None, cfg)
+    be = cfg["tts_backends"][route.tts_backend]
     py = C.path(cfg, "mlx_python")
     code = ("from huggingface_hub import snapshot_download as s;"
             f"print(s({be['model']!r}));print(s('mlx-community/S3TokenizerV2'))")
@@ -126,8 +145,9 @@ def language_issues(cfg: dict) -> dict[str, list[str]]:
             T.check_ready(route, cfg)
         except LangError as exc:
             issues.append(str(exc))
-        if not C.asr_model_path(cfg, route.asr_model).exists():
-            issues.append(f"asr model missing: {C.asr_model_path(cfg, route.asr_model)}")
+        model = C.asr_model_path(cfg, route.asr_model)
+        if not model.is_file() or model.stat().st_size < C.MIN_ASR_BYTES:
+            issues.append(f"asr model missing or truncated: {model}")
         out[lang] = issues
     return out
 
@@ -140,7 +160,7 @@ def setup(cfg: dict | None = None) -> int:
         print(f"mlx runtime: {ensure_mlx(cfg)}")
     else:
         print("mlx runtime: skipped. Hindi and Hinglish need Apple Silicon. This host is set up for English only.")
-    changed = ensure_asr_models(cfg)
+    changed = ensure_asr_models(cfg, needed)
     print("asr models: " + (", ".join(changed) if changed else "already present"))
     ensure_storage()
     print("storage: workspace and publishing library are writable")
@@ -164,5 +184,5 @@ def setup(cfg: dict | None = None) -> int:
         print("setup incomplete: " + ", ".join(failed))
         return 1
     ready = ", ".join(needed)
-    print(f"setup ok: {ready} ready. or stays blocked until the owner approves a gated model and a PyTorch environment.")
+    print(f"setup ok: {ready} ready. Odia (or) stays blocked until the owner approves a gated model and a PyTorch environment.")
     return 0
