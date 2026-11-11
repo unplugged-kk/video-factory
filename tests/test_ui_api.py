@@ -209,6 +209,16 @@ def test_write_requires_exact_token_and_origin(workspace):
         assert json.loads(body)["error"]["code"] == "INVALID_JSON"
 
 
+def test_jobs_state_skips_a_legacy_project_manifest(workspace):
+    legacy = storage.job_dir("legacy-pilot")
+    legacy.mkdir(parents=True, exist_ok=True)
+    (legacy / "manifest.json").write_text(json.dumps({"schema": "project-manifest/1", "title": "Pilot"}))
+    real = storage.job_dir("real-job")
+    real.mkdir(parents=True, exist_ok=True)
+    storage.write_manifest(real, storage.new_manifest("real-job", title="Real job"))
+    assert [job["id"] for job in ui_state.jobs_state()] == ["real-job"]
+
+
 def test_spec_validate_create_collision_and_draft_read_model(workspace):
     payload = json.dumps(valid_spec()).encode()
     validated = ui_api.dispatch("POST", "/api/v1/specs/validate", write_headers(), payload, "token")

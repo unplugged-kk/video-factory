@@ -357,7 +357,10 @@ def _status(stages, directory, now):
             return "FAILED"
         if status in ("RUNNING", "STALE"):
             return status
-    manifest = storage.read_manifest(directory) or {}
+    try:
+        manifest = storage.read_manifest(directory) or {}
+    except storage.StorageError:                   # a legacy project folder, not a jobmanifest/1 job
+        manifest = {}
     if manifest.get("status") == "exported":
         return "EXPORTED"
     if manifest.get("status") == "ready" or stages.get("render", {}).get("status") == "OK":
@@ -370,7 +373,10 @@ def jobs_state(*, now=None):
     by_job, approvals = _job_rows(now)
     result = []
     for directory in storage.iter_job_dirs():
-        manifest = storage.read_manifest(directory) or {}
+        try:
+            manifest = storage.read_manifest(directory) or {}
+        except storage.StorageError:
+            continue                                # legacy project folder; `storage adopt` migrates it deliberately
         cid = directory.name
         stages = by_job.get(cid, {})
         latest = max(stages.values(), key=lambda row: row["rowId"], default={})
