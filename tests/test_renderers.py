@@ -59,6 +59,11 @@ def test_remotion_capabilities():
     assert caps["default"] is False
 
 
+def test_hyperframes_reports_the_pinned_version():
+    pinned = json.loads((Path(__file__).resolve().parent.parent / "package.json").read_text())["dependencies"]["hyperframes"]
+    assert get_renderer("hyperframes").version == pinned
+
+
 def test_hyperframes_capabilities():
     r = get_renderer("hyperframes")
     caps = r.capabilities()
@@ -126,3 +131,39 @@ def test_remotion_compose_generates_valid_project():
         video_tsx = (proj / "src" / "Video.tsx").read_text()
         assert "paddingBottom: 460" in video_tsx  # Safezone bottom padding
         assert "paddingRight: 190" in video_tsx   # Safezone side padding
+
+
+def test_remotion_render_never_installs_and_has_a_timeout(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from contentos.renderers import remotion
+    job = tmp_path / "job"
+    (job / "project_remotion").mkdir(parents=True)
+    monkeypatch.setattr(remotion, "REMOTION_BIN", tmp_path / "missing-remotion")
+    seen = {}
+
+    def fake_run(cmd, **kw):
+        seen["cmd"] = cmd
+        seen.update(kw)
+        (job / "video.mp4").write_bytes(b"x" * 2000)
+        return SimpleNamespace(returncode=0, stderr="")
+
+    monkeypatch.setattr(remotion.subprocess, "run", fake_run)
+    remotion.RemotionRenderer().render({"dir": job, "spec": {}, "res": (1080, 1920)})
+    assert seen["cmd"][:3] == ["npx", "--no-install", "remotion"]
+    assert seen["timeout"] == 1800
+
+
+def test_remotion_compose_routes_non_english_lines_through_the_language_asr(tmp_path, monkeypatch):
+    import wave
+    from contentos.renderers import remotion
+    seen = []
+    from contentos import pipeline
+    monkeypatch.setattr(pipeline, "words_for", lambda wav, workdir, **kw: seen.append(("words", kw.get("language"))) or [("नमस्ते", 0.0, 0.2)])
+    monkeypatch.setattr(pipeline, "caption_words", lambda toks, asr, d, **kw: seen.append(("caption", kw.get("language"))) or [(w, 0.0, 0.2) for w in toks])
+    spec = {"title": "Hindi", "language": "hi", "script": [{"say": "नमस्ते दुनिया", "headline": "नमस्ते"}]}
+    audio = tmp_path / "job" / "audio"
+    audio.mkdir(parents=True)
+    with wave.open(str(audio / "01.wav"), "wb") as wf:
+        wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(24000); wf.writeframes(b"\x00" * 48000)
+    get_renderer("remotion").compose({"id": "hi", "dir": tmp_path / "job", "spec": spec, "res": (1080, 1920)})
+    assert seen == [("words", "hi"), ("caption", "hi")]

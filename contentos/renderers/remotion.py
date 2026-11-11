@@ -136,9 +136,11 @@ class RemotionRenderer(RenderProvider):
         for i, ln in enumerate(spec["script"], 1):
             wav = audio_src / f"{i:02d}.wav"
             d = round(dur(wav) + 0.35, 2)
-            asr = words_for(wav, audio_src / f"tx{i:02d}")
+            language = ln.get("lang") or spec.get("language")
+            kw = {"language": language} if language not in (None, "en") else {}
+            asr = words_for(wav, audio_src / f"tx{i:02d}", **kw)
             toks = ln["say"].split()
-            wl = caption_words(toks, asr, d)
+            wl = caption_words(toks, asr, d, **kw)
 
             tag_text = ln.get("tag", f"{i}/{len(spec['script'])}")
             headline_text = ln["headline"]
@@ -366,11 +368,7 @@ registerRoot(RemotionRoot);
         proj = ctx["dir"] / "project_remotion"
         mp4 = ctx["dir"] / "video.mp4"
 
-        cmd = [
-            str(REMOTION_BIN) if REMOTION_BIN.exists() else "npx",
-        ]
-        if not REMOTION_BIN.exists():
-            cmd.extend(["remotion"])
+        cmd = [str(REMOTION_BIN)] if REMOTION_BIN.exists() else ["npx", "--no-install", "remotion"]
 
         cmd.extend([
             "render",
@@ -382,7 +380,10 @@ registerRoot(RemotionRoot);
         ])
 
         env = {**os.environ}
-        p = subprocess.run(cmd, cwd=proj, capture_output=True, text=True, env=env)
+        try:
+            p = subprocess.run(cmd, cwd=proj, capture_output=True, text=True, env=env, timeout=1800)
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError("Remotion render timed out after 1800 s") from exc
         if p.returncode != 0:
             raise RuntimeError(f"Remotion render failed with exit code {p.returncode}: {p.stderr[-800:]}")
 

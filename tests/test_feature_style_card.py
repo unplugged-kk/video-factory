@@ -37,6 +37,14 @@ def test_style_card_execution_default():
         assert rec_data["chosen"] == ctx["style_card"]["id"]
 
 
+def test_unknown_style_card_fails_with_the_known_ids():
+    with tempfile.TemporaryDirectory() as td:
+        spec = {"content_id": "typo-job", "title": "Typo", "features": {"style_card": {"chosen": "not-a-style"}}}
+        ctx = {"id": "typo-job", "dir": Path(td), "spec": spec}
+        with pytest.raises(ValueError, match="unknown style card 'not-a-style'.*known:"):
+            _feat.get("style_card", spec)(ctx, spec)
+
+
 def test_style_card_override():
     with tempfile.TemporaryDirectory() as td:
         job_dir = Path(td)

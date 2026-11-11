@@ -81,10 +81,10 @@ def style_card_hook(ctx: dict, spec: dict) -> None:
         chosen = candidates[0]["style"]
     elif chosen not in [c["style"] for c in candidates]:
         chosen_card = next((c for c in cards if c["id"] == chosen), None)
-        if chosen_card:
-            candidates.append(creative.score_card(chosen_card, brief, history))
-        else:
-            candidates.append({"style": chosen, "score": 5, "fit": 2, "novelty": 0, "experimental": False, "axes": {}})
+        if chosen_card is None:
+            known = ", ".join(sorted(c["id"] for c in cards))
+            raise ValueError(f"unknown style card {chosen!r}; known: {known}")
+        candidates.append(creative.score_card(chosen_card, brief, history))
 
     # Rejection reasons for non-chosen candidates
     rejection_reasons = {}

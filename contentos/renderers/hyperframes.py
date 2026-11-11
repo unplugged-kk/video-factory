@@ -23,7 +23,12 @@ class HyperFramesRenderer(RenderProvider):
 
     @property
     def version(self) -> str:
-        return "0.1.0"
+        """The pinned engine version, read from package.json rather than a hand-maintained string."""
+        try:
+            pkg = json.loads((Path(__file__).resolve().parents[2] / "package.json").read_text(encoding="utf-8"))
+            return str(pkg.get("dependencies", {}).get("hyperframes", "unknown"))
+        except (OSError, json.JSONDecodeError):
+            return "unknown"
 
     def capabilities(self) -> dict[str, Any]:
         return {
