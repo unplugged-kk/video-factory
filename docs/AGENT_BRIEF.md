@@ -19,11 +19,12 @@ Local-first pipeline on an Apple Silicon Mac: `brief > script > voice > compose 
   - `hyperframes` (default): HTML/GSAP compositions to MP4.
   - `remotion`: React/TypeScript compositions with spring physics, kinetic typography, and fluid active-word reveals.
   - `mpt`: MoneyPrinterTurbo lane for stock b-roll clips.
-- Every stage writes to `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<content_id>/` (outside the repo; see docs/STORAGE.md; finals are exported by the `export` stage to `$VIDEO_FACTORY_PUBLISH_DIR/ready/`) and resumes if the artifact exists. Ledger is SQLite.
+- Every stage writes to `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/DD/<content_id>/` (outside the repo; see docs/STORAGE.md; finals are exported by the `export` stage to `$VIDEO_FACTORY_PUBLISH_DIR/ready/`) and resumes if the artifact exists. Ledger is SQLite.
 - Entry point: `./contentos.sh` (put `/opt/homebrew/bin` first; the stale x86 ffmpeg in /usr/local/bin fails).
 
 ## 3. Workflow the agent must follow
-1. `./contentos.sh doctor` . Stop and report if anything the plan needs is NOT_INSTALLED.
+0. If this machine is not set up, run `docs/AGENT_SETUP.md` and do not ask a person to install the tools that script installs. Then read `docs/CAPABILITIES.md` before choosing a language or a renderer.
+1. `./contentos.sh doctor` and `python -m contentos.lang doctor`. Stop and report if a language the job needs is NOT READY. Odia NOT READY is expected.
 2. Optional research: `./contentos.sh research "<topic>"` (Reddit+HN, keyless). Verify every fact; put sources in the spec `sources:`.
 3. Plan with the `video-director` skill (`.claude/skills/video-director`): audience, one takeaway, hook, arc, scene-by-scene treatment, using only capabilities listed in `config/capabilities.json`.
 4. Write the spec YAML in `workspace/factory-specs/<content_id>.yaml` (template in section 4; examples in `examples/`). ~2.5 words per second of narration.
@@ -31,7 +32,7 @@ Local-first pipeline on an Apple Silicon Mac: `brief > script > voice > compose 
 6. Voice, compose. For animation quality use `explainer-motion-craft`, `hyperframes-core`, or `docs/RENDERERS.md`.
 7. **GATE 2: wait for PRODUCTION_APPROVED** before render.
 8. `./contentos.sh pipeline run <spec> --approve-private` only after I approve (omit the flag to park at the gate).
-9. QA: `./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/<id>/video.mp4`, then visual check with the `explainer-visual-qa` skill (look at frames at phone size).
+9. QA: `./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/DD/<id>/video.mp4`, then visual check with the `explainer-visual-qa` skill (look at frames at phone size).
 10. Report: video path, QA table, open risks, claims still to verify. Nothing else happens without me.
 
 ## 4. Spec template (minimum)
@@ -76,7 +77,7 @@ script:
 
 ## Storage rules for every agent
 - Producing or auditing a whole video: use the `video-production-orchestrator` skill (`.claude/skills/video-production-orchestrator/`). It sets the order of phases, the two background rules (`python -m contentos.intelligence.visual ...`) and technique lookup (`python -m contentos.intelligence.catalogue query ...`). Design and known failures: `docs/video-intelligence/`.
-- Generated files (audio, images, scenes, renders, caches, logs) live **outside Git**, in `$VIDEO_FACTORY_WORKSPACE` (default `~/Desktop/VideoFactory-Workspace`), one folder per job: `jobs/YYYY/MM/<job-id>/`. Never write them into the repo and never `git add` media.
+- Generated files (audio, images, scenes, renders, caches, logs) live **outside Git**, in `$VIDEO_FACTORY_WORKSPACE` (default `~/Desktop/VideoFactory-Workspace`), one folder per job: `jobs/YYYY/MM/DD/<job-id>/`. Never write them into the repo and never `git add` media.
 - Only validated finals go to the publishing library `$VIDEO_FACTORY_PUBLISH_DIR` (default `~/Desktop/Video-Publishing`) via the pipeline `export` stage or `./contentos.sh storage export <job-id>`. Output: `ready/<project>/YYYY/MM/<content>__<job>.mp4` plus a `.publish.json` sidecar. Failed or unvalidated videos are never exported.
 - Optional spec fields that feed the sidecar (never guessed if absent): `project`, `project_name`, `content`, `topic`, `description`, `tags`, `platform_targets`, `language`, `kind` (short|long), `require_audio`.
 - If a configured folder is missing or unwritable, stop and report it. Do not fall back to the repo, and never delete files to free space (`storage cleanup` is dry-run unless the owner passes `--apply`).

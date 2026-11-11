@@ -36,7 +36,7 @@ There are two tracks. They share the voice, QA and gates but differ in how much 
 | Status | working end to end | planning/validation built; builder integration not built |
 
 ## 3. Track A, stage by stage
-`brief > script > voice > compose > render > qa > package > export > publish`, each stage writing an artifact to `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<content_id>/` (outside the repo; finals go to `$VIDEO_FACTORY_PUBLISH_DIR/ready/` via the `export` stage, see [STORAGE.md](STORAGE.md)). If the artifact exists the stage is skipped on the next run; a failed stage deletes its own artifact so a resume never trusts half-built output.
+`brief > script > voice > compose > render > qa > package > export > publish`, each stage writing an artifact to `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/DD/<content_id>/` (outside the repo; finals go to `$VIDEO_FACTORY_PUBLISH_DIR/ready/` via the `export` stage, see [STORAGE.md](STORAGE.md)). If the artifact exists the stage is skipped on the next run; a failed stage deletes its own artifact so a resume never trusts half-built output.
 
 | Stage | What happens | Gate |
 |---|---|---|
@@ -106,7 +106,7 @@ Check commands: `platforms list | budget | check`, with `--platforms`, `--tier y
 ./contentos.sh pipeline run SPEC.yaml                   # stops at the gates
 ./contentos.sh approve <content_id> SCRIPT_APPROVED     # grant a gate (PRODUCTION_APPROVED the same way); binds to the spec's digest, --spec SPEC.yaml to choose it. Editing the script or composed project afterwards needs a fresh approval
 ./contentos.sh pipeline run SPEC.yaml --approve-private # grants research, script, production gates; never publish
-./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/<id>/video.mp4
+./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/DD/<id>/video.mp4
 ./contentos.sh preview VIDEO --at 2,10,30 --out DIR --sheet
 ./contentos.sh queue add specs/*.yaml                   # batch; add --approve-private to skip parking
 ./contentos.sh worker --concurrency 2                   # runs the queue (--once drains and exits)
@@ -136,7 +136,7 @@ A project folder (for example Pilot 001) holds `script/`, `audio/`, `captions/`,
 
 ## Storage rules for every agent
 - Producing or auditing a whole video: use the `video-production-orchestrator` skill (`.claude/skills/video-production-orchestrator/`). It sets the order of phases, the two background rules (`python -m contentos.intelligence.visual ...`) and technique lookup (`python -m contentos.intelligence.catalogue query ...`). Design and known failures: `docs/video-intelligence/`.
-- Generated files (audio, images, scenes, renders, caches, logs) live **outside Git**, in `$VIDEO_FACTORY_WORKSPACE` (default `~/Desktop/VideoFactory-Workspace`), one folder per job: `jobs/YYYY/MM/<job-id>/`. Never write them into the repo and never `git add` media.
+- Generated files (audio, images, scenes, renders, caches, logs) live **outside Git**, in `$VIDEO_FACTORY_WORKSPACE` (default `~/Desktop/VideoFactory-Workspace`), one folder per job: `jobs/YYYY/MM/DD/<job-id>/`. Never write them into the repo and never `git add` media.
 - Only validated finals go to the publishing library `$VIDEO_FACTORY_PUBLISH_DIR` (default `~/Desktop/Video-Publishing`) via the pipeline `export` stage or `./contentos.sh storage export <job-id>`. Output: `ready/<project>/YYYY/MM/<content>__<job>.mp4` plus a `.publish.json` sidecar. Failed or unvalidated videos are never exported.
 - Optional spec fields that feed the sidecar (never guessed if absent): `project`, `project_name`, `content`, `topic`, `description`, `tags`, `platform_targets`, `language`, `kind` (short|long), `require_audio`.
 - If a configured folder is missing or unwritable, stop and report it. Do not fall back to the repo, and never delete files to free space (`storage cleanup` is dry-run unless the owner passes `--apply`).

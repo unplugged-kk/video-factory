@@ -39,7 +39,7 @@ alone, so a previously approved script that you then change needs a fresh approv
 
 Skill-first: read `.claude/skills/video-production-orchestrator/SKILL.md` and follow its phases. The loop:
 
-1. `./contentos.sh doctor` — stop and report anything the plan needs that is `NOT_INSTALLED`.
+1. `./contentos.sh doctor` and `python -m contentos.lang doctor`. If a needed tool is `NOT_INSTALLED`, run `docs/AGENT_SETUP.md` instead of asking the owner to install it. Stop only when that script fails. Odia `NOT READY` is expected. What the factory can and cannot do is `docs/CAPABILITIES.md`.
 2. `./contentos.sh storage paths --check` — workspace and publishing library must exist and be writable.
 3. Length budget from the registry, never guessed: `python -m contentos.production.platforms budget --kind short`.
 4. Research when the topic needs facts: `./contentos.sh research "<topic>"` (Reddit + HN, keyless). Every

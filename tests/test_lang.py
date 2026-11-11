@@ -321,7 +321,7 @@ def test_devanagari_text_disables_letter_spacing_and_uppercase_via_a_script_mark
 
 # ======================= round 3: Odia, script validation, capability matrix, cloud-facing behaviour ======================
 
-from contentos.lang import capabilities as K, script as SC, typography as TY  # noqa: E402
+from contentos.lang import capabilities as K, script as SC, setup as SU, typography as TY  # noqa: E402
 
 ODIA = "ଓଡ଼ିଶା ଭାରତର ପୂର୍ବ ଉପକୂଳରେ ଥିବା ଏକ ରାଜ୍ୟ।"
 HINDI = "कुबेरनेट्स में पॉड सबसे छोटी इकाई है।"
@@ -446,3 +446,14 @@ def test_script_kind_and_typography_blocks():
 
 def test_legacy_english_template_gets_no_indic_css():
     assert TY.block(TY.script_kind("What is a pod headline"), ["h1", ".tag", ".cap"]) == ""     # so English HTML is byte-identical
+
+
+def test_setup_requires_hindi_only_on_apple_silicon(tmp_path):
+    assert SU.required_languages("darwin", "arm64") == ("en", "hi", "hi-en")
+    assert SU.required_languages("linux", "x86_64") == ("en",)
+    assert SU.required_languages("darwin", "x86_64") == ("en",)
+    good = tmp_path / "m.bin"
+    good.write_bytes(b"abc")
+    assert SU.artifact_ok(good, 3) is True
+    assert SU.artifact_ok(good, 4) is False
+    assert SU.artifact_ok(good, 3, "not-a-hash") is False

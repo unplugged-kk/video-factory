@@ -1,6 +1,6 @@
 {
  "schema": "language-capabilities/1",
- "source_sha256": "dc596ff16812553ca86abfcdfd22f0431a74443fb4fbe617e602eb33f8f29bd0",
+ "source_sha256": "f15782c38f0e12c1f3681727041ff6ec3fc22a098a4c202401512cf306afe7f6",
  "default_language": "en",
  "languages": {
   "en": {

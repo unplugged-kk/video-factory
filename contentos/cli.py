@@ -23,6 +23,11 @@ FIX = {
 
 def cmd_doctor(a):
     cfg = providers.load("providers.yaml")["capabilities"]
+    required = set(a.require.split(",")) if a.require else None
+    unknown = (required or set()) - set(cfg)
+    if unknown:
+        print(f"unknown capability in --require: {', '.join(sorted(unknown))}; known: {', '.join(cfg)}")
+        return 2
     worst = 0
     for cap in cfg:
         cands = providers.candidates(cap, allow_paid=True)
@@ -37,7 +42,7 @@ def cmd_doctor(a):
             print(f"  {st:14} {c['id']:24} {c['tier']:14} {c['detail']}")
             if st == "NOT_INSTALLED":
                 print(f"  {'':14} fix: {FIX.get(c['id'], '-')}")
-        if not prim:
+        if not prim and (required is None or cap in required):
             worst = 1
     return worst
 
@@ -236,7 +241,8 @@ def cmd_factory_worker(a):
 def main():
     p = argparse.ArgumentParser(prog="contentos")
     sp = p.add_subparsers(dest="cmd", required=True)
-    sp.add_parser("doctor").set_defaults(f=cmd_doctor)
+    d = sp.add_parser("doctor"); d.add_argument("--require", help="comma-separated capabilities that must have a healthy provider; others are informational")
+    d.set_defaults(f=cmd_doctor)
     sp.add_parser("status").set_defaults(f=cmd_status)
     r = sp.add_parser("route"); r.add_argument("capability"); r.add_argument("--allow-paid", action="store_true"); r.set_defaults(f=cmd_route)
     pl = sp.add_parser("pipeline"); pl.add_argument("action", choices=["run"]); pl.add_argument("spec")

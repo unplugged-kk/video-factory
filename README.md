@@ -4,19 +4,20 @@ Local-first YouTube content pipeline for an Apple Silicon Mac. Thin Python CLI t
 tools you already have (hyperframes, ffmpeg, Kokoro, whisper.cpp, the `yt-*` Agent Skills), records
 every stage in a SQLite ledger, and refuses to publish without a gate.
 
-**New here, or an agent?** [AGENTS.md](AGENTS.md) is the contract every coding agent follows (gates, hard
+**New here, or an agent?** Set the machine up from [docs/AGENT_SETUP.md](docs/AGENT_SETUP.md), then read [docs/CAPABILITIES.md](docs/CAPABILITIES.md). [AGENTS.md](AGENTS.md) is the contract every coding agent follows (gates, hard
 stops, the production loop). Then read [docs/HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) for how the factory works
 end to end and [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the step-by-step rules. Driving it from Cursor:
 [docs/CURSOR.md](docs/CURSOR.md). Hindi and Hinglish narration (language routing, ASR models, benchmark, limits): [docs/MULTILINGUAL.md](docs/MULTILINGUAL.md).
 
 ```bash
-./scripts/bootstrap-mac.sh                      # idempotent installs + doctor
+./scripts/bootstrap-mac.sh                      # Apple Silicon: English, Hindi, Hinglish
+./scripts/bootstrap-linux.sh                    # Ubuntu: English only. Hindi needs Apple Silicon
 ./contentos.sh doctor                           # PASS / NOT_INSTALLED / OPTIONAL per provider, with fix commands
 ./contentos.sh route tts                        # which provider wins, and why (local-first policy)
 ./contentos.sh pipeline run examples/youtube-short.yaml --approve-private
 ./contentos.sh validate SPEC.yaml               # Studio Track A field check, one JSON object
 ./contentos.sh dashboard                        # Creator Studio on http://127.0.0.1:4310
-./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/<id>/video.mp4
+./contentos.sh qa "$VIDEO_FACTORY_WORKSPACE"/jobs/YYYY/MM/DD/<id>/video.mp4
 ./contentos.sh status                           # recent ledger rows
 ./contentos.sh jev status | jev triage "topic"  # decision layer
 ./contentos.sh recommend <content_id>           # PUBLISH/HOLD/REVISE/ABANDON with reasons
@@ -26,13 +27,13 @@ end to end and [docs/AGENT_BRIEF.md](docs/AGENT_BRIEF.md) for the step-by-step r
 ./contentos.sh worker [--concurrency N] [--once]          # runs queued jobs (default 1); queue list / requeue <id>
 ./contentos.sh learn providers|cost|calibration|platforms|packaging
 docker compose up -d                           # container side: MoneyPrinterTurbo (UI :8501, API :8081) + OpenMontage Backlot (:4750)
-~/.contentos/venv/bin/python -m pytest tests    # 884 tests
+~/.contentos/venv/bin/python -m pytest tests    # repo suite. Do not use a bare pytest.
 node --test contentos/ui/*.test.mjs contentos/adapters/v1/*.test.mjs   # 69 Node tests
 npx playwright install && npx playwright test   # 6 browser journeys against fixture data
 ```
 
 Pipeline: `brief > script > voice > compose > render > qa > package > export > publish`. Each stage writes an
-artifact under `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/<content_id>/` (outside the repo; default `~/Desktop/VideoFactory-Workspace`; the `export` stage copies validated finals to `~/Desktop/Video-Publishing/ready/`, see [docs/STORAGE.md](docs/STORAGE.md)) and resumes (skips) if it exists. A failed stage
+artifact under `$VIDEO_FACTORY_WORKSPACE/jobs/YYYY/MM/DD/<content_id>/` (outside the repo; default `~/Desktop/VideoFactory-Workspace`; the `export` stage copies validated finals to `~/Desktop/Video-Publishing/ready/`, see [docs/STORAGE.md](docs/STORAGE.md)) and resumes (skips) if it exists. A failed stage
 deletes its own artifact so resume never trusts half-built output. Each stage appends its command, output and verdict to
 `<job>/logs/<stage>.log`, and `pipeline run SPEC --only STAGE --force` deletes the later sentinels and revokes the
 approval gates that stage invalidates.
@@ -114,7 +115,7 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 
 ## Storage rules for every agent
 - Producing or auditing a whole video: use the `video-production-orchestrator` skill (`.claude/skills/video-production-orchestrator/`). It sets the order of phases, the two background rules (`python -m contentos.intelligence.visual ...`) and technique lookup (`python -m contentos.intelligence.catalogue query ...`). Design and known failures: `docs/video-intelligence/`.
-- Generated files (audio, images, scenes, renders, caches, logs) live **outside Git**, in `$VIDEO_FACTORY_WORKSPACE` (default `~/Desktop/VideoFactory-Workspace`), one folder per job: `jobs/YYYY/MM/<job-id>/`. Never write them into the repo and never `git add` media.
+- Generated files (audio, images, scenes, renders, caches, logs) live **outside Git**, in `$VIDEO_FACTORY_WORKSPACE` (default `~/Desktop/VideoFactory-Workspace`), one folder per job: `jobs/YYYY/MM/DD/<job-id>/`. Never write them into the repo and never `git add` media.
 - Only validated finals go to the publishing library `$VIDEO_FACTORY_PUBLISH_DIR` (default `~/Desktop/Video-Publishing`) via the pipeline `export` stage or `./contentos.sh storage export <job-id>`. Output: `ready/<project>/YYYY/MM/<content>__<job>.mp4` plus a `.publish.json` sidecar. Failed or unvalidated videos are never exported.
 - Optional spec fields that feed the sidecar (never guessed if absent): `project`, `project_name`, `content`, `topic`, `description`, `tags`, `platform_targets`, `language`, `kind` (short|long), `require_audio`.
 - If a configured folder is missing or unwritable, stop and report it. Do not fall back to the repo, and never delete files to free space (`storage cleanup` is dry-run unless the owner passes `--apply`).

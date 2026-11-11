@@ -6,6 +6,7 @@
   doctor                           what is installed/ready for each language, with the exact fix when it is not
   verify-models                    size + sha256 of every configured ASR model against the config
   reference --make [--from FILE]   create ~/.contentos/voices/hi_reference.wav (synthetic Kokoro clip, or a recording you supply with consent)
+  setup                            install English, Hindi, and Hinglish runtimes and models. Odia stays blocked.
   download-tts                     pre-fetch the Chatterbox checkpoint into the HF cache (~3 GB, network)
   speak --lang hi --text "..." --out OUT.wav [--voice V]     one segment through the router
   transcribe WAV --lang hi         word timings through the routed ASR model
@@ -42,7 +43,7 @@ def _sha(p):
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="contentos.lang", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for n in ("routes", "doctor", "verify-models", "download-tts"):
+    for n in ("routes", "doctor", "verify-models", "download-tts", "setup"):
         sub.add_parser(n)
     p = sub.add_parser("matrix"); p.add_argument("--write", action="store_true"); p.add_argument("--check", action="store_true"); p.add_argument("--json", action="store_true")
     p = sub.add_parser("validate-script"); p.add_argument("lang"); p.add_argument("file")
@@ -117,6 +118,9 @@ def main(argv=None) -> int:
             text = json.loads(FIX.read_text(encoding="utf-8"))["reference_voice_text_hi"]
             res = T._kokoro(text, R.Route("hi", "hi", "kokoro_hindi", "hf_alpha", "whisper_turbo_q5", "hi", "as_is", None), dest, cfg, __import__("time").time())
             print(f"wrote {dest} ({res.duration} s, synthetic Kokoro hf_alpha; no real person's voice)"); return 0
+        if a.cmd == "setup":
+            from .setup import setup
+            return setup(cfg)
         if a.cmd == "download-tts":
             be = cfg["tts_backends"]["chatterbox_v3"]
             py = C.path(cfg, "mlx_python")

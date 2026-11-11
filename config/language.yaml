@@ -80,6 +80,7 @@ asr_models:
   whisper_small_en:                      # existing English model, unchanged
     file: ggml-small.en.bin
     size_bytes: 487614201
+    source: https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin
     multilingual: false
   whisper_turbo_q5:                      # official whisper.cpp artifact, MIT
     file: ggml-large-v3-turbo-q5_0.bin
