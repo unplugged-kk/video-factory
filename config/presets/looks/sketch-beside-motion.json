@@ -1,0 +1,32 @@
+{
+  "schema": "look/1",
+  "id": "sketch-beside-motion",
+  "name": "Sketch beside motion",
+  "kind": "look",
+  "summary": "A rough paper sketch stays on one side while the polished motion graphic plays beside it.",
+  "family": "explainer",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "supplied-media"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#f5f5f0",
+    "fg": "#1b1b1b",
+    "accent": "#ff6b35"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 3
+  },
+  "captions": "minimal",
+  "texture": [
+    "paper-sketch"
+  ],
+  "effects": [],
+  "layout": "split-sketch-left"
+}

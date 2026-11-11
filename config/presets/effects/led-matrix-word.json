@@ -1,0 +1,20 @@
+{
+  "schema": "look/1",
+  "id": "led-matrix-word",
+  "name": "LED matrix word",
+  "kind": "effect",
+  "summary": "One key word per beat as a grid of glowing round dots that light column by column, with a faint flicker.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "beat-detection"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "beat",
+  "params": {
+    "dot_grid": true,
+    "reveal": "column",
+    "flicker": 0.05
+  }
+}

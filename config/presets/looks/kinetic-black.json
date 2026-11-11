@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "kinetic-black",
+  "name": "Kinetic black",
+  "kind": "look",
+  "summary": "Chunky words punch in on the beat in big letters on black with paint splats and confetti.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "beat-detection"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#000000",
+    "fg": "#ffffff",
+    "accent": "#ff2e63"
+  },
+  "typography": {
+    "display": "Anton",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 5
+  },
+  "captions": "one word per beat, huge",
+  "texture": [
+    "paint-splat"
+  ],
+  "effects": [
+    "confetti-beat",
+    "punch-in-zoom"
+  ]
+}

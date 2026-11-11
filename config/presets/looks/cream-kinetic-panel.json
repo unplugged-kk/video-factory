@@ -1,0 +1,34 @@
+{
+  "schema": "look/1",
+  "id": "cream-kinetic-panel",
+  "name": "Cream kinetic panel",
+  "kind": "look",
+  "summary": "The speaker in a rounded window on a cream page with big kinetic type and a green marker swipe on key words.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#f6efdc",
+    "fg": "#1a1a1a",
+    "accent": "#2ecc71"
+  },
+  "typography": {
+    "display": "Fraunces",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 4
+  },
+  "captions": "large kinetic type beside the speaker",
+  "texture": [
+    "marker-swipe"
+  ],
+  "effects": [
+    "punch-in-zoom"
+  ],
+  "layout": "rounded-window"
+}

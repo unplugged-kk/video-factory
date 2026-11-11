@@ -1,0 +1,33 @@
+{
+  "schema": "look/1",
+  "id": "podcast-clean-cuts",
+  "name": "Podcast clean cuts",
+  "kind": "look",
+  "summary": "Tight cuts, a fixed topic headline bar, alternating wide and punched-in framing, clean white captions with a yellow active word.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#101010",
+    "fg": "#ffffff",
+    "accent": "#ffd400"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 2
+  },
+  "captions": "white with yellow active word",
+  "texture": [
+    "flat"
+  ],
+  "effects": [
+    "punch-in-zoom"
+  ]
+}

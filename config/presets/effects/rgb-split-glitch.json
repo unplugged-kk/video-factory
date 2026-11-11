@@ -1,0 +1,22 @@
+{
+  "schema": "look/1",
+  "id": "rgb-split-glitch",
+  "name": "RGB split glitch",
+  "kind": "effect",
+  "summary": "Offset the red and blue channels and tear horizontal slices for a few frames on emphasis words.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "keyword",
+  "params": {
+    "channel_offset_px": 8,
+    "slice_frames": 4
+  },
+  "forbidden": [
+    "glitch longer than 6 frames"
+  ]
+}

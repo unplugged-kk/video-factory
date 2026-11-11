@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "gold-party-3d",
+  "name": "Gold party",
+  "kind": "look",
+  "summary": "Gold and gem lettering, red curtains and lavender smoke with confetti on every beat.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "beat-detection"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#3a0a14",
+    "fg": "#ffd700",
+    "accent": "#ff3366"
+  },
+  "typography": {
+    "display": "Anton",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 5
+  },
+  "captions": "3D gold lettering, one line at a time",
+  "texture": [
+    "curtain",
+    "smoke"
+  ],
+  "effects": [
+    "confetti-beat"
+  ]
+}

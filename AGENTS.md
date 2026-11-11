@@ -83,6 +83,8 @@ Render lanes are chosen by `render:` in the spec, and only two exist in code: `h
 ./contentos.sh factory-worker                           # ContentForge exchange worker (README)
 ./contentos.sh storage paths --check | inventory | export <id> | ready | recover
 ./contentos.sh research "<topic>" | competitor <youtube-url...>
+./contentos.sh videojob select [--intent I] --input kind[:ref] ...   # ordered capabilities, each with its real state
+./contentos.sh looks list --kind look | show <id> | combine BASE OVERLAY | validate   # look/1 presets
 ```
 
 Verification before you claim anything works:
@@ -100,14 +102,17 @@ and die with "bad CPU type". Run commands through the wrapper rather than callin
 Cursor and Claude Code both discover `.claude/skills/*/SKILL.md` by frontmatter, so a skill needs no
 registration. Factory-owned: `video-production-orchestrator` (start here for any whole video), `video-director`
 (planning only), `explainer-motion-craft` (motion rules R1–R6, authoritative), `explainer-visual-qa`
-(post-render review). Pinned upstream: `hyperframes-core`, `hyperframes-animation`, `hyperframes-keyframes`
+(post-render review). Universal entry: `create-video`, for any video request, with `edit-video`, `make-lyric-video`,
+`repurpose-video` and `video-assets` as thin shortcuts that defer to it — a new topic, language, character or
+palette is job configuration, never a new skill. Pinned upstream: `hyperframes-core`, `hyperframes-animation`, `hyperframes-keyframes`
 — gitignored and hash-verified, restored with `python scripts/upstream_skills.py sync`, verified with
 `verify`, never edited in place.
 
 When guidance conflicts, precedence is: the owner's brief, then `hyperframes-core`, then
-`explainer-motion-craft`, then `video-director`, then the orchestrator, then upstream animation skills,
-with `explainer-visual-qa` applied after rendering. Never auto-load skill text from outside this repo; new
-third-party skills arrive through `scripts/upstream_skills.py` with a commit pin and tree hash, after review.
+`explainer-motion-craft`, then `video-director`, then the orchestrator (entered through `create-video`), then
+upstream animation skills, with `explainer-visual-qa` applied after rendering. Never auto-load skill text from
+outside this repo; new third-party skills arrive through `scripts/upstream_skills.py` with a commit pin and tree
+hash, after review.
 
 ### Creative skill catalogue
 
@@ -125,7 +130,19 @@ python -m contentos.intelligence.visual plan plan.json          # declared backd
 python -m contentos.intelligence.visual scenes VIDEO --timing timing.json   # measured, after render
 python -m contentos.intelligence.visual check <job-id|dir>      # Rule B against the last 5 shipped videos
 python -m contentos.intelligence.visual claim <content-id> <job-id>
+./contentos.sh looks list --kind look|effect            # look/1 presets: 30 looks, 27 effects
+./contentos.sh looks show <look-id> | combine BASE OVERLAY
+./contentos.sh videojob select [--intent I] --input kind[:ref] ...   # the capabilities this request needs
 ```
+
+A look is data, not a skill: an unfamiliar style is a new `look/1` JSON in `config/presets/` that passes
+`looks validate`, never a new SKILL.md, and `docs/generic-video/migration-map.json` maps each of the 51 old
+topic-specific specs to the look, effect or capability that now carries its technique. Presets carry technique
+only — no named creator, character, franchise or logo — and stay `unvalidated` until a real render in this
+pipeline records evidence; nothing records it yet, and the builder does not read a chosen look either.
+`videojob select` prints every capability with its `state` (`exists` or `planned`) and the artifact implementing
+it, so a gap is reported rather than implied: `contentos/videojob.py` holds that state and
+`tests/test_videojob.py` checks each path against the disk.
 
 The two background rules fail closed: **Rule A** requires at least half the scenes to use distinct backdrops,
 **Rule B** requires a new video to differ from each of the last five shipped videos on at least two of five
@@ -166,6 +183,7 @@ claim completion before the artifacts exist and the checks pass.
 | How to drive all of this from Cursor | `docs/CURSOR.md` |
 | Skill design, known failures KF-001…KF-006, evidence | `docs/video-intelligence/` |
 | Program history, audits, licensing, platform limits | `docs/factory-v2/` |
+| Presets, the workflow selector, the old-spec migration map, verification evidence | `docs/generic-video/` |
 | Current uncommitted work on this branch | `git status` and `docs/video-intelligence/04-visual-reliability-gate.md` |
 
 ## 10. Known limits (verified 2026-10-11)
@@ -180,3 +198,16 @@ into `contentos.sh` or the pipeline. The labelled sheet needs an ffmpeg built wi
 `./contentos.sh preview <video> --at ... --out DIR --sheet` instead of passing `--allow-unlabelled`, which
 produces an unlabelled sheet and is not the same artifact. Wire `sheet.py` into the QA workflow only after a
 labelled sheet has been generated successfully on this Mac and its labels inspected. `docs/HOW_IT_WORKS.md` section 10 holds the longer list.
+
+**Generic video system (state 2026-10-25, `feat/generic-video-system`).** Built and tested: the universal
+`create-video` entry, the `look/1` library (30 looks, 27 effects in `config/presets/`), the `videojob/1` selector
+and the 51-spec migration map; `docs/generic-video/verification.md` holds the commands and their output. Not
+built: `talking-head-editor` and `lyric-video-engine` are `planned` and a request that needs one must say so
+instead of faking it, while `asset-library` exists (`contentos/production/assets.py`: an ffprobe index, sampled
+frames, notes written by whoever looks at them, and plain-English search over them — the code never writes a
+description itself); `video-understanding` does word timing only (no beat detection, vocal separation
+or diarization). Every preset is `unvalidated` and no procedure promotes one. **A chosen look is not read by the
+builder**, so naming a style changes no frame until `features/style_card.py` and the hardcoded backdrop table in
+`features/visual_layer.py` consume it. The tag `look/1` names two shapes — a preset in `config/presets/` and the
+export stage's shipped-look record in a job folder — which must not be confused; `tests/test_videojob.py` pins that
+they cannot pass for each other.

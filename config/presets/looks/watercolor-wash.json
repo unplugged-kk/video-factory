@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "watercolor-wash",
+  "name": "Watercolor wash",
+  "kind": "look",
+  "summary": "Uneven watercolor washes with paper grain and handwritten labels.",
+  "family": "explainer",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "map-data"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#f7f3ea",
+    "fg": "#2b2d42",
+    "accent": "#3a86ff"
+  },
+  "typography": {
+    "display": "Caveat",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 2
+  },
+  "captions": "handwritten labels",
+  "texture": [
+    "wash",
+    "paper-grain"
+  ],
+  "effects": [
+    "great-circle-route"
+  ]
+}

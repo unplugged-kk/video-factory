@@ -1,0 +1,34 @@
+{
+  "schema": "look/1",
+  "id": "floating-interface-depth",
+  "name": "Floating interface depth",
+  "kind": "look",
+  "summary": "App interfaces floating behind the speaker, who is cut out in front of them.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "segmentation"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#0f172a",
+    "fg": "#ffffff",
+    "accent": "#38bdf8"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Inter"
+  },
+  "motion": {
+    "intensity": 3
+  },
+  "captions": "clean captions",
+  "texture": [
+    "depth-blur"
+  ],
+  "effects": [
+    "cutout-behind-text"
+  ]
+}

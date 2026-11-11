@@ -1,0 +1,24 @@
+{
+  "schema": "look/1",
+  "id": "particle-chart",
+  "name": "Particle chart",
+  "kind": "effect",
+  "summary": "Particles pour down and settle into bars of the true heights; bars are labelled once settled; chart stays in the upper half.",
+  "family": "explainer",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "chart-data"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "scene",
+  "params": {
+    "particles": 3000,
+    "settle": "physics",
+    "label_after_settle": true,
+    "region": "upper-half"
+  },
+  "forbidden": [
+    "bar heights that do not match the supplied data"
+  ]
+}

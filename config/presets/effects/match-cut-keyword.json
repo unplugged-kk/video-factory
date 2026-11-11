@@ -1,0 +1,27 @@
+{
+  "schema": "look/1",
+  "id": "match-cut-keyword",
+  "name": "Match cut on a keyword",
+  "kind": "effect",
+  "summary": "Show the repeated keyword on a different backdrop each time, locked to the same position and size, cutting on the beat of the voice.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "keyword",
+  "params": {
+    "lock": [
+      "position",
+      "size"
+    ],
+    "cut_on": "voice-beat",
+    "backdrops": [
+      "page",
+      "document",
+      "poster"
+    ]
+  }
+}

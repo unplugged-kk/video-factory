@@ -1,0 +1,20 @@
+{
+  "schema": "look/1",
+  "id": "particle-text",
+  "name": "Particle text",
+  "kind": "effect",
+  "summary": "Scatter particles then pull them into a word, hold it, and blow it apart on the next beat.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "beat-detection"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "beat",
+  "params": {
+    "assemble_frames": 18,
+    "hold": "until-next-beat",
+    "color_from": "palette.accent"
+  }
+}

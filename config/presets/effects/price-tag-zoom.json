@@ -1,0 +1,23 @@
+{
+  "schema": "look/1",
+  "id": "price-tag-zoom",
+  "name": "Price tag zoom",
+  "kind": "effect",
+  "summary": "A slow push-in over the sentence with a price card that swings in on the price word; strike the old price on a discount.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "keyword",
+  "params": {
+    "push_in": "sentence-long",
+    "tag": "swing",
+    "strike_old_price": true
+  },
+  "audio": [
+    "register"
+  ]
+}

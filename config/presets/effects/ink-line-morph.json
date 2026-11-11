@@ -1,0 +1,21 @@
+{
+  "schema": "look/1",
+  "id": "ink-line-morph",
+  "name": "Ink line morph",
+  "kind": "effect",
+  "summary": "One continuous glowing line that morphs into a new drawing on each key word, with a camera punch on each kick.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "beat-detection"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "keyword",
+  "params": {
+    "line": "continuous",
+    "morph_on": "key-word",
+    "camera_punch_on": "kick"
+  }
+}

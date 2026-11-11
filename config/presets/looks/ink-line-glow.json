@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "ink-line-glow",
+  "name": "Ink line glow",
+  "kind": "look",
+  "summary": "A single unbroken glowing line morphs into a new drawing on each key word.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment",
+    "beat-detection"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#05070d",
+    "fg": "#e8f7ff",
+    "accent": "#00e5ff"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 4
+  },
+  "captions": "short key words only",
+  "texture": [
+    "glow"
+  ],
+  "effects": [
+    "ink-line-morph",
+    "punch-in-zoom"
+  ]
+}

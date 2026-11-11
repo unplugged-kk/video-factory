@@ -1,0 +1,19 @@
+{
+  "schema": "look/1",
+  "id": "doodle-per-line",
+  "name": "Doodle per line",
+  "kind": "effect",
+  "summary": "One simple doodle drawn stroke by stroke for each lyric line; board clears just before the next line.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "sentence",
+  "params": {
+    "draw": "stroke-by-stroke",
+    "clear": "before-next-line"
+  }
+}

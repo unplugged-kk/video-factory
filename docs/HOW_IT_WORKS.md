@@ -18,6 +18,8 @@ The parts:
 | whisper.cpp | Word timings for captions and alignment | via `hyperframes transcribe` |
 | ffmpeg / ffprobe | Rendering support and QA measurements | `/opt/homebrew/bin` must come first |
 | Skills | Instructions an agent reads before doing a kind of work | `.claude/skills/` |
+| Look presets | The look as data: palette, type, texture, motion, captions (30 looks, 27 effects) | `config/presets/`, `contentos/intelligence/looks.py` |
+| Workflow selector | Picks the capabilities a request needs and reports which of them exist | `contentos/videojob.py`, `./contentos.sh videojob select` |
 | Capability registry | The list of techniques an agent may choose from | `config/capabilities.json` |
 | Platform limits | Maximum lengths and formats per platform | `config/platforms.json` |
 
@@ -77,8 +79,11 @@ Failed voice, compose or render stages are retried twice (after 15 s and 45 s); 
   - `video-director`: planning (this repo's own).
   - `explainer-motion-craft`: the house motion rules R1 to R6 (smooth settle with no bounce, reveal on the spoken cue, one camera move per scene, no ambient motion, safe zones, short statements at about 2.5 words per second). Authoritative for motion.
   - `explainer-visual-qa`: post-render review.
+  - `create-video`: the universal entry for any video request — a new video from a topic, script, audio, song, images or data, an edit of a recording, a lyric video, repurposing a long video, or an asset search. It reads the inputs, asks the selector which capabilities the job needs, and runs only those through the orchestrator phases and gates. `edit-video`, `make-lyric-video`, `repurpose-video` and `video-assets` are thin shortcuts that defer to it.
   - `hyperframes-core`, `hyperframes-animation`, `hyperframes-keyframes`: pinned upstream HyperFrames skills. They are not committed; `python scripts/upstream_skills.py sync` restores them from `config/upstream-skills.lock.json`.
-- **Precedence when guidance conflicts:** the user's brief, then `hyperframes-core`, then `explainer-motion-craft`, then `video-director` and `video-production-orchestrator` (same level; the orchestrator places `video-director` first, planning before execution), then upstream animation skills, then `references/motion-intent.md` (advisory), with `explainer-visual-qa` applied after rendering.
+- **Look presets** (`config/presets/`, schema `look/1`): a look is a visual language kept as data — palette, typography, texture, motion, captions and the effects that fit it; an effect is one parameterised treatment with a trigger and params. 30 looks and 27 effects exist today, all `unvalidated`. `./contentos.sh looks list|show|combine`, validate with `./contentos.sh looks validate`. A new style is a new JSON file, never a new skill, and a preset may never name a third-party creator, character or logo. `docs/generic-video/migration-map.json` maps all 51 old topic-specific skill specs to the look, effect or capability that now carries their technique.
+- **Workflow selector** (`contentos/videojob.py`, schema `videojob/1`): `./contentos.sh videojob select [--intent create|edit|lyric|repurpose|assets|news] --input kind[:ref] ...` returns the ordered capability list with each capability's `state` (`exists` or `planned`) and the artifact implementing it. A missing critical input is a blocker (exit 1); missing lyrics or timing is a warning, never an invention. `tests/test_videojob.py` checks the state against the disk, so a planned capability is reported rather than faked.
+- **Precedence when guidance conflicts:** the user's brief, then `hyperframes-core`, then `explainer-motion-craft`, then `video-director` and `video-production-orchestrator` (same level; the orchestrator places `video-director` first, planning before execution), then upstream animation skills, then `references/motion-intent.md` (advisory), with `explainer-visual-qa` applied after rendering. The universal entry `create-video` sits at the orchestrator's level: it decides what to run, the orchestrator decides the order and rules.
 - **Capability registry** (`config/capabilities.json`): 93 entries, each `installed`, `available` (needs an opt-in), `candidate` (experimental only, for example p5.brush) or `unavailable` (for example the vibe filters). "Installed" means the file is present and lock-verified, not that it has been render-tested. An agent may name only ids that are in this file; `director.select_capability` picks the simplest usable one and records any substitution.
 - **Platform limits** (`config/platforms.json`): see section 6.
 
@@ -112,8 +117,10 @@ Check commands: `platforms list | budget | check`, with `--platforms`, `--tier y
 ./contentos.sh worker --concurrency 2                   # runs the queue (--once drains and exits)
 ./contentos.sh factory-worker                           # ContentForge exchange (README has details)
 ./contentos.sh status                                   # recent ledger rows
+./contentos.sh videojob select --intent create --input topic:"..."   # ordered capabilities, each with its state
+./contentos.sh looks list --kind look | show <id> | combine <base> <overlay> | validate
 ```
-Tests: `~/.contentos/venv/bin/python -m pytest tests` (Python 3.12 or later). One known failure exists, `test_core.py::test_local_beats_paid_even_when_both_healthy`, unrelated to the director work and not yet investigated.
+Tests: `~/.contentos/venv/bin/python -m pytest tests` (Python 3.12 or later). Measured 2026-10-25 on `feat/generic-video-system`: 848 passed, 21 skipped, 0 failed; the skips need `node_modules`, the pinned `hyperframes-*` skills or a gitignored pilot workspace. Before ffmpeg was reinstalled the same suite reported 266 failures, every one of them the dead x86 `/usr/local/bin` ffmpeg — `brew install ffmpeg` (arm64) fixes all of them without a code change, and `contentos.sh` putting `/opt/homebrew/bin` first is what keeps it fixed.
 
 ## 8. Where things live
 ```
@@ -149,7 +156,8 @@ No public upload and no paid service without explicit approval; do not change ga
 ## 10. What is built and what is not
 Working: the Track A pipeline, Kokoro voice, whisper captions, multi-renderer architecture (HyperFrames default + Remotion selectable second provider + MPT b-roll), 6-family motion catalog, QA (including Safezone G6 and Rule A), gates, ledger, queue and worker, ContentForge exchange, the capability registry and validator, the director check, platform limits, the contact-sheet and critic tools.
 New and in shadow mode: `production/sheet.py` (timeline-labelled contact sheets, `sheet/1`) and `production/timeline.py` (`timeline/1`). Nothing imports the timeline yet, and the labelled sheet needs an ffmpeg built with `drawtext`: the `/opt/homebrew` build on this Mac has no freetype, so there it fails closed and the plain `preview --sheet` is the fallback. `--allow-unlabelled` produces an unlabelled sheet, which is not the same artifact; the labelled path enters the QA workflow only after a labelled sheet has been generated on this Mac and its labels inspected. Nothing invokes the timeline: `visual_gate captions --timing` reads scenes with `start`/`end`, so a `timeline/1` file (`t0`/`t1`) yields no windows and a misleading `visible_ratio: 0.0`. `visual scenes --timing` is the tool that does accept `t0`.
-Built but not wired into the builder: scene-plan consumption (Track B composition is agent-built).
+Built but not wired into the builder: scene-plan consumption (Track B composition is agent-built), and the chosen `look/1` preset — `features/style_card.py` resolves one, but the hardcoded backdrop table in `features/visual_layer.py` ignores it, so naming a style changes no frames yet.
+Generic video system (added 2026-10-25, `feat/generic-video-system`): the universal `create-video` entry, the `look/1` library (30 looks, 27 effects in `config/presets/`) and the `videojob/1` selector are built and tested, and `docs/generic-video/migration-map.json` maps all 51 old topic-specific specs onto the presets or capabilities that now carry their technique. Built since: `asset-library` (`contentos/production/assets.py` — index a folder, fill the notes in from the sampled frames, search it in plain English; the code never writes a description itself). Planned: `talking-head-editor`, `lyric-video-engine`; `video-understanding` does word timing only (no beat detection, vocal separation or diarization). All 57 presets are `unvalidated` and nothing promotes one. Evidence, commands and the gaps: [generic-video/verification.md](generic-video/verification.md).
 Tested only as a dry run: the `video-director` plan for "What Happens When an AI Agent Uses a Tool?" (`workspace/experiments/m2-director-dryrun-001/`, not rendered).
 Not built: a YouTube uploader and OAuth, multi-platform publishing, niche discovery, analytics ingestion, thumbnails, Odia, a human-reviewed Hindi voice (Hindi/Hinglish generation exists: docs/MULTILINGUAL.md), automatic skill triggering tests.
 
@@ -158,3 +166,4 @@ Not built: a YouTube uploader and OAuth, multi-platform publishing, niche discov
 2. Wire scene plans into the ContentOS builder only after M3 succeeds.
 3. Research the remaining platforms and decide long-form length.
 4. Decide on a publishing adapter per platform behind the existing gate.
+5. Wire the chosen look into the builder (`features/style_card.py` feeding `features/visual_layer.py`) so a named style changes the render, then take on a remaining planned capability: `talking-head-editor` or `lyric-video-engine`.

@@ -1,0 +1,38 @@
+{
+  "schema": "look/1",
+  "id": "anime-cel",
+  "name": "Anime cel",
+  "kind": "look",
+  "summary": "Big-eyed characters with thick clean outlines and one flat shade, drawn in code, with anime impact tricks.",
+  "family": "story",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#1b1f3a",
+    "fg": "#ffffff",
+    "accent": "#ff4d6d"
+  },
+  "typography": {
+    "display": "Anton",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 4
+  },
+  "captions": "2-3 word chunks, active word in the speaker's colour",
+  "texture": [
+    "clean-outline",
+    "flat-shade"
+  ],
+  "effects": [
+    "lip-sync-mouth",
+    "speed-lines-impact",
+    "speech-bubble-pop",
+    "sfx-cue-set"
+  ],
+  "layout": "character-sheet-first"
+}

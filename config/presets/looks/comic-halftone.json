@@ -1,0 +1,36 @@
+{
+  "schema": "look/1",
+  "id": "comic-halftone",
+  "name": "Comic halftone",
+  "kind": "look",
+  "summary": "A scene retold as comic panels: halftone dots, speed lines, burst words and speech bubbles.",
+  "family": "story",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#fff4d6",
+    "fg": "#111111",
+    "accent": "#e63946"
+  },
+  "typography": {
+    "display": "Bangers",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 4
+  },
+  "captions": "speech bubbles per line",
+  "texture": [
+    "halftone-dots",
+    "panel-border"
+  ],
+  "effects": [
+    "speech-bubble-pop",
+    "speed-lines-impact",
+    "halftone-grade"
+  ]
+}

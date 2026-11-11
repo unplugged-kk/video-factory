@@ -1,0 +1,19 @@
+{
+  "schema": "look/1",
+  "id": "film-bars-grain",
+  "name": "Film bars and grain",
+  "kind": "effect",
+  "summary": "Wide-screen bars, film grain and a warm grade with slow cinematic punch-ins.",
+  "family": "any",
+  "status": "unvalidated",
+  "needs": [
+    "core"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "always",
+  "params": {
+    "aspect": "2.39:1",
+    "grain": true,
+    "grade": "warm"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "folk-art-painting",
+  "name": "Folk art painting",
+  "kind": "look",
+  "summary": "A story told as a living folk painting: bold double outlines, patterned fills, a thick decorated border.",
+  "family": "story",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#f4e3b5",
+    "fg": "#1a1a1a",
+    "accent": "#c0392b"
+  },
+  "typography": {
+    "display": "Noto Sans Devanagari",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 2
+  },
+  "captions": "one line at the bottom, active word underlined",
+  "texture": [
+    "double-outline",
+    "pattern-fill",
+    "decorated-border"
+  ],
+  "effects": [
+    "speech-bubble-pop"
+  ]
+}

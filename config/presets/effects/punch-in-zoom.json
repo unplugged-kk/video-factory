@@ -1,0 +1,22 @@
+{
+  "schema": "look/1",
+  "id": "punch-in-zoom",
+  "name": "Punch-in zoom",
+  "kind": "effect",
+  "summary": "A quick punch-in on a key word, returning to wide at the next sentence.",
+  "family": "any",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "keyword",
+  "params": {
+    "scale": 1.2,
+    "in_frames": 4
+  },
+  "forbidden": [
+    "more than one punch-in per sentence"
+  ]
+}

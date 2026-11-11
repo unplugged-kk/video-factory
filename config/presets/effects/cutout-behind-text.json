@@ -1,0 +1,23 @@
+{
+  "schema": "look/1",
+  "id": "cutout-behind-text",
+  "name": "Text behind subject",
+  "kind": "effect",
+  "summary": "Place large type or interface elements behind the cut-out subject and change them per point.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "segmentation"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "scene",
+  "params": {
+    "layer": "behind-subject",
+    "change_on": "new-point"
+  },
+  "safe_zone": true,
+  "frame_checklist": [
+    "subject edge is clean at phone size"
+  ]
+}

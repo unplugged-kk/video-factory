@@ -1,0 +1,21 @@
+{
+  "schema": "look/1",
+  "id": "channel-chyron-ticker",
+  "name": "Chyron and ticker",
+  "kind": "effect",
+  "summary": "A lower-third, a scrolling ticker of short headlines and a corner bug, all generic placeholders.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "always",
+  "params": {
+    "lower_third": true,
+    "ticker": true,
+    "corner_bug": "generic"
+  },
+  "safe_zone": true
+}

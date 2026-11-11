@@ -1,0 +1,20 @@
+{
+  "schema": "look/1",
+  "id": "handwriting-write-on",
+  "name": "Handwriting write-on",
+  "kind": "effect",
+  "summary": "Each word writes on letter by letter at its exact sung time, stroke grain re-jittered about 8 times a second.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "word",
+  "params": {
+    "mode": "letter-by-letter",
+    "jitter_hz": 8,
+    "grain": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "look/1",
+  "id": "rec-timecode-timeline",
+  "name": "REC tag, timecode, timeline",
+  "kind": "effect",
+  "summary": "A blinking record dot, running timecode and an editing-timeline bar with a moving playhead.",
+  "family": "talking-head",
+  "status": "unvalidated",
+  "needs": [
+    "core"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "trigger": "always",
+  "params": {
+    "rec_dot_hz": 1,
+    "timecode": true,
+    "timeline_bar": "bottom"
+  },
+  "safe_zone": true
+}

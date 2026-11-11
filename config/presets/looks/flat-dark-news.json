@@ -1,0 +1,34 @@
+{
+  "schema": "look/1",
+  "id": "flat-dark-news",
+  "name": "Flat dark news",
+  "kind": "look",
+  "summary": "Flat dark cards with a thin red box and a highlighter on the key line, then a zoom; a hard cut every two seconds.",
+  "family": "explainer",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#242021",
+    "fg": "#ffffff",
+    "accent": "#e63946"
+  },
+  "typography": {
+    "display": "Outfit",
+    "body": "Outfit"
+  },
+  "motion": {
+    "intensity": 4
+  },
+  "captions": "2-3 word chunks",
+  "texture": [
+    "flat-card"
+  ],
+  "effects": [
+    "sfx-cue-set",
+    "punch-in-zoom"
+  ]
+}

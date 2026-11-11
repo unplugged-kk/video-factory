@@ -1,0 +1,35 @@
+{
+  "schema": "look/1",
+  "id": "pencil-sketch",
+  "name": "Pencil sketch",
+  "kind": "look",
+  "summary": "Soft graphite drawings of the song's story fill the page while the lyrics are handwritten beside them.",
+  "family": "lyric",
+  "status": "unvalidated",
+  "needs": [
+    "core",
+    "forced-alignment"
+  ],
+  "provenance": "Technique distilled from the owner's skill specs; original wording, no third-party assets, characters or logos.",
+  "palette": {
+    "bg": "#f3efe6",
+    "fg": "#3a3a3a",
+    "accent": "#7a7a7a"
+  },
+  "typography": {
+    "display": "Caveat",
+    "body": "Kalam"
+  },
+  "motion": {
+    "intensity": 2
+  },
+  "captions": "handwritten beside the drawing",
+  "texture": [
+    "graphite",
+    "paper-grain"
+  ],
+  "effects": [
+    "handwriting-write-on",
+    "doodle-per-line"
+  ]
+}
