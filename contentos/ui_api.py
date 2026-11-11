@@ -213,7 +213,7 @@ def _rerun_qa(content_id):
     except (OSError, RuntimeError, subprocess.SubprocessError) as exc:
         return error(422, "QA_FAILED", str(exc)[-1000:])
     target = directory / "qa.json"
-    target.write_text(json.dumps([{"check": name, "status": status, "detail": text} for name, status, text in rows], indent=2), encoding="utf-8")
+    storage.write_json_atomic(target, [{"check": name, "status": status, "detail": text} for name, status, text in rows])
     failed = [name for name, status, _text in rows if status == "FAIL"]
     return Response(200, {"status": "FAIL" if failed else "PASS", "failed": failed, "checks": len(rows)})
 

@@ -1,6 +1,6 @@
 import { api, mediaUrl, watchJobEvents } from "../api.js";
 import { bindCopy, emptyState, errorPanel, escapeHtml, formatTime, idControl, nextActionCard, qaRows, statusLabel, timeline } from "../components.js";
-import { formatDuration, jobView, listFrom, nextAction, STAGES } from "../state.js";
+import { defaultLogStage, formatDuration, jobView, listFrom, nextAction, STAGES } from "../state.js";
 
 const TABS = ["overview", "script", "review", "logs", "files"];
 
@@ -64,7 +64,7 @@ function reviewPage(job, id) {
 }
 
 function logsPage(job, id) {
-  const selected = job.current_stage ?? job.failed_stage ?? STAGES.find((stage) => job.stages?.[stage]?.state === "failed") ?? "script";
+  const selected = defaultLogStage(job);
   return `<section><header class="section-head"><div><h2>Stage logs</h2><p>Logs are escaped text from the selected stage.</p></div><label>Stage <select id="log-stage">${STAGES.map((stage) => `<option ${stage === selected ? "selected" : ""}>${stage}</option>`).join("")}</select></label></header>
     <div class="log-actions"><label>Find <input id="log-search" type="search" autocomplete="off"></label><label class="choice"><input id="log-wrap" type="checkbox" checked> Wrap lines</label><button class="secondary" id="copy-log" type="button">Copy log</button><button class="secondary" id="download-log" type="button">Download</button></div>
     <div id="log-result" aria-live="polite"><div class="skeleton" aria-label="Loading log"></div></div></section>`;
@@ -118,6 +118,8 @@ function overviewPage(job, id) {
 }
 
 export async function showJob(root, id, requestedTab = "overview") {
+  const watchToken = Symbol("job-watch");
+  root.__watchToken = watchToken;
   const tab = TABS.includes(requestedTab) ? requestedTab : "overview";
   root.innerHTML = '<div class="skeleton skeleton--large" aria-label="Loading job"></div>';
   try {
@@ -300,7 +302,7 @@ function bindActions(root, id, tab, currentJob) {
     let current = fingerprint(currentJob);
     let timer = null;
     let closeEvents = () => {};
-    const active = () => root.isConnected && location.hash === expectedHash;
+    const active = () => root.isConnected && root.__watchToken === watchToken && location.hash === expectedHash;
     const refresh = async () => {
       if (!active()) { closeEvents(); clearTimeout(timer); return; }
       try {

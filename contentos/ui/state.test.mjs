@@ -2,11 +2,17 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  canonicalState, checkView, filterSortJobs, healthReadiness, jobView, nextAction,
+  canonicalState, checkView, defaultLogStage, filterSortJobs, healthReadiness, jobView, nextAction,
   normalizeJobDraft, persistJobDraft, restoreJobDraft, STAGES, statusMeta,
 } from "./state.js";
 import { escapeHtml, fieldAttrs, idControl, middleId, statusLabel, timeline } from "./components.js";
 import { icon } from "./icons.js";
+
+test("the log screen opens on a real failed stage, not an array lookup miss", () => {
+  assert.equal(defaultLogStage({ stages: [{ name: "voice", status: { state: "passed" } }, { name: "render", status: { state: "failed" } }] }), "render");
+  assert.equal(defaultLogStage({ currentStage: "qa", stages: [] }), "qa");
+  assert.equal(defaultLogStage({ stages: [] }), "script");
+});
 
 test("blocked, failed, and stale remain distinct", () => {
   assert.equal(canonicalState("draft"), "draft");
@@ -117,6 +123,7 @@ test("render helpers escape untrusted text and include icon plus label", () => {
   assert.match(label, />Failed</);
   assert.doesNotMatch(label, /<script>/);
   assert.match(timeline([{ name: "script", state: "failed", error: "<boom>" }]), /&lt;boom&gt;/);
+  assert.match(timeline([{ name: "render", state: "passed", provider: "hyperframes", seconds: 7.5 }]), /hyperframes · 7\.5s/);
 });
 
 test("long ids use deterministic middle truncation", () => {

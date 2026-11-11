@@ -213,6 +213,13 @@ export function filterSortJobs(jobs, { query = "", state = "", kind = "", sort =
   });
 }
 
+export function defaultLogStage(job = {}) {
+  const stages = Array.isArray(job.stages) ? job.stages : [];
+  return job.currentStage ?? job.current_stage ?? job.failedStage ?? job.failed_stage
+    ?? stages.find((stage) => (stage.status?.state ?? stage.state) === "failed")?.name
+    ?? "script";
+}
+
 export function formatDuration(seconds) {
   if (!Number.isFinite(Number(seconds))) return "—";
   const total = Math.max(0, Math.round(Number(seconds)));

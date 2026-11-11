@@ -65,7 +65,8 @@ export function timeline(stages = []) {
   return `<ol class="timeline">${STAGES.map((name) => {
     const stage = byName.get(name) ?? {};
     const status = stage.status?.state ? stage.status : statusMeta(stage.state ?? stage.status);
-    const details = [stage.provider, stage.duration != null ? `${stage.duration}s` : null].filter(Boolean).join(" · ");
+    const seconds = stage.seconds ?? stage.duration;
+    const details = [stage.provider, seconds != null ? `${seconds}s` : null].filter(Boolean).join(" · ");
     return `<li class="timeline__item timeline__item--${status.state}">
       <div class="timeline__head"><strong>${escapeHtml(name)}</strong>${statusLabel(status)}</div>
       ${details ? `<small>${escapeHtml(details)}</small>` : ""}
