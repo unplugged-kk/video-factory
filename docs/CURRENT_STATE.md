@@ -245,6 +245,10 @@ synthetic reference provenance. Export:
 `ready/recovery/2026/11/recovery-hi-smoke-20261111__recovery-hi-smoke-20261111.mp4`. This proves the language
 path, not narration quality: no fluent listener has approved the audio.
 
+After inspection, both sample finals and their sidecars were moved to
+`~/Desktop/VideoFactory-Workspace/experiments/recovery-samples/` so no scheduler could claim them from `ready/`.
+No claim existed and no publish occurred; `publish` returned `DRY_RUN` for both jobs.
+
 ## 12. Known bugs and debt (not fixed here)
 
 1. **A named look does not change a frame.** `config/presets/` is not read by the builder; style cards reach
