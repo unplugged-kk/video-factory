@@ -44,6 +44,20 @@ def test_queue_run_uses_production_result_and_kills_on_timeout(tmp_path, monkeyp
     assert "timed out" in error
 
 
+def test_recover_requeues_a_running_job_with_no_pid(tmp_path, monkeypatch):
+    monkeypatch.setenv("VIDEO_FACTORY_WORKSPACE", str(tmp_path / "workspace"))
+    monkeypatch.setenv("VIDEO_FACTORY_PUBLISH_DIR", str(tmp_path / "publishing"))
+    storage.preflight()
+    spec = tmp_path / "job.yaml"
+    spec.write_text(yaml.safe_dump({"content_id": "orphan-job", "title": "Orphan"}))
+    job_id = queue.add([spec])[0]
+    with ledger.db() as c:
+        c.execute("UPDATE jobs SET status='running', pid=NULL WHERE id=?", (job_id,))
+    queue.recover()
+    status, pid = ledger.db().execute("SELECT status, pid FROM jobs WHERE id=?", (job_id,)).fetchone()
+    assert (status, pid) == ("queued", None)
+
+
 def test_production_json_marks_gate_wait_as_blocked(tmp_path, monkeypatch):
     monkeypatch.setenv("VIDEO_FACTORY_WORKSPACE", str(tmp_path / "workspace"))
     monkeypatch.setenv("VIDEO_FACTORY_PUBLISH_DIR", str(tmp_path / "publishing"))

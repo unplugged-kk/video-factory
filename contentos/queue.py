@@ -36,9 +36,12 @@ def recover():
     """Jobs left 'running' by a dead worker go back to the queue."""
     with ledger.db() as c:
         for jid, pid in c.execute("SELECT id, pid FROM jobs WHERE status='running'").fetchall():
+            if not pid:                                  # no process to probe; os.kill(0, 0) would always succeed
+                c.execute("UPDATE jobs SET status='queued', pid=NULL WHERE id=?", (jid,))
+                continue
             try:
-                os.kill(pid or 0, 0)
-            except (OSError, ProcessLookupError):
+                os.kill(pid, 0)
+            except OSError:
                 c.execute("UPDATE jobs SET status='queued', pid=NULL WHERE id=?", (jid,))
 
 
