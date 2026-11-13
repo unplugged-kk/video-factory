@@ -1,0 +1,46 @@
+# Hindi finance explainer, original script. Illustrative numbers (assumed 12% p.a., not a forecast). Sample only, never published.
+content_id: sample-fin-sip-hi-001
+title: "5000 रुपये महीना: दस साल में क्या होता है"
+thumb_text: "5000 रुपये महीना"
+description: "एसआईपी का एक सरल उदाहरण, आसान हिंदी में। यह निवेश सलाह नहीं है।"
+tags: [finance, sip, hindi, savings]
+format: "9:16"
+kind: short
+language: hi
+visual_style: {id: editorial-magazine, seed: 7}
+script:
+  - say: "हर महीने पाँच हज़ार रुपये बचाना छोटा लगता है, लेकिन दस साल में यही रकम चौंका सकती है।"
+    headline: "छोटी बचत, बड़ा असर"
+    tag: शुरुआत
+  - say: "अगर आप हर महीने पाँच हज़ार रुपये एक एसआईपी में डालें, तो दस साल में आपका निवेश छह लाख रुपये होता है।"
+    headline: "दस साल में निवेश"
+    tag: हिसाब
+    visual:
+      type: stat
+      illustrative: true
+      note: "उदाहरण के लिए, असली आँकड़ा नहीं"
+      value: "₹6 लाख"
+      label: "आपका कुल निवेश"
+  - say: "मान लीजिए सालाना बारह प्रतिशत रिटर्न मिले, तो वही रकम लगभग साढ़े ग्यारह लाख रुपये बन सकती है।"
+    headline: "उदाहरण: 12% सालाना"
+    tag: उदाहरण
+    visual:
+      type: stat
+      illustrative: true
+      note: "उदाहरण के लिए, 12% मानकर; गारंटी नहीं"
+      unit: " लाख"
+      bars:
+        - {label: "निवेश", value: 6.0}
+        - {label: "अनुमानित मूल्य", value: 11.5}
+  - say: "यह सिर्फ़ एक उदाहरण है। असली रिटर्न ऊपर नीचे होता है, और कोई गारंटी नहीं होती।"
+    headline: "कोई गारंटी नहीं"
+    tag: ध्यान दें
+  - say: "सबसे ज़रूरी बात है जल्दी शुरू करना, और हर महीने रुकना नहीं।"
+    headline: "तीन आसान कदम"
+    tag: सीख
+    visual:
+      type: steps
+      steps: [छोटी रकम चुनें, हर महीने ऑटो डेबिट, दस साल तक न रुकें]
+  - say: "आज ही अपनी पहली छोटी रकम तय कीजिए।"
+    headline: "आज शुरू करें"
+    tag: अंत
