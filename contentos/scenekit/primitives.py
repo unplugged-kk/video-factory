@@ -222,7 +222,7 @@ def stat(v, sid, t, d, g):
             parts.append(f'<div class="bar"><span class="bl">{e(b["label"])}</span><div class="bt"><div class="bf" id="{sid}b{k}" style="width:0;background:{col}"></div></div>'
                          f'<span class="bv">{e(str(b["value"]))}{unit}</span></div>')
             js.append(f'tl.to("#{sid}b{k}",{{width:"{pct:.1f}%",duration:.7,ease:"power3.out"}},{t + 0.5 + k * 0.18:.2f});')
-    foot = f'Source: {e(v["source"])}' if v.get("source") else "Illustrative data, not a measurement"
+    foot = e(v["note"]) if v.get("note") else (f'Source: {e(v["source"])}' if v.get("source") else "Illustrative data, not a measurement")
     parts.append(f'<div class="foot">{foot}</div>')
     return f'<div class="statwrap">{"".join(parts)}</div>', "".join(js)
 

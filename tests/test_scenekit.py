@@ -170,6 +170,11 @@ def test_stat_footer_states_source_or_illustrative():
     assert "Source: Vendor doc" in h1 and "Illustrative data" in h2
 
 
+def test_stat_footer_note_overrides_default_for_non_english_videos():
+    h, _ = primitives.stat({"type": "stat", "value": "2x", "illustrative": True, "note": "उदाहरण"}, "s1", 0, 4, G)
+    assert "उदाहरण" in h and "Illustrative data" not in h
+
+
 # ---- compose (hermetic: fake audio length, no ASR, no render) -------------------------------------------------------
 
 def _ctx(tmp_path, s, res=(1080, 1920)):
