@@ -52,3 +52,14 @@
 ## 2026-11-13 (late) - Claude Code (Sonnet 5.5), P1-1 M1 and prompts
 - Did: D1/D2 defaults applied; wrote scenekit/lookmap.py + tests/test_lookmap.py (72 pass with scenekit and looks tests; full suite 1167 passed, 8 skipped); extracted styles.check_style; updated ROADMAP, P1-1 proposal, handover; wrote docs/AGENT_PROMPTS.md.
 - Not done on purpose: no commit/push, no pipeline wiring, no render, no CEH touch.
+
+## 2026-11-18/19 - pi (audit sessions), audit and P0 export gating
+- Did: docs/audit/* (11 files); export gated on both tracks with digest-bound check (G-01, G-02); G-03 Option D (manifest video sha); tests updated with storage_helpers.approve.
+- Left open: P0-1b manifest bypasses; G-04..G-20. Not recorded in AGENT_HANDOVER.md at the time (fixed in the next entry).
+
+## 2026-11-19/20 - pi (Claude), Phase 1 completion and P0-1b closure
+- Start: HEAD 86eeaa2, 29 dirty paths, backed up to ~/.contentos/checkpoints/phase1-20261119-2142 (patch, untracked tgz, sha256 list).
+- Did: ledger `renders` attestation; export.approval_refusal reads ledger only; whole-tree production digest; approve --show/--expect; job_id and export-record containment checks; Track B render needs both gates; tests/test_export_security.py; independent review (3 rounds) docs/audit/POTATO_FINAL_SECURITY_REVIEW.md; reconciled audit docs; real HyperFrames smoke render in /tmp.
+- Commits: two local commits (lookmap, export security). Not pushed.
+- Side effect: `git worktree prune` removed stale metadata for two already-missing worktrees (/private/tmp/ceh-vf-consumer, vf-b1); directories were already gone, branches untouched.
+- Not done: Remotion/MPT render, CI, human listening, visual review, P1-1 M2.

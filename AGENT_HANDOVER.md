@@ -129,3 +129,23 @@ uv run ceh validate --json            # in CEH
 - M1 result: 17 of 30 looks compile; 13 blocked with named reasons (see proposal "M1 result"). Textures go to `tokens["texture"]`, compose paints them in M2.
 - NEXT: M2 (wire `look:` key, paint textures, `look-input.json`, golden no-regression tests). Hold M3 until D3 answered.
 - Prompts for the two workstreams (Video Factory, CEH) are in `docs/AGENT_PROMPTS.md`. The CEH mission prompt was never stored in a repo; the CEH prompt there is a replacement.
+
+## Update 2026-11-18/19 (audit, P0 export gating) and 2026-11-19/20 (Phase 1: P0-1b closure)
+
+Read first: `docs/audit/MASTER_GAP_REGISTER.md` "Current status - authoritative" (the only status source) and
+`docs/audit/PHASE_1_FINAL_READINESS_REPORT.md`.
+
+- **2026-11-18/19, pi sessions (audit):** wrote `docs/audit/` (findings, gap register, capability matrix, runtime
+  report, security review, P0 dossiers, implementation plan, Potato challenge and review, open-source research).
+  Fixed G-01/G-02 (export gated on both tracks, digest-bound) and G-03 Option D (manifest `final_video_sha256`).
+  Left open: P0-1b, two bypasses by editing `manifest.json`.
+- **2026-11-19/20, pi session (Phase 1):** closed P0-1b. Export now trusts a `renders` table in the ledger
+  (`ledger.attest_render`), written only by the pipeline render stage, `track_b.render` and `job register`, and
+  `export.approval_refusal` reads only the ledger and content hashed now, never the manifest. The production digest
+  covers the whole project tree. `contentos approve` gained `--show` and `--expect DIGEST`. Attack tests:
+  `tests/test_export_security.py`. An independent fresh-context reviewer ("Potato", 3 rounds) wrote
+  `docs/audit/POTATO_FINAL_SECURITY_REVIEW.md`: both bypasses VERIFIED closed; OPEN: PF-02 (default approve, owner
+  decision), PF-03, PF-05 (partly), PF-07, PF-22, PF-23.
+- Two commits on `feat/p1-1-lookmap`, not pushed: P1-1 M1 lookmap, then the export security work.
+- Owner decisions pending: make `approve --expect` mandatory (PF-02); branch destination and push.
+- Next: PF-22 and PF-05 (snapshot render) before relying on the chain; then G-07; P1-1 M2 after that.

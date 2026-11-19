@@ -432,19 +432,89 @@ def script_digest(spec):
     return _digest([json.dumps(body, sort_keys=True, ensure_ascii=False)])
 
 
+# Written into audio/ by the render stage's audio hook (features/audio_bed.py): an output of rendering, never reviewed
+GENERATED_AUDIO = frozenset({"ambient_bed.wav"})
+
+
+def _tree_parts(root, base):
+    """Every file under `root` by content, following symlinked directories (a link is no way around the binding), so
+    whatever the renderer can read from the project is covered. The one exception is project_remotion/node_modules,
+    Remotion's shared toolchain link: only the link itself is bound. Each real directory is walked once, so a link
+    loop terminates. None when the tree holds a FIFO or device, which cannot be bound."""
+    parts, seen = [], set()
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=True):
+        here = Path(dirpath)
+        real = os.path.realpath(here)
+        if real in seen:
+            dirnames[:] = []
+            parts.append(f"loop {here.relative_to(base).as_posix()}")
+            continue
+        seen.add(real)
+        for name in sorted(dirnames):
+            if (here / name).is_symlink():
+                parts.append(f"link {(here / name).relative_to(base).as_posix()} {os.readlink(here / name)}")
+        if here == Path(base) / "project_remotion":       # only Remotion's own top-level toolchain link is exempt
+            dirnames[:] = [n for n in dirnames if not (n == "node_modules" and (here / n).is_symlink())]
+        for name in sorted(filenames):
+            p = here / name
+            if p.is_file():
+                parts.append(f"project {p.relative_to(base).as_posix()} {exporter.sha256_file(p)}")
+            elif p.is_symlink() and not p.exists():
+                parts.append(f"dangling {p.relative_to(base).as_posix()} {os.readlink(p)}")
+            else:                                         # a FIFO or device has no content to bind; nothing it serves is reviewable
+                return None
+    return sorted(parts)
+
+
 def production_digest(d, spec):
-    """What PRODUCTION_APPROVED covers: the composed project plus every audio take. None until the composition exists."""
+    """What PRODUCTION_APPROVED covers: the whole composed project (the page, its assets, scripts and config - every
+    file the renderer reads) plus every reviewed audio take. None until the composition exists."""
     d = Path(d)
-    comp = d / artifact("compose", spec)
+    rel = artifact("compose", spec)
+    comp = d / rel
     if not comp.is_file():
         return None
-    parts = [f"composition {artifact('compose', spec)} {exporter.sha256_file(comp)}"]
-    parts += [f"audio {w.name} {exporter.sha256_file(w)}" for w in sorted((d / "audio").glob("*.wav"))]
+    tree = _tree_parts(d / Path(rel).parts[0], d)
+    if tree is None:
+        return None
+    parts = [f"composition {rel} {exporter.sha256_file(comp)}"] + tree
+    takes = [w for w in sorted((d / "audio").glob("*.wav")) if w.name not in GENERATED_AUDIO]
+    if any(not w.is_file() for w in takes):              # a FIFO would block the hash; nothing it serves is reviewable
+        return None
+    parts += [f"audio {w.name} {exporter.sha256_file(w)}" for w in takes]
     return _digest(parts)
 
 
 def gate_digest(gate, d, spec):
     return script_digest(spec) if gate == "SCRIPT_APPROVED" else production_digest(d, spec) if gate == "PRODUCTION_APPROVED" else None
+
+
+def video_digest(video_sha256):
+    """What PRODUCTION_APPROVED covers for a render made outside the factory: the finished bytes themselves, because
+    nothing proves they came from the composition."""
+    return _digest([f"video video.mp4 {video_sha256}"])
+
+
+def render_subjects(d, spec, source, video_sha256=None):
+    """Gate digests a render of `source` is bound to. One function, so the render stages, `job register`, approval
+    and export can never compute them differently."""
+    script = script_digest(spec) if spec and spec.get("script") else None
+    if source == "register":
+        video = video_digest(video_sha256) if video_sha256 else None
+        # a hand-built job with no structured script has nothing to review but the video, so both gates bind to it
+        return {"SCRIPT_APPROVED": script or video, "PRODUCTION_APPROVED": video}
+    return {"SCRIPT_APPROVED": script, "PRODUCTION_APPROVED": production_digest(d, spec) if spec else None}
+
+
+def approval_subjects(content_id, d, spec):
+    """What each gate covers now, for whoever grants an approval (CLI or Studio). A job whose latest render was
+    registered from outside binds PRODUCTION_APPROVED to the video on disk; every other job to the composition."""
+    if d is None:
+        return {"SCRIPT_APPROVED": script_digest(spec) if spec and spec.get("script") else None, "PRODUCTION_APPROVED": None}
+    latest, video = ledger.render_record(content_id), Path(d) / "video.mp4"
+    if latest and latest["source"] == "register" and video.is_file():
+        return render_subjects(d, spec, "register", exporter.sha256_file(video))
+    return render_subjects(d, spec, "pipeline")
 
 
 def _check_gate(cid, gate, d, spec):
@@ -543,7 +613,8 @@ RESUME_GUARD = {"export": exporter.resume_blocker}
 
 
 def _note_stage(d, st, arts):
-    """Record a finished stage in the job manifest (relative paths only). The manifest is a record, never a gate."""
+    """Record a finished stage in the job manifest (relative paths only). The manifest is a record, never a gate:
+    what export trusts about a render is the ledger attestation written in _stages."""
     try:
         upd = {"artifacts": {st: [storage.rel(a, d) for a in arts]}}
         if st == "render":
@@ -599,10 +670,10 @@ def run(spec_path, allow_paid=False, force=False, only=None, approve_private=Fal
         _note_spec(d, _manifest, spec_path)
         if only and force:
             invalidate_downstream(d, spec, only)
-        return _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private)
+        return _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private, str(Path(spec_path).resolve()))
 
 
-def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
+def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private, spec_path=None):
     """Run the stages in order. Split out of run() so the per-job lock can wrap the loop without re-indenting it."""
     if _manifest["status"] != "exported":           # a resumed, already exported job stays exported
         storage.update_manifest(d, status="running", failure=None)
@@ -657,8 +728,16 @@ def _stages(cid, d, spec, _manifest, allow_paid, force, only, approve_private):
                 ledger.record(rid, cid, st, "-", "BLOCKED", t0, error=str(e))
                 report.append((st, f"BLOCKED: {e}", time.time() - t0))
                 break
+        # taken before the stage runs: these are the digests the gate check above just accepted
+        subjects = render_subjects(d, spec, "pipeline") if st == "render" else None
         try:
             prov, arts = FN[st](ctx)
+            if subjects is not None:                     # after the audio hook, so the bytes attested are the bytes on disk
+                if render_subjects(d, spec, "pipeline") != subjects:
+                    raise Blocked("the approved content changed while it was rendering; this render is not attested, "
+                                  "review the change and re-render")
+                ledger.attest_render(cid, exporter.sha256_file(d / "video.mp4"), "pipeline", spec_path,
+                                     subjects["SCRIPT_APPROVED"], subjects["PRODUCTION_APPROVED"])
             ledger.record(rid, cid, st, prov, "OK", t0, arts)
             _append_log(log_path, f"[stage OK provider={prov}]\n")
             _note_stage(d, st, arts)

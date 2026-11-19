@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from contentos import export, handoff, storage  # noqa: E402
-from storage_helpers import make_video  # noqa: E402
+from storage_helpers import approve, make_video  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -37,6 +37,7 @@ def job(good_video, job_id="job-1", video=True, **spec):
         shutil.copy(good_video, d / "video.mp4")
     elif video:
         shutil.copy(video, d / "video.mp4")
+    approve(job_id)
     return d
 
 
@@ -101,6 +102,7 @@ def test_different_video_for_same_job_needs_force(env, good_video, tmp_path):
     export.export_job("job-1")
     other = make_video(tmp_path / "other.mp4", seconds=3)
     shutil.copy(other, d / "video.mp4")
+    approve("job-1")                                         # a real re-render: attested and approved
     with pytest.raises(export.ExportRefused, match="force"):
         export.export_job("job-1")
     assert len(list((pub / "ready").rglob("*.mp4"))) == 1
@@ -116,6 +118,7 @@ def test_claimed_video_is_never_replaced(env, good_video, tmp_path):
     export.export_job("job-1")
     handoff.claim(pub, "job-1", "sched")
     shutil.copy(make_video(tmp_path / "o.mp4", seconds=3), d / "video.mp4")
+    approve("job-1")
     with pytest.raises(export.ExportRefused, match="claimed"):
         export.export_job("job-1", force=True)
 

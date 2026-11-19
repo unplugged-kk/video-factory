@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from contentos import export, pipeline, storage  # noqa: E402
 from contentos.production import supplied_audio as sa  # noqa: E402
-from storage_helpers import make_video  # noqa: E402
+from storage_helpers import approve, make_video  # noqa: E402
 
 pytestmark = pytest.mark.skipif(shutil.which("ffmpeg") is None or shutil.which("ffprobe") is None, reason="ffmpeg/ffprobe not installed")
 
@@ -251,6 +251,7 @@ def pipe(tmp_path, monkeypatch):
     storage.preflight()
     d, _ = storage.open_job("sj", spec)
     shutil.copy(make_video(tmp_path / "v.mp4", seconds=1), d / "video.mp4")
+    approve("sj")
     return sp, spec, d, tmp_path / "pub"
 
 

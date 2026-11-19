@@ -11,7 +11,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from contentos import cli, export, ledger, storage  # noqa: E402
-from storage_helpers import make_video  # noqa: E402
+from storage_helpers import approve, make_video  # noqa: E402
 
 
 @pytest.fixture
@@ -37,9 +37,14 @@ def register(d, **kw):
     return cli.cmd_job_register(SimpleNamespace(**args))
 
 
+def owner_approves(gate, job="tb1"):
+    """The real `contentos approve` path, which binds the grant to the content on disk."""
+    return cli.cmd_approve(SimpleNamespace(content_id=job, gate=gate, note="", spec=None))
+
+
 def approve_both():
     for g in ("SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
-        ledger.approve("tb1", g, by="owner")
+        owner_approves(g)
 
 
 def test_register_creates_only_manifest_json(env):
@@ -86,11 +91,11 @@ def test_export_refuses_until_both_gates_exist_then_exports_once(env):
     register(env.dir)
     with pytest.raises(export.ExportRefused, match="SCRIPT_APPROVED.*PRODUCTION_APPROVED"):
         export.export_job("tb1")
-    ledger.approve("tb1", "SCRIPT_APPROVED", by="owner")
+    owner_approves("SCRIPT_APPROVED")
     with pytest.raises(export.ExportRefused, match="PRODUCTION_APPROVED"):
         export.export_job("tb1")
     assert not list((env.pub / "ready").rglob("*.mp4"))
-    ledger.approve("tb1", "PRODUCTION_APPROVED", by="owner")
+    owner_approves("PRODUCTION_APPROVED")
     assert export.export_job("tb1")["status"] == "exported"
     assert export.export_job("tb1")["status"] == "already_exported"
     assert len(list((env.pub / "ready").rglob("*.mp4"))) == 1
@@ -110,10 +115,15 @@ def test_unregistered_directory_still_cannot_export(env):
         export.export_job("tb1")
 
 
-def test_track_a_export_is_unchanged(env):
-    """A pipeline job has no track marker, so the new gate check does not apply to it."""
+def test_track_a_export_needs_both_gates_too(env):
+    """A pipeline job has no track marker, but `storage export` and `--only export` skip the stages that check gates,
+    so export itself enforces them. Nothing reaches ready/ before both approvals exist."""
     d, _ = storage.open_job("pj", {"title": "Pipeline Job", "project": "Demo"})
     make_video(d / "video.mp4", seconds=1)
+    with pytest.raises(export.ExportRefused, match="not a render the factory recorded"):
+        export.export_job("pj")
+    assert not list((env.dir / "ready").rglob("*")) if env.dir.exists() else True
+    approve("pj")
     assert export.export_job("pj")["status"] == "exported"
 
 

@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from contentos import ledger, storage, track_b, ui_api
+from contentos import export, ledger, pipeline, storage, track_b, ui_api
 from contentos.ui_state import job_state
 
 
@@ -256,10 +256,17 @@ def test_stale_visual_evidence_and_separate_qa_results(workspace, monkeypatch):
 def test_export_refuses_when_either_grant_is_absent(workspace):
     plant("tb-export")
     assert post("/api/v1/jobs/tb-export/track-b/intake").status == 200
-    (storage.find_job_dir("tb-export") / "video.mp4").write_bytes(b"video")
+    d = storage.find_job_dir("tb-export")
+    (d / "video.mp4").write_bytes(b"video")
+    unrecorded = post("/api/v1/jobs/tb-export/export", {"confirm": True})
+    assert unrecorded.status == 409 and "not a render the factory recorded" in unrecorded.body["error"]["message"]
+    subjects = pipeline.render_subjects(d, track_b.script_spec(d), "track-b")   # what track_b.render would attest
+    ledger.attest_render("tb-export", export.sha256_file(d / "video.mp4"), "track-b", None,
+                         subjects["SCRIPT_APPROVED"], subjects["PRODUCTION_APPROVED"])
     missing = post("/api/v1/jobs/tb-export/export", {"confirm": True})
     assert missing.status == 409
     assert missing.body["error"]["code"] == "EXPORT_REFUSED"
+    assert "SCRIPT_APPROVED and PRODUCTION_APPROVED" in missing.body["error"]["message"]
     digest = get_job("tb-export")["approvals"]["SCRIPT_APPROVED"]["currentDigest"]
     assert post("/api/v1/jobs/tb-export/approve", {"gate": "SCRIPT_APPROVED", "seenDigest": digest}).status == 200
     one_gate = post("/api/v1/jobs/tb-export/export", {"confirm": True})
