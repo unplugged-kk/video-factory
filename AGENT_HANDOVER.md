@@ -1,6 +1,6 @@
 # AGENT_HANDOVER
 
-Resume from Git plus this file. Read AGENTS.md first, then docs/CURRENT_STATE.md and docs/ROADMAP.md. Updated 2026-11-13.
+Resume from Git plus this file. Read AGENTS.md first, then docs/CURRENT_STATE.md and docs/ROADMAP.md. Updated 2026-11-13 (late). Prompts to give the next agent: docs/AGENT_PROMPTS.md.
 
 ## Product mandate
 
@@ -119,3 +119,13 @@ uv run ceh validate --json            # in CEH
 3. Quick win: drop the English "scene N of M" ornament for non-English jobs (compose.py split branch).
 4. P1-5 (owner): listen to the Hindi sample, run an independent critic, then decide promotion from `experimental`.
 5. Then P1-2 (consume `sceneplan/1`), P1-6 (one style system, not three).
+
+## Update 2026-11-13 (late): D1/D2 decided, P1-1 M1 implemented, prompts documented
+
+- Owner chose D1 (compile into scenekit only) and D2 (system fonts, explicit map). D3 still open. CEH untouched.
+- Branch `feat/p1-1-lookmap` from main `86eeaa2`. UNCOMMITTED: `contentos/scenekit/lookmap.py` (new), `contentos/scenekit/styles.py` (`check_style` extracted, behaviour same),
+  `tests/test_lookmap.py` (new), docs (ROADMAP P1-1, P1-1 proposal M1 result, NEW `docs/AGENT_PROMPTS.md`, this file, SESSION_LOG.md).
+- Verified: `pytest tests/test_lookmap.py tests/test_scenekit.py tests/test_looks.py` = 72 passed. Full suite after the change: 1167 passed, 8 skipped. No render, no pipeline change.
+- M1 result: 17 of 30 looks compile; 13 blocked with named reasons (see proposal "M1 result"). Textures go to `tokens["texture"]`, compose paints them in M2.
+- NEXT: M2 (wire `look:` key, paint textures, `look-input.json`, golden no-regression tests). Hold M3 until D3 answered.
+- Prompts for the two workstreams (Video Factory, CEH) are in `docs/AGENT_PROMPTS.md`. The CEH mission prompt was never stored in a repo; the CEH prompt there is a replacement.

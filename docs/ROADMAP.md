@@ -112,7 +112,7 @@ Status: `DONE` (in this recovery), `OPEN`, `BLOCKED` (needs owner/decision).
 ## P1 — core production pipeline
 
 ### P1-1 — Make one chosen look change real frames (next task)
-- **Status:** OPEN. **This is the next recommended development task.**
+- **Status:** IN PROGRESS. D1 (compile into scenekit, legacy frozen) and D2 (system fonts, explicit map) decided 2026-11-13. **M1 done** (`scenekit/lookmap.py`, `tests/test_lookmap.py`, 17 of 30 looks compile). Next: M2 wire. D3 open. Detail: `docs/P1-1_LOOK_PROPOSAL.md`.
 - **Problem:** `config/presets/*.json` (30 looks, 27 effects) are validated but unread by the builder.
   Style cards only change a border/radius/background string in `features/visual_layer.py`; their axes,
   motion and dials do not reach frames.

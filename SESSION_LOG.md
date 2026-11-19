@@ -48,3 +48,7 @@
 ## 2026-11-13 - Claude Code (Sonnet 5.5), commit and push
 - Committed pending work in three commits, fast-forwarded main from feat/standalone-acceptance, pushed origin/main (includes B1 merge 016b5a5).
 - Updated AGENT_HANDOVER.md with next plan (P1-1 D1-D3, M1/M2). No publish, no paid call, no CEH touch.
+
+## 2026-11-13 (late) - Claude Code (Sonnet 5.5), P1-1 M1 and prompts
+- Did: D1/D2 defaults applied; wrote scenekit/lookmap.py + tests/test_lookmap.py (72 pass with scenekit and looks tests; full suite 1167 passed, 8 skipped); extracted styles.check_style; updated ROADMAP, P1-1 proposal, handover; wrote docs/AGENT_PROMPTS.md.
+- Not done on purpose: no commit/push, no pipeline wiring, no render, no CEH touch.
