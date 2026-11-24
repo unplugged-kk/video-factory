@@ -719,10 +719,9 @@ def job_state(content_id, *, now=None):
         live = track_b.script_spec(directory)
         if live.get("script"):
             spec = live
-    script_digest = pipeline.script_digest(spec) if spec.get("script") else None
-    production_digest = pipeline.production_digest(directory, spec) if spec else None
+    subjects = pipeline.approval_subjects(content_id, directory, spec or None)
     approval_state = {}
-    for gate, digest in (("SCRIPT_APPROVED", script_digest), ("PRODUCTION_APPROVED", production_digest)):
+    for gate, digest in subjects.items():
         state, bound = ledger.check_gate(content_id, gate, digest)
         approval_state[gate] = {"state": state, "currentDigest": digest, "approvedDigests": bound}
         approval_state[gate].update(approved=state == "ok", digest=bound[-1] if bound else None)

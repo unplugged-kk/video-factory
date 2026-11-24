@@ -21,7 +21,9 @@ import time
 import uuid
 from pathlib import Path
 
-from . import finalcheck, storage
+import yaml
+
+from . import finalcheck, ledger, storage
 from .production import supplied_audio
 
 SIDECAR_SUFFIX = ".publish.json"
@@ -80,7 +82,10 @@ def _existing(pub, manifest):
     if st.exists():
         with contextlib.suppress(Exception):
             rec = json.loads(st.read_text(encoding="utf-8"))
-            return Path(pub) / rec["video"], Path(pub) / rec["sidecar"]
+            v, sc = Path(pub) / rec["video"], Path(pub) / rec["sidecar"]
+            ready = (Path(pub) / "ready").resolve()
+            if all(p.resolve().is_relative_to(ready) for p in (v, sc)):   # a forged record must not aim --force at any file
+                return v, sc
     for mode in storage.EXPORT_MODES:
         _, v, s = locations(pub, manifest, mode)
         if s.exists() or v.exists():
@@ -104,6 +109,76 @@ def build_sidecar(m, validation, video_name, sha, size, exported_at):
     }
 
 
+GATES = ("SCRIPT_APPROVED", "PRODUCTION_APPROVED")
+GATE_COLUMN = {"SCRIPT_APPROVED": "script_sha256", "PRODUCTION_APPROVED": "production_sha256"}
+
+
+def _pipeline():
+    """Late import: contentos.pipeline imports this module, so a module-level import would be circular."""
+    from . import pipeline
+    return pipeline
+
+
+def _current_spec(rec, d):
+    """The spec as it stands now, from where the render attestation says it lives - never from the manifest."""
+    if rec["source"] != "pipeline":                         # Track B and registered jobs keep their script in the job
+        from . import track_b
+        return track_b.script_spec(d)                       # {} when absent: the digests below then show the change
+    try:
+        p = Path(rec["spec_path"] or "")
+        spec = yaml.safe_load(p.read_text(encoding="utf-8")) if rec["spec_path"] and p.is_file() else None
+        return spec if isinstance(spec, dict) else None      # an empty or truncated file is not a spec
+    except (OSError, ValueError, yaml.YAMLError):
+        return None
+
+
+def approval_refusal(job_id, d, sha=None):
+    """None when video.mp4 may be exported, else the reason it must not be.
+
+    Every fact used here comes from the ledger or from content hashed now, never from manifest.json, which any tool
+    or person can edit. Three links must all hold:
+      1. the bytes on disk are a render the ledger attested for this job (pipeline, Track B render or job register);
+      2. both gates hold a digest-bound approval for the digests that render was made under - an unbound grant, or
+         a grant for any other version, does not count;
+      3. the content those digests cover is unchanged now: the spec the run used and the composition and audio, so
+         an edit after rendering is refused until it is reviewed and re-rendered.
+    A missing video is left to the exporter, which explains it. `sha` lets the caller pin the bytes it checked.
+    """
+    video = Path(d) / "video.mp4"
+    if not video.is_file():
+        return None
+    sha = sha or sha256_file(video)
+    rec = ledger.render_record(job_id, sha)
+    if rec is None:
+        return (f"{job_id}: not exported, video.mp4 (sha {sha[:12]}) is not a render the factory recorded for this job; "
+                "render it through the pipeline or Track B, or register a hand-built render with `contentos job register`")
+    missing, stale = [], []
+    for gate in GATES:
+        bound = rec[GATE_COLUMN[gate]]
+        state = ledger.check_gate(job_id, gate, bound)[0] if bound else "none"
+        if state == "mismatch":
+            stale.append(gate)
+        elif state != "ok":                                  # none, or only unbound (legacy) grants
+            missing.append(gate)
+    if stale:
+        return (f"{job_id}: {' and '.join(stale)} was granted for different content than this render was made from; "
+                "review it and re-approve: " + "; ".join(f"contentos approve {job_id} {g}" for g in stale))
+    if missing:
+        return (f"{job_id}: not exported until {' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} granted "
+                "and bound to this render's content (an unbound grant does not count): "
+                + "; ".join(f"contentos approve {job_id} {g}" for g in missing))
+    spec = _current_spec(rec, d)
+    if spec is None:
+        return (f"{job_id}: not exported, the spec this render was made from ({rec['spec_path'] or 'the job script'}) "
+                "can no longer be read, so the approved content cannot be shown to be unchanged; restore it")
+    now = _pipeline().render_subjects(d, spec, rec["source"], sha)
+    changed = [g for g in GATES if now[g] != rec[GATE_COLUMN[g]]]
+    if changed:
+        return (f"{job_id}: not exported, the content behind {' and '.join(changed)} changed after this render; "
+                "review the change, re-approve and re-render")
+    return None
+
+
 def export_job(job_id, *, force=False, mode=None, cfg=None, jobs=None):
     cfg = cfg or storage.config()
     paths = storage.preflight(publish=True, cfg=cfg)
@@ -114,22 +189,24 @@ def export_job(job_id, *, force=False, mode=None, cfg=None, jobs=None):
     m = storage.read_manifest(d)
     if m is None:
         raise storage.StorageError(f"job {job_id!r} has no manifest.json")
-    if m.get("track") == "B":                                # hand-built jobs have no pipeline gates, so the ledger must hold both before export
-        from . import ledger
-        missing = [g for g in ("SCRIPT_APPROVED", "PRODUCTION_APPROVED") if not ledger.approved(job_id, g)]
-        if missing:
-            raise ExportRefused(f"{job_id}: hand-built job is not exported until {' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} granted: "
-                                + "; ".join(f"contentos approve {job_id} {g}" for g in missing))
+    if m.get("job_id") != storage.check_job_id(job_id):     # the manifest's job_id names the destination; it must be this job
+        raise ExportRefused(f"{job_id}: not exported, manifest.json names a different job ({m.get('job_id')!r})")
+    # One check for every route (pipeline export stage, `storage export`, the Studio button) and both tracks. It reads
+    # the ledger, not the manifest: see approval_refusal.
+    checked = sha256_file(d / "video.mp4") if (d / "video.mp4").is_file() else None
+    refusal = approval_refusal(job_id, d, checked)
+    if refusal:
+        raise ExportRefused(refusal)
     mode = mode or storage.export_mode(cfg)
     with storage.file_lock(pub / ".state" / "locks" / f"{job_id}.lock"):
-        return _export_locked(d, m, pub, mode, force, cfg)
+        return _export_locked(d, m, pub, mode, force, cfg, checked)
 
 
 def _fail(d, reason):
     storage.update_manifest(d, export={"status": "failed", "reason": storage.scrub(reason), "at": storage.now_iso()})
 
 
-def _export_locked(d, m, pub, mode, force, cfg):
+def _export_locked(d, m, pub, mode, force, cfg, checked=None):
     job = m["job_id"]
     video = d / "video.mp4"
     if not video.is_file():
@@ -138,6 +215,8 @@ def _export_locked(d, m, pub, mode, force, cfg):
     if blockers:
         raise ExportRefused(f"{job}: not exported, supplied audio blocks publication: " + "; ".join(blockers))
     sha, size = sha256_file(video), video.stat().st_size
+    if sha != checked:                                       # the staged copy is verified against sha, so this pins ready/ to the approved bytes
+        raise ExportRefused(f"{job}: video.mp4 changed while it was being exported; not exported")
     prior = _existing(pub, m)
     prior_sidecar = None
     if not (prior and (prior[0].exists() or prior[1].exists())) and _claim(pub, job).exists():

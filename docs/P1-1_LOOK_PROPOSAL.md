@@ -1,6 +1,6 @@
 # P1-1 proposal: a chosen look must change rendered frames
 
-Status: PROPOSAL, nothing implemented. Written 2026-11-11 on `feat/standalone-acceptance` (HEAD `016b5a5`).
+Status: D1 and D2 DECIDED 2026-11-13 (recommended defaults); D3 open. **M1 implemented** (`contentos/scenekit/lookmap.py`, `tests/test_lookmap.py`; also `styles.check_style` extracted from `validate`, behaviour unchanged). M2-M5 not started. Original status: PROPOSAL. Written 2026-11-11 on `feat/standalone-acceptance` (HEAD `016b5a5`).
 Labels: **[read]** read in code, **[ran]** executed, **[inferred]**, **[decision]** needs the owner.
 
 ## 1. Root cause
@@ -161,3 +161,13 @@ new example spec `examples/finance/sip-small-savings-hi-looks.yaml`; docs. No ch
 ## Recommendation
 
 Ready to implement M1 and M2 now: the cause is traced, the change is additive, a golden test protects every existing render, and no dependency, spend or gate is touched. Hold M3 and M4 for D3 and the owner's visual review. P1-1 as worded in ROADMAP should be rewritten before work starts, because its "unread by the builder" claim is true for `look/1` but not for scenekit styles.
+
+## M1 result (2026-11-13)
+
+`python -m contentos.scenekit.lookmap report`: **17 of 30 looks compile**, 13 are blocked and say why. Blockers found: textures that need illustration
+or particles (`rain`, `smoke`, `curtain`, `paint-splat`, `frosted-glass`, `depth-blur`, `marker-swipe`, `pattern-fill`, `starry-backdrop`, outline/border tags) and four looks
+whose accent is under 3:1 against the background (`aged-paper-rain`, `corporate-docs`, `cream-kinetic-panel`, `sketch-beside-motion`). Both sample looks (`flat-dark-news`,
+`watercolor-wash`) compile and differ on at least 3 axes.
+Design note that changes M2: scene grounds are inserted as one `background` shorthand and `--bgsize` overrides tile sizes, so textures are emitted as `tokens["texture"]`
+(image plus size per layer) and compose must paint them in M2; they are not baked into `grounds`. Effects, free-text `layout` and `audio` are unread and reported in `style["look"]["unread"]`.
+Not measured yet: render time with an SVG grain tile (budget +20 %).

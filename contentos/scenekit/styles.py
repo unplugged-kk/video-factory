@@ -159,15 +159,20 @@ def distinct() -> list[tuple[str, str, int]]:
     return bad
 
 
+def check_style(sid: str, s: dict) -> list[str]:
+    problems = []
+    if s["layout"] not in LAYOUTS: problems.append(f"{sid}: bad layout")
+    if s["motion"] not in MOTIONS or any(m not in MOTIONS for m in s["alt_motions"]): problems.append(f"{sid}: bad motion")
+    if s["caption"] not in CAPTIONS: problems.append(f"{sid}: bad caption")
+    for t in STAGE_TYPES + TEXT_TYPES:
+        if t not in s["affinity"]: problems.append(f"{sid}: affinity missing {t}")
+    if len(s["grounds"]) < 3: problems.append(f"{sid}: needs >= 3 grounds (Rule A)")
+    return problems
+
+
 def validate() -> list[str]:
     problems = []
     for sid, s in STYLES.items():
-        if s["layout"] not in LAYOUTS: problems.append(f"{sid}: bad layout")
-        if s["motion"] not in MOTIONS or any(m not in MOTIONS for m in s["alt_motions"]): problems.append(f"{sid}: bad motion")
-        if s["caption"] not in CAPTIONS: problems.append(f"{sid}: bad caption")
-        for t in STAGE_TYPES + TEXT_TYPES:
-            if t not in s["affinity"]: problems.append(f"{sid}: affinity missing {t}")
-    for sid, s in STYLES.items():
-        if len(s["grounds"]) < 3: problems.append(f"{sid}: needs >= 3 grounds (Rule A)")
+        problems += check_style(sid, s)
     problems += [f"{a} and {b} differ on only {n} axes" for a, b, n in distinct()]
     return problems

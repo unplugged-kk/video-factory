@@ -1,6 +1,6 @@
 # AGENT_HANDOVER
 
-Resume from Git plus this file. Read AGENTS.md first, then docs/CURRENT_STATE.md and docs/ROADMAP.md. Updated 2026-11-13.
+Read `AGENTS.md` first. **Phase 2 is parked for UI design and prototyping (2026-11-24).** Resume integrity work from `feat/phase2-foundation`; see `docs/project-intelligence/AGENT_HANDOFF.md` and `docs/audit/PHASE_2_IMPLEMENTATION_PLAN.md`. The histories below are not the active handoff. Start independent UI prototypes from `main` in a separate worktree. Do not depend on the unfinished approval migration or activate new production render lanes.
 
 ## Product mandate
 
@@ -119,3 +119,40 @@ uv run ceh validate --json            # in CEH
 3. Quick win: drop the English "scene N of M" ornament for non-English jobs (compose.py split branch).
 4. P1-5 (owner): listen to the Hindi sample, run an independent critic, then decide promotion from `experimental`.
 5. Then P1-2 (consume `sceneplan/1`), P1-6 (one style system, not three).
+
+## Update 2026-11-13 (late): D1/D2 decided, P1-1 M1 implemented, prompts documented
+
+- Owner chose D1 (compile into scenekit only) and D2 (system fonts, explicit map). D3 still open. CEH untouched.
+- Branch `feat/p1-1-lookmap` from main `86eeaa2`. UNCOMMITTED: `contentos/scenekit/lookmap.py` (new), `contentos/scenekit/styles.py` (`check_style` extracted, behaviour same),
+  `tests/test_lookmap.py` (new), docs (ROADMAP P1-1, P1-1 proposal M1 result, NEW `docs/AGENT_PROMPTS.md`, this file, SESSION_LOG.md).
+- Verified: `pytest tests/test_lookmap.py tests/test_scenekit.py tests/test_looks.py` = 72 passed. Full suite after the change: 1167 passed, 8 skipped. No render, no pipeline change.
+- M1 result: 17 of 30 looks compile; 13 blocked with named reasons (see proposal "M1 result"). Textures go to `tokens["texture"]`, compose paints them in M2.
+- NEXT: M2 (wire `look:` key, paint textures, `look-input.json`, golden no-regression tests). Hold M3 until D3 answered.
+- Prompts for the two workstreams (Video Factory, CEH) are in `docs/AGENT_PROMPTS.md`. The CEH mission prompt was never stored in a repo; the CEH prompt there is a replacement.
+
+## Update 2026-11-18/19 (audit, P0 export gating) and 2026-11-19/20 (Phase 1: P0-1b closure)
+
+Read first: `docs/audit/MASTER_GAP_REGISTER.md` "Current status - authoritative" (the only status source) and
+`docs/audit/PHASE_1_FINAL_READINESS_REPORT.md`.
+
+- **2026-11-18/19, pi sessions (audit):** wrote `docs/audit/` (findings, gap register, capability matrix, runtime
+  report, security review, P0 dossiers, implementation plan, Potato challenge and review, open-source research).
+  Fixed G-01/G-02 (export gated on both tracks, digest-bound) and G-03 Option D (manifest `final_video_sha256`).
+  Left open: P0-1b, two bypasses by editing `manifest.json`.
+- **2026-11-19/20, pi session (Phase 1):** closed P0-1b. Export now trusts a `renders` table in the ledger
+  (`ledger.attest_render`), written only by the pipeline render stage, `track_b.render` and `job register`, and
+  `export.approval_refusal` reads only the ledger and content hashed now, never the manifest. The production digest
+  covers the whole project tree. `contentos approve` gained `--show` and `--expect DIGEST`. Attack tests:
+  `tests/test_export_security.py`. An independent fresh-context reviewer ("Potato", 3 rounds) wrote
+  `docs/audit/POTATO_FINAL_SECURITY_REVIEW.md`: both bypasses VERIFIED closed; OPEN: PF-02 (default approve, owner
+  decision), PF-03, PF-05 (partly), PF-07, PF-22, PF-23.
+- Two commits on `feat/p1-1-lookmap`, not pushed: P1-1 M1 lookmap, then the export security work.
+- Owner decisions pending: make `approve --expect` mandatory (PF-02); branch destination and push.
+- Next at that time: PF-22 and PF-05 (snapshot render) before relying on the chain; then G-07; P1-1 M2 after that.
+
+## Update 2026-11-24: Phase 2 foundation
+
+- Original checkout remains `feat/p1-1-lookmap @ 849ea6a`, no upstream, with both Phase 1 untracked deliverables preserved. Baseline bundle, ref list and archive checksums verified at `~/.contentos/checkpoints/video-factory-phase2-20261124/`.
+- Isolated branch `feat/phase2-foundation`: `d9c1d8e` refuses incomplete production dependency trees; `cce972d` fixes two optional language-test assumptions. No push, no publish, no gate/approval policy change and no protected edits.
+- Fresh worktree proof: Python 1,211 passed / 17 skipped; Node 66 passed. The first Python failure and offline npm failure are preserved. Runtime: HyperFrames 0.8.114 starts, offline English and Hindi TTS returned valid-format WAV metadata; no human audio sign-off.
+- Continuation: `46f8e78` stages and binds local MPT B-roll and narration; Docker adapter tests passed, real MPT and immutable mounting remain open. Full tests: Python 1,224 passed / 17 skipped, JavaScript 66 passed. A no-host-mount Node fixture supports PF-05 feasibility only. Next: real sealed rendering with attestation, then complete PF-22 and migrate PF-02 across CLI/API/Studio. Kishore approved PF-02, including separate scoped private automation. No eligible native subagent or independent review; three storyboard proposals are documented, not rendered.

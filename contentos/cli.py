@@ -125,38 +125,76 @@ def cmd_videojob(a):
 
 
 def _subject_digest(content_id, gate, spec_arg):
-    """Digest of the artifact an approval covers, read from disk now, or None when it cannot be determined (the gate is
-    then unbound). The spec comes from --spec, else from the one the job's last run recorded in its manifest."""
+    """(digest, shown) for the artifact an approval covers, read from disk now. digest is None when it cannot be
+    determined (the gate is then unbound); shown is what the digest covers, printed so the approver sees what they
+    bind rather than a bare hash. The spec comes from --spec, else from the one the job's last run recorded."""
     if gate not in ("SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
-        return None
+        return None, []
     import yaml
     from pathlib import Path
-    from . import pipeline, storage
+    from . import export, pipeline, storage, track_b
     d = storage.find_job_dir(content_id)
     try:
-        spec_path = spec_arg or ((storage.read_manifest(d) or {}).get("source_spec") if d else None)
-        spec = yaml.safe_load(Path(spec_path).read_text()) if spec_path else None
-        if gate == "SCRIPT_APPROVED":
-            return pipeline.script_digest(spec) if spec else None
-        return pipeline.production_digest(d, spec) if spec and d else None
+        m = (storage.read_manifest(d) or {}) if d else {}
+        if m.get("track") == "B" and not spec_arg:       # Track B gates are checked against the live script in the job
+            spec, source = track_b.script_spec(d), f"the script in {d}"
+        else:
+            source = spec_arg or m.get("source_spec")
+            spec = yaml.safe_load(Path(source).read_text()) if source else None
+        spec = spec if isinstance(spec, dict) else None
+        digest = pipeline.approval_subjects(content_id, d, spec)[gate]
     except (OSError, storage.StorageError, yaml.YAMLError, KeyError, TypeError):
-        return None
+        return None, []
+    if digest is None:
+        return None, []
+    latest = ledger.render_record(content_id) if d else None
+    if gate == "PRODUCTION_APPROVED" and latest and latest["source"] == "register":
+        video = Path(d) / "video.mp4"
+        return digest, [f"  the hand-built video {video} (sha256 {export.sha256_file(video)})"]
+    if gate == "PRODUCTION_APPROVED":
+        files = sorted(str(p.relative_to(d)) for sub in ("project", "project_remotion", "audio") if (Path(d) / sub).is_dir()
+                       for p in (Path(d) / sub).rglob("*") if p.is_file() and "node_modules" not in p.parts)
+        return digest, [f"  the composed project and audio takes in {d}:"] + [f"    {f}" for f in files]
+    if not spec or not spec.get("script"):
+        return digest, [f"  the hand-built video {Path(d) / 'video.mp4'} (this job has no script file)"]
+    lines = []
+    for ln in spec["script"]:                            # the voice speaks `tts` when it is set, so that is what is shown
+        lines.append(f"  | {ln['say']}")
+        if "tts" in ln and ln["tts"] != ln["say"]:
+            lines.append(f"  |   spoken as: {ln['tts']}")
+    return digest, [f"  spec: {source}", f"  title: {spec.get('title')}"] + lines
 
 
 def cmd_approve(a):
-    digest = _subject_digest(a.content_id, a.gate, getattr(a, "spec", None))
+    """Grant a gate. `--show` prints what a grant would bind (and its digest) and records nothing; `--expect DIGEST`
+    grants only if the content still has the digest the approver was shown, so nothing can change in between."""
+    digest, shown = _subject_digest(a.content_id, a.gate, getattr(a, "spec", None))
+    if shown:
+        print(f"{a.gate} for {a.content_id} covers:\n" + "\n".join(shown) + f"\n  digest: {digest}")
+    if getattr(a, "show", False):
+        print("nothing recorded (--show)")
+        return 0
+    expect = getattr(a, "expect", None)
+    if expect is not None and expect != digest:
+        print(f"not approved: the content now has digest {digest}, not the {expect} you reviewed; run with --show again",
+              file=sys.stderr)
+        return 1
     ledger.approve(a.content_id, a.gate, note=a.note, subject_sha256=digest)
     print(f"approved {a.gate} for {a.content_id}" + (f" (bound to {digest})" if digest else ""))
     if digest is None and a.gate in ("SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
-        print(f"warning: {a.gate} was recorded unbound (no spec or artifact found to digest); later edits will not be detected. "
+        print(f"warning: {a.gate} was recorded unbound (no spec or artifact found to digest); export refuses unbound approvals. "
               f"Pass --spec SPEC.yaml to bind it.", file=sys.stderr)
+    return 0
 
 
 def cmd_job_register(a):
     """Bring a hand-built (Track B) job folder under the manifest/ledger/export discipline. Writes only manifest.json."""
     import time
     from . import storage
+    from pathlib import Path
+    from . import track_b
     m, created = storage.adopt_external(a.path, title=a.title, project=a.project, project_name=a.project_name)
+    track_b.attest_registration(m["job_id"], Path(a.path).resolve())
     if created:
         t0 = time.time()
         rid = ledger.new_run_id()
@@ -268,7 +306,9 @@ def main():
     va.set_defaults(f=cmd_validate)
     q = sp.add_parser("qa"); q.add_argument("video"); q.add_argument("--format", default="9:16"); q.set_defaults(f=cmd_qa)
     pv = sp.add_parser("preview", help="preview frames from a project dir (pre-render) or an .mp4 (post-render)"); pv.add_argument("target"); pv.add_argument("--at", required=True, help="comma-separated seconds"); pv.add_argument("--out", required=True); pv.add_argument("--sheet", action="store_true"); pv.add_argument("--cols", type=int, default=6); pv.set_defaults(f=cmd_preview)
-    ap = sp.add_parser("approve"); ap.add_argument("content_id"); ap.add_argument("gate"); ap.add_argument("--note", default=""); ap.add_argument("--spec", help="spec YAML the approval covers (default: the one this job last ran with)"); ap.set_defaults(f=cmd_approve)
+    ap = sp.add_parser("approve"); ap.add_argument("content_id"); ap.add_argument("gate"); ap.add_argument("--note", default=""); ap.add_argument("--spec", help="spec YAML the approval covers (default: the one this job last ran with)")
+    ap.add_argument("--show", action="store_true", help="print what the approval would bind, and its digest; record nothing")
+    ap.add_argument("--expect", metavar="DIGEST", help="approve only if the content still has this digest (from --show)"); ap.set_defaults(f=cmd_approve)
     jb = sp.add_parser("job", help="jobs built outside the pipeline"); jbs = jb.add_subparsers(dest="jcmd", required=True)
     jr = jbs.add_parser("register", help="register a hand-built job folder (writes only manifest.json)"); jr.add_argument("path")
     jr.add_argument("--track", required=True, choices=["B"], help="B = hand-built, agent-authored composition")

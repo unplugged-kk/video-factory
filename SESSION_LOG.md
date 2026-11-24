@@ -48,3 +48,29 @@
 ## 2026-11-13 - Claude Code (Sonnet 5.5), commit and push
 - Committed pending work in three commits, fast-forwarded main from feat/standalone-acceptance, pushed origin/main (includes B1 merge 016b5a5).
 - Updated AGENT_HANDOVER.md with next plan (P1-1 D1-D3, M1/M2). No publish, no paid call, no CEH touch.
+
+## 2026-11-13 (late) - Claude Code (Sonnet 5.5), P1-1 M1 and prompts
+- Did: D1/D2 defaults applied; wrote scenekit/lookmap.py + tests/test_lookmap.py (72 pass with scenekit and looks tests; full suite 1167 passed, 8 skipped); extracted styles.check_style; updated ROADMAP, P1-1 proposal, handover; wrote docs/AGENT_PROMPTS.md.
+- Not done on purpose: no commit/push, no pipeline wiring, no render, no CEH touch.
+
+## 2026-11-18/19 - pi (audit sessions), audit and P0 export gating
+- Did: docs/audit/* (11 files); export gated on both tracks with digest-bound check (G-01, G-02); G-03 Option D (manifest video sha); tests updated with storage_helpers.approve.
+- Left open: P0-1b manifest bypasses; G-04..G-20. Not recorded in AGENT_HANDOVER.md at the time (fixed in the next entry).
+
+## 2026-11-19/20 - pi (Claude), Phase 1 completion and P0-1b closure
+- Start: HEAD 86eeaa2, 29 dirty paths, backed up to ~/.contentos/checkpoints/phase1-20261119-2142 (patch, untracked tgz, sha256 list).
+- Did: ledger `renders` attestation; export.approval_refusal reads ledger only; whole-tree production digest; approve --show/--expect; job_id and export-record containment checks; Track B render needs both gates; tests/test_export_security.py; independent review (3 rounds) docs/audit/POTATO_FINAL_SECURITY_REVIEW.md; reconciled audit docs; real HyperFrames smoke render in /tmp.
+- Commits: two local commits (lookmap, export security). Not pushed.
+- Side effect: `git worktree prune` removed stale metadata for two already-missing worktrees (/private/tmp/ceh-vf-consumer, vf-b1); directories were already gone, branches untouched.
+- Not done: Remotion/MPT render, CI, human listening, visual review, P1-1 M2.
+
+## 2026-11-24 - pi/root, Phase 2 foundation launch
+- Baseline recovery: verified `849ea6a`, no upstream, 0 tracked edits, two existing untracked deliverables. Preserved exact contents and local Git history in checksummed external archive; isolated branch `feat/phase2-foundation`.
+- Implemented and tested: incomplete production dependency walk rejection (`d9c1d8e`) and two fresh-environment language test fixes (`cce972d`). First Python run failed 1/1203/22 before the HyperFrames assertion fix; fresh venv then passed 1211/17. Node 66/66. See `docs/project-intelligence/VERIFICATION_EVIDENCE.md` for commands and logs.
+- Runtime: offline English and Hindi narration CLI smokes succeeded; that does not establish quality. No allowed Pi subagent type; no independent critic or reviewer sign-off. Agent inventory and Phase 2 design are under `docs/audit/`.
+- Phase 2A remains open. Worktree ownership, owner decision, gaps, and exact next steps are in the Phase 2 project-intelligence checkpoint. No approval-policy change, publishing, push, or paid provider.
+
+## 2026-11-24 - pi/root, ITER-2026-11-24-002
+- Owner approved PF-02 mandatory human confirmation and separately authenticated, scoped automation. Implementation follows PF-05/PF-22 in the new directive; the policy is authorized, not active.
+- `46f8e78`: staged local MPT B-roll and narration, reject unresolved/legacy/remote requests, and verify container mount bytes. 10 expected red failures; focused 160 passed; full local 1,224 passed / 17 skipped; Node 66 passed; one real HyperFrames fixture regression at current HEAD, 12 technical checks passed. No real MPT runtime.
+- PF-05 fixture worker confinement passed with a cached Node image; no sealed production render. Three desk-research storyboards delivered, no creative code. No eligible agents or independent Potato run. See `docs/audit/PF23_LOCAL_STAGING.md` and `docs/project-intelligence/VERIFICATION_EVIDENCE.md`.

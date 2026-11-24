@@ -12,7 +12,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from contentos import export, handoff, storage  # noqa: E402
-from storage_helpers import make_video  # noqa: E402
+from storage_helpers import approve, make_video  # noqa: E402
 
 
 @pytest.fixture
@@ -36,6 +36,7 @@ def tree(root):
 
 def exported(d, video):
     shutil.copy(video, d / "video.mp4")
+    approve(d.name)
     return export.export_job(d.name)
 
 

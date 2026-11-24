@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from contentos import export, handoff, pipeline, storage  # noqa: E402
 from contentos.intelligence import visual  # noqa: E402
 from contentos.production import supplied_audio  # noqa: E402
-from storage_helpers import make_video  # noqa: E402
+from storage_helpers import approve, make_video  # noqa: E402
 
 
 @pytest.fixture
@@ -30,6 +30,7 @@ def stage(spec, video):
     storage.preflight()
     d, _ = storage.open_job("pj", yaml.safe_load(spec.read_text()))
     shutil.copy(video, d / "video.mp4")
+    approve("pj")
     return d
 
 
@@ -68,6 +69,7 @@ def test_forced_rerun_replaces_superseded_export(setup, tmp_path):
     first = json.loads(next((pub / "ready").rglob("*.publish.json")).read_text())
 
     shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+    approve("pj")                                                  # what the render stage attests
     _, report = pipeline.run(spec, only="export", force=True)
     assert report[0][:2] == ("export", "OK")
     sidecars = list((pub / "ready").rglob("*.publish.json"))
@@ -88,6 +90,7 @@ def test_rerun_without_force_refuses_superseded_export(setup, tmp_path):
     d = stage(spec, make_video(tmp_path / "v1.mp4", seconds=1))
     pipeline.run(spec, only="export")
     shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+    approve("pj")                                                  # what the render stage attests
     (d / "export-result.json").unlink()          # the sentinel the pipeline itself deletes when a stage fails
 
     _, report = pipeline.run(spec, only="export")
@@ -117,6 +120,7 @@ def test_a_stale_render_blocks_the_resume_instead_of_reporting_success(setup, tm
     pipeline.run(spec, only="export")
     first = json.loads(next((pub / "ready").rglob("*.publish.json")).read_text())
     shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+    approve("pj")                                                  # what the render stage attests
 
     _, report = pipeline.run(spec, only="export")
     assert report[0][0] == "export" and report[0][1].startswith("BLOCKED")
@@ -211,6 +215,7 @@ def stage_as(spec, video, job_id):
     storage.preflight()
     d, _ = storage.open_job(job_id, yaml.safe_load(spec.read_text()))
     shutil.copy(video, d / "video.mp4")
+    approve(job_id)
     return d
 
 
@@ -225,6 +230,7 @@ def test_export_records_the_look_in_the_ledger(setup, tmp_path):
                                     "script": [{"say": "Hi there."}]}))
     d = stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
     composition(d, bg=MESH, body="#061410", a1="#ff6b6b", a2="#c084fc")
+    approve("pj")                                                  # the render was made from this composition
 
     _, report = pipeline.run(spec, only="export")
     assert report[0][:2] == ("export", "OK")
@@ -243,7 +249,10 @@ def test_export_records_the_look_in_the_ledger(setup, tmp_path):
 def test_a_missing_composition_still_exports_and_reports_the_skip(setup, tmp_path):
     """A spent render must never be lost because the look could not be read."""
     spec, pub = setup
-    d = stage(spec, make_video(tmp_path / "v.mp4", seconds=1))     # no project/index.html
+    storage.preflight()                                            # a remotion job: approved, but no project/index.html
+    d, _ = storage.open_job("pj", yaml.safe_load(spec.read_text()))
+    shutil.copy(make_video(tmp_path / "v.mp4", seconds=1), d / "video.mp4")
+    approve("pj", render="remotion")
 
     _, report = pipeline.run(spec, only="export")
     assert report[0][:2] == ("export", "OK")
@@ -257,12 +266,14 @@ def test_a_duplicate_look_is_recorded_so_the_next_check_can_see_it(setup, tmp_pa
     spec, pub = setup
     first = stage(spec, make_video(tmp_path / "v1.mp4", seconds=1))
     composition(first)
+    approve("pj")
     pipeline.run(spec, only="export")
 
     spec.write_text(yaml.safe_dump({"content_id": "pj2", "title": "Second Job", "project": "Demo",
                                     "script": [{"say": "Hi there."}]}))
     second = stage_as(spec, make_video(tmp_path / "v2.mp4", seconds=1), "pj2")
     composition(second)                                            # the same look: a Rule B duplicate
+    approve("pj2")
     _, report = pipeline.run(spec, only="export")
     assert report[0][:2] == ("export", "OK")
 
@@ -278,6 +289,7 @@ def test_recording_the_look_never_fails_the_export(setup, tmp_path, monkeypatch)
     spec, pub = setup
     d = stage(spec, make_video(tmp_path / "v.mp4", seconds=1))
     composition(d)
+    approve("pj")
 
     def boom(*a, **k):
         raise RuntimeError("ledger is unwritable")
@@ -311,6 +323,7 @@ def test_forced_rerun_cannot_replace_a_claimed_export(setup, tmp_path):
     pipeline.run(spec, only="export")
     handoff.claim(pub, "pj", "scheduler")
     shutil.copy(make_video(tmp_path / "v2.mp4", seconds=3), d / "video.mp4")
+    approve("pj")                                                  # what the render stage attests
 
     _, report = pipeline.run(spec, only="export", force=True)
     assert report[0][1].startswith("FAIL")

@@ -13,6 +13,8 @@ DDL = """CREATE TABLE IF NOT EXISTS runs(
 CREATE TABLE IF NOT EXISTS jobs(id INTEGER PRIMARY KEY AUTOINCREMENT, spec TEXT, content_id TEXT, status TEXT, priority INT,
  approve_private INT, pid INT, created REAL, started REAL, finished REAL, error TEXT);
 CREATE TABLE IF NOT EXISTS approvals(content_id TEXT, gate TEXT, by TEXT, at REAL, note TEXT, subject_sha256 TEXT);
+CREATE TABLE IF NOT EXISTS renders(content_id TEXT, video_sha256 TEXT, source TEXT, spec_path TEXT,
+ script_sha256 TEXT, production_sha256 TEXT, at REAL);
 CREATE TABLE IF NOT EXISTS decisions(id TEXT, type TEXT, subject TEXT, decision TEXT, confidence REAL, source TEXT,
  reasons TEXT, predicted TEXT, actual TEXT, ts REAL);
 CREATE TABLE IF NOT EXISTS video_metrics(content_id TEXT, platform TEXT, views INT, ctr REAL, avg_view_pct REAL,
@@ -81,6 +83,29 @@ def check_gate(content_id, gate, current):
 
 def approved(content_id, gate):
     return db().execute("SELECT 1 FROM approvals WHERE content_id=? AND gate=?", (content_id, gate)).fetchone() is not None
+
+
+RENDER_COLS = ("content_id", "video_sha256", "source", "spec_path", "script_sha256", "production_sha256", "at")
+
+
+def attest_render(content_id, video_sha256, source, spec_path, script_sha256, production_sha256):
+    """Record that `video_sha256` is a render of this job, made from content whose gate digests were these.
+
+    This row, not the job's manifest, is what export trusts: the manifest and spec live in folders any tool or
+    person edits, while this is written only by the render stages and `job register`. source is pipeline, track-b
+    (both rendered by the factory after the PRODUCTION gate passed) or register (rendered outside the factory).
+    """
+    with db() as c:
+        c.execute("INSERT INTO renders VALUES (?,?,?,?,?,?,?)",
+                  (content_id, video_sha256, source, spec_path, script_sha256, production_sha256, time.time()))
+
+
+def render_record(content_id, video_sha256=None):
+    """The latest render attestation for this job (for these exact bytes, when given), as a dict, or None."""
+    q = f"SELECT {','.join(RENDER_COLS)} FROM renders WHERE content_id=?" + (" AND video_sha256=?" if video_sha256 else "")
+    row = db().execute(q + " ORDER BY at DESC, rowid DESC LIMIT 1",
+                       (content_id, video_sha256) if video_sha256 else (content_id,)).fetchone()
+    return dict(zip(RENDER_COLS, row)) if row else None
 
 
 def revoke(content_id, gate, reason=""):

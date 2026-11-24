@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from contentos import export, handoff, storage  # noqa: E402
-from storage_helpers import make_video  # noqa: E402
+from storage_helpers import approve, make_video  # noqa: E402
 
 
 @pytest.fixture(scope="module")
@@ -26,6 +26,7 @@ def lib(tmp_path, monkeypatch, vid):
     def add(job_id, project="alpha", **spec):
         d, _ = storage.open_job(job_id, {"title": f"T {job_id}", "project": project, **spec})
         shutil.copy(vid, d / "video.mp4")
+        approve(job_id)
         return export.export_job(job_id)
     add("j1"); add("j2", project="beta", platform_targets=["x"], kind="short", language="en"); add("j3", platform_targets=["youtube"], kind="long")
     return tmp_path / "pub", add

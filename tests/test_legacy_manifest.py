@@ -125,10 +125,15 @@ def test_after_adoption_the_job_is_managed_but_still_not_exportable(legacy):
     assert any(s["job"] == JOB and "status created is not eligible" in s["reason"] for s in r["skipped"])
 
     ready_before = tree(pub / "ready")
+    # Approving the gates does not help: the masters are renders/*-master.mp4, not video.mp4, so nothing was attested
+    # and there is nothing to export.
+    from contentos import ledger
+    for g in ("SCRIPT_APPROVED", "PRODUCTION_APPROVED"):
+        ledger.approve(JOB, g, by="test")
     with pytest.raises(export.ExportRefused, match="final video is missing"):
-        export.export_job(JOB)                                   # the masters are renders/*-master.mp4, not video.mp4
+        export.export_job(JOB)
     assert tree(pub / "ready") == ready_before                   # nothing published was touched
-    # the only side effect anywhere under the library is the export lock, which export_job takes before it refuses
+    # the only side effect under the library is the export lock export_job takes before it refuses
     assert set(tree(pub)) - set(before) == {f".state/locks/{JOB}.lock"}
 
 

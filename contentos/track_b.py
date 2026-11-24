@@ -181,6 +181,20 @@ def _record(job_id, stage, provider, status, start, artifacts=(), error=""):
     ledger.record(ledger.new_run_id(), job_id, stage, provider, status, start, artifacts=artifacts, error=error[-1000:])
 
 
+def attest_registration(job_id, directory):
+    """Record the hand-built video.mp4 as this job's render. The factory did not make it, so PRODUCTION_APPROVED is
+    bound to the bytes themselves: replacing the file and registering again needs a fresh production approval."""
+    video = Path(directory) / "video.mp4"
+    if not video.is_file():                               # nothing to attest; export refuses the job until there is
+        return
+    sha = export.sha256_file(video)
+    known = ledger.render_record(job_id, sha)
+    if known and known["source"] != "register":       # the factory rendered these exact bytes; keep that stronger record
+        return
+    subjects = pipeline.render_subjects(directory, script_spec(directory), "register", sha)
+    ledger.attest_render(job_id, sha, "register", None, subjects["SCRIPT_APPROVED"], subjects["PRODUCTION_APPROVED"])
+
+
 def _composition_sha(directory):
     path = _composition(directory)
     return export.sha256_file(path) if path else None
@@ -435,6 +449,7 @@ def register(job_id):
     if existing is None:
         spec = script_spec(directory)
         storage.adopt_external(directory, title=spec.get("title") or job_id)
+        attest_registration(job_id, directory)
         return {"status": "REGISTERED", "created": True, "externalLedger": _record_external(job_id)}
     from . import finalcheck
     manifest = storage.read_manifest(directory)
@@ -445,6 +460,7 @@ def register(job_id):
         storage.update_manifest(directory, validation=result)
         raise TrackBError(422, "VIDEO_INVALID", "The finished video did not pass validation")
     storage.update_manifest(directory, validation=result, final_output="video.mp4", failure=None)
+    attest_registration(job_id, directory)
     return {"status": "REGISTERED", "created": False, "externalLedger": _record_external(job_id)}
 
 
@@ -497,12 +513,19 @@ def render(job_id):
     directory = _job(job_id)
     _manifest(directory)
     spec = _spec_for_job(directory)
+    _require_gate(job_id, "SCRIPT_APPROVED", pipeline.script_digest(spec))
     _require_gate(job_id, "PRODUCTION_APPROVED", pipeline.production_digest(directory, spec))
     if _composition(directory) is None:
         raise TrackBError(409, "MISSING_COMPOSITION", "Render needs project/index.html")
+    subjects = pipeline.render_subjects(directory, spec, "track-b")      # the digests the gate just accepted
     started = time.time()
     try:
         provider, artifacts = pipeline.s_render(_context(directory, spec))
+        if pipeline.render_subjects(directory, spec, "track-b") != subjects:
+            (directory / "video.mp4").unlink(missing_ok=True)   # a suspect render must not be left to be registered
+            raise pipeline.Blocked("the approved content changed while it was rendering; this render is not attested")
+        ledger.attest_render(job_id, export.sha256_file(directory / "video.mp4"), "track-b", None,
+                             subjects["SCRIPT_APPROVED"], subjects["PRODUCTION_APPROVED"])
     except pipeline.Blocked as exc:
         raise TrackBError(409, "RENDER_BLOCKED", str(exc)) from exc
     except (OSError, RuntimeError) as exc:
