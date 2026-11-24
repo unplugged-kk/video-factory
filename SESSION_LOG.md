@@ -63,3 +63,14 @@
 - Commits: two local commits (lookmap, export security). Not pushed.
 - Side effect: `git worktree prune` removed stale metadata for two already-missing worktrees (/private/tmp/ceh-vf-consumer, vf-b1); directories were already gone, branches untouched.
 - Not done: Remotion/MPT render, CI, human listening, visual review, P1-1 M2.
+
+## 2026-11-24 - pi/root, Phase 2 foundation launch
+- Baseline recovery: verified `849ea6a`, no upstream, 0 tracked edits, two existing untracked deliverables. Preserved exact contents and local Git history in checksummed external archive; isolated branch `feat/phase2-foundation`.
+- Implemented and tested: incomplete production dependency walk rejection (`d9c1d8e`) and two fresh-environment language test fixes (`cce972d`). First Python run failed 1/1203/22 before the HyperFrames assertion fix; fresh venv then passed 1211/17. Node 66/66. See `docs/project-intelligence/VERIFICATION_EVIDENCE.md` for commands and logs.
+- Runtime: offline English and Hindi narration CLI smokes succeeded; that does not establish quality. No allowed Pi subagent type; no independent critic or reviewer sign-off. Agent inventory and Phase 2 design are under `docs/audit/`.
+- Phase 2A remains open. Worktree ownership, owner decision, gaps, and exact next steps are in the Phase 2 project-intelligence checkpoint. No approval-policy change, publishing, push, or paid provider.
+
+## 2026-11-24 - pi/root, ITER-2026-11-24-002
+- Owner approved PF-02 mandatory human confirmation and separately authenticated, scoped automation. Implementation follows PF-05/PF-22 in the new directive; the policy is authorized, not active.
+- `46f8e78`: staged local MPT B-roll and narration, reject unresolved/legacy/remote requests, and verify container mount bytes. 10 expected red failures; focused 160 passed; full local 1,224 passed / 17 skipped; Node 66 passed; one real HyperFrames fixture regression at current HEAD, 12 technical checks passed. No real MPT runtime.
+- PF-05 fixture worker confinement passed with a cached Node image; no sealed production render. Three desk-research storyboards delivered, no creative code. No eligible agents or independent Potato run. See `docs/audit/PF23_LOCAL_STAGING.md` and `docs/project-intelligence/VERIFICATION_EVIDENCE.md`.

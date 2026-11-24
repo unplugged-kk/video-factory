@@ -1,6 +1,6 @@
 # AGENT_HANDOVER
 
-Resume from Git plus this file. Read AGENTS.md first, then docs/CURRENT_STATE.md and docs/ROADMAP.md. Updated 2026-11-13 (late). Prompts to give the next agent: docs/AGENT_PROMPTS.md.
+Read `AGENTS.md` first. **Phase 2 is parked for UI design and prototyping (2026-11-24).** Resume integrity work from `feat/phase2-foundation`; see `docs/project-intelligence/AGENT_HANDOFF.md` and `docs/audit/PHASE_2_IMPLEMENTATION_PLAN.md`. The histories below are not the active handoff. Start independent UI prototypes from `main` in a separate worktree. Do not depend on the unfinished approval migration or activate new production render lanes.
 
 ## Product mandate
 
@@ -148,4 +148,11 @@ Read first: `docs/audit/MASTER_GAP_REGISTER.md` "Current status - authoritative"
   decision), PF-03, PF-05 (partly), PF-07, PF-22, PF-23.
 - Two commits on `feat/p1-1-lookmap`, not pushed: P1-1 M1 lookmap, then the export security work.
 - Owner decisions pending: make `approve --expect` mandatory (PF-02); branch destination and push.
-- Next: PF-22 and PF-05 (snapshot render) before relying on the chain; then G-07; P1-1 M2 after that.
+- Next at that time: PF-22 and PF-05 (snapshot render) before relying on the chain; then G-07; P1-1 M2 after that.
+
+## Update 2026-11-24: Phase 2 foundation
+
+- Original checkout remains `feat/p1-1-lookmap @ 849ea6a`, no upstream, with both Phase 1 untracked deliverables preserved. Baseline bundle, ref list and archive checksums verified at `~/.contentos/checkpoints/video-factory-phase2-20261124/`.
+- Isolated branch `feat/phase2-foundation`: `d9c1d8e` refuses incomplete production dependency trees; `cce972d` fixes two optional language-test assumptions. No push, no publish, no gate/approval policy change and no protected edits.
+- Fresh worktree proof: Python 1,211 passed / 17 skipped; Node 66 passed. The first Python failure and offline npm failure are preserved. Runtime: HyperFrames 0.8.114 starts, offline English and Hindi TTS returned valid-format WAV metadata; no human audio sign-off.
+- Continuation: `46f8e78` stages and binds local MPT B-roll and narration; Docker adapter tests passed, real MPT and immutable mounting remain open. Full tests: Python 1,224 passed / 17 skipped, JavaScript 66 passed. A no-host-mount Node fixture supports PF-05 feasibility only. Next: real sealed rendering with attestation, then complete PF-22 and migrate PF-02 across CLI/API/Studio. Kishore approved PF-02, including separate scoped private automation. No eligible native subagent or independent review; three storyboard proposals are documented, not rendered.
