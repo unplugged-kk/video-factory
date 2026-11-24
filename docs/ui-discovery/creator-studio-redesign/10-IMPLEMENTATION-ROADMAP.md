@@ -1,0 +1,16 @@
+# 10 / Implementation roadmap (not authorized here)
+
+**Research date:** 2026-11-24. **Scope:** implementation sequence, gates and rollback. **Evidence / sources:** [00](00-RECONCILIATION.md), [API gaps](08-API-GAP-ANALYSIS.md), prior `docs/ui-discovery/creator-studio/browser-e2e-and-accessibility-plan.md`, current [integrity design](../../audit/PHASE_2_IMPLEMENTATION_PLAN.md). **Verified:** testable per-job slice exists; new group persistence and sealed subjects do not.
+
+| Phase / owner | Inputs and deliverable | Exit tests and rollback |
+|---|---|---|
+| R0 Owner + design | Review published blueprint and decisions, then authorize an inert, fixture-only prototype. Demonstrate exact-subject review, 20 mixed rows, and three responsive layouts. | User can identify the next blocker and export vs publish; keyboard, 320 px reflow and AA checks in both themes. Discard prototype without touching app. |
+| R1 Frontend + QA | Mount the proposed shell and read-only Mission, Library and Operations on existing APIs; preserve original job routes. | Old routes unchanged, live updates don't lose selection/focus, test disconnect, missing capability, bad artifacts. Roll back route affordances, no migrations. |
+| R2 Product + core | Single-job creation and Track B handoff, truthful readiness and budget; script authoring remains explicit. | Run only via saved validated spec and explicit action, tested lock/idempotency behavior, test legacy read. Do not expand external assets. |
+| R3 Integrity + core | PF-05, PF-22 and PF-02 shared sealed confirmation; supersession and render attestation. Then enable expanded review and selected asset import. | Fixture and real-lane evidence of exact subject and output identity; stale, mismatch and automation isolation; approved gate behavior independent of UI. Release review read-only if not ready. |
+| R4 Core + QA | Independent batches then campaigns using shared effective-spec and receipt layer. | 20 mixed rows, interrupted submit replay, no duplicate jobs, per-row recovery, campaign r3 not altering r2 grant or job, keyboard editing. Preserve jobs if grouping toggled off. |
+| R5 Core + design | Bulk export with independent receipts and robust conflict handling; enrich Creative Library and real activity only as capabilities land. | Tested export preflight/revalidation, partial failures, duplicate retry, separate technical and creative results. No upload; fallback to existing per-job export. |
+
+Do not block R0–R1 on backend expansion. Restrict mutation routes to the explicit contract and owner-approved integrity policy. Quality bar: no critical axe violations, complete manual keyboard flow and focus checks, media controls/transcript where applicable, parity smoke on old routes, and no regressions in approval, export or worker tests. Use contained test workspaces only once implementation is authorized. Record actual outcomes and report rendering tests separately from fixture UI acceptance. Promote capability labels only from recorded evidence.
+
+**Assumptions:** main milestones ship via independently reviewable PRs, no new dependency without an ADR. **Open questions:** prototype operator test participants/fixtures, production release order and whether creative verdict blocks export.
