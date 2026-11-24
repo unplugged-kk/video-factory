@@ -441,6 +441,28 @@ def test_pf21_a_symlink_loop_terminates(env, videos):
     assert pipeline.production_digest(j.d, yaml.safe_load(j.spec.read_text()))
 
 
+@pytest.mark.parametrize("unavailable", ["missing target", "unreadable directory"])
+def test_production_does_not_offer_a_digest_for_an_incomplete_project(env, videos, monkeypatch, unavailable):
+    j = track_a(env, videos)
+    assets = j.d / "project" / "assets"
+    if unavailable == "missing target":
+        assets.symlink_to(env.tmp / "missing", target_is_directory=True)
+    else:
+        assets.mkdir()
+        original_scandir = pipeline.os.scandir
+
+        def scandir(path):
+            if path == str(assets):
+                raise PermissionError("asset directory is not readable")
+            return original_scandir(path)
+
+        monkeypatch.setattr(pipeline.os, "scandir", scandir)
+
+    response = ui_api._approve(j.id, {"gate": "PRODUCTION_APPROVED"})
+    assert response.status == 409
+    assert response.body["error"]["code"] == "ARTIFACT_NOT_READY"
+
+
 def test_pf24_a_shared_node_modules_link_is_bound_by_target_only(env, videos):
     """Accepted risk PF-24: Remotion's shared toolchain (project_remotion/node_modules) is linked, not reviewed.
     Its link target is bound, its tree is not."""

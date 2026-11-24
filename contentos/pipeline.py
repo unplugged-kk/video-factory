@@ -440,9 +440,9 @@ def _tree_parts(root, base):
     """Every file under `root` by content, following symlinked directories (a link is no way around the binding), so
     whatever the renderer can read from the project is covered. The one exception is project_remotion/node_modules,
     Remotion's shared toolchain link: only the link itself is bound. Each real directory is walked once, so a link
-    loop terminates. None when the tree holds a FIFO or device, which cannot be bound."""
-    parts, seen = [], set()
-    for dirpath, dirnames, filenames in os.walk(root, followlinks=True):
+    loop terminates. None for a failed directory walk, dangling link, or special file."""
+    parts, seen, walk_errors = [], set(), []
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=True, onerror=walk_errors.append):
         here = Path(dirpath)
         real = os.path.realpath(here)
         if real in seen:
@@ -459,11 +459,9 @@ def _tree_parts(root, base):
             p = here / name
             if p.is_file():
                 parts.append(f"project {p.relative_to(base).as_posix()} {exporter.sha256_file(p)}")
-            elif p.is_symlink() and not p.exists():
-                parts.append(f"dangling {p.relative_to(base).as_posix()} {os.readlink(p)}")
-            else:                                         # a FIFO or device has no content to bind; nothing it serves is reviewable
+            else:  # A broken link, FIFO, or device has no reviewable content.
                 return None
-    return sorted(parts)
+    return None if walk_errors else sorted(parts)
 
 
 def production_digest(d, spec):
