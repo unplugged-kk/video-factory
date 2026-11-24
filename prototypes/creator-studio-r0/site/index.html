@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cutting Room / Creator Studio prototype</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <aside class="sidebar">
+    <a class="brand" href="#/mission"><span class="mark" aria-hidden="true">◒</span><span>Cutting Room<small>VIDEO FACTORY</small></span></a>
+    <nav id="nav" aria-label="Studio"></nav>
+    <p class="rail-note">WORKSPACE / R0<br>Fixture session</p>
+  </aside>
+  <div class="workspace">
+    <header class="top">
+      <button id="open-nav" class="mobile-only" type="button">Studio menu</button>
+      <span class="prototype"><span aria-hidden="true">◆</span> Prototype · synthetic data</span>
+      <div class="utilities"><button id="theme" type="button">Light theme</button><button id="reset" type="button">Reset</button></div>
+    </header>
+    <main id="main" tabindex="-1"></main>
+  </div>
+  <dialog id="menu" aria-labelledby="menu-title"><h2 id="menu-title">Studio destinations</h2><nav aria-label="Mobile Studio"></nav><button data-close type="button">Close menu</button></dialog>
+  <dialog id="action" aria-labelledby="action-title"></dialog>
+  <p id="notice" class="sr" role="status"></p>
+</body>
+</html>
