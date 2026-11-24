@@ -49,3 +49,6 @@ Video-Publishing/
 
 # W0 hermetic fixtures: the wavs are golden test inputs, not generated media
 !tests/fixtures/baseline/audio/*.wav
+
+# Netlify local project state
+.netlify/
