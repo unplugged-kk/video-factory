@@ -50,7 +50,7 @@ Source: [complete ChatGPT review at `10ae59f`](https://github.com/unplugged-kk/v
 
 ## Owner decision proposals
 
-These are recommended defaults, **not owner-approved decisions**. They do not supersede approval or storage policies. No remaining technical disagreement with Review 02 is recorded.
+The table below preserves the proposals as reviewed. See the subsequent owner authorization for their disposition. They do not supersede approval or storage policies. No remaining technical disagreement with Review 02 is recorded.
 
 | ID / topic | Recommended default | Current status | Risk if unresolved | Owner action required |
 |---|---|---|---|---|
@@ -62,3 +62,16 @@ These are recommended defaults, **not owner-approved decisions**. They do not su
 | D6 / Authorization | Consider standalone fixture-only R0 as a separate decision; R1 and production unauthorized | Spec ready for owner review; **R0 not authorized** | Prototype may acquire live API integration by scope drift | Explicitly authorize R0 only; R1/live requires separate security review and permission |
 
 **Assumptions:** this branch remains docs-only and draft. **Open questions:** owner choices above and prototype test participants. Record actual owner decisions as new entries instead of rewriting either review.
+
+## Owner authorization (D1–D6)
+
+Date: 2026-11-24. Source: owner instruction “Video Factory Creator Studio — Owner Authorization and R0 Execution”. The historical proposal table above is superseded for these decisions.
+
+| Decision | Owner resolution |
+|---|---|
+| D1 | Approved: PF-02 remains mandatory. Redesigned live approvals remain read-only until trusted human attribution satisfies the policy. |
+| D2 | Approved: creative review is advisory initially, separate from technical export eligibility. |
+| D3 | Approved: PNG/JPEG and WAV first. Video import deferred until safe probing and resource isolation are validated. No import implementation in R0. |
+| D4 | Approved: Cutting Room for R0 experimentation only, not final direction. |
+| D5 | Approved: vanilla ES modules for R0 and initial frontend direction. |
+| D6 | Owner authorized implementation of isolated fixture-only R0. Authorization does not extend to R1, production code, live APIs, approval systems, publishing or pipeline changes. |
