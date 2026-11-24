@@ -1,11 +1,12 @@
-"""MoneyPrinterTurbo render lane. contentos keeps the script, the voice, the gates and QA; MPT only
-sources free stock footage, cuts it to OUR voice track and burns subtitles. Driven through MPT's CLI
-inside its container, because the HTTP API cannot take a voice track from outside its own task dir."""
+"""MoneyPrinterTurbo cuts reviewed local footage to our voice track and burns subtitles."""
+import hashlib
 import json
+import os
 import re
 import shutil
+import stat
 import subprocess
-import tomllib
+import tempfile
 import uuid
 from pathlib import Path
 
@@ -26,7 +27,10 @@ LICENSE = {
     "coverr": ("Coverr License", "https://coverr.co/license"),
     "local": ("user-supplied, rights not verified by contentos", ""),
 }
-KEY = {"pexels": "pexels_api_keys", "pixabay": "pixabay_api_keys", "coverr": "coverr_api_keys"}
+STAGED = "mpt-assets"
+NARRATION = f"{STAGED}/narration.wav"
+SHA = re.compile(r"[a-f0-9]{64}")
+CLIP_SUFFIX = re.compile(r"\.[a-z0-9]{1,8}")
 # Bold face, thick outline, 70% from the top: the Shorts UI covers the bottom ~20%.
 STYLE = ["--font-name=BeVietnamPro-Bold.ttf", "--font-size=78", "--stroke-width=4",
          "--subtitle-position=custom", "--custom-position=70"]
@@ -36,8 +40,34 @@ class Unavailable(Exception):
     """The lane cannot run (stack down, key missing, bad spec). The pipeline reports it as BLOCKED."""
 
 
-def request(spec):
-    """Pure: spec -> everything MPT needs. Raises Unavailable for anything contentos refuses to run."""
+def _relative(path):
+    rel = Path(path)
+    if not rel.parts or rel.is_absolute() or ".." in rel.parts or rel.as_posix() != path:
+        raise ValueError("expected a canonical relative path")
+    return rel
+
+
+def _open_input(root, relative):
+    """Open a regular file beneath the jobs root without following any input symlink."""
+    dirs = os.O_DIRECTORY | os.O_NOFOLLOW | os.O_RDONLY
+    parent = os.open(root, dirs)
+    try:
+        for part in relative.parts[:-1]:
+            child = os.open(part, dirs, dir_fd=parent)
+            os.close(parent)
+            parent = child
+        fd = os.open(relative.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
+        stream = os.fdopen(fd, "rb")
+        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+            stream.close()
+            raise ValueError("not a regular file")
+        return stream
+    finally:
+        os.close(parent)
+
+
+def request(spec, *, check_files=True):
+    """Normalize the MPT spec; only compose needs access to the original files."""
     m = spec.get("mpt") or {}
     source = m.get("source", "pexels")
     if source not in LICENSE:
@@ -48,14 +78,20 @@ def request(spec):
     terms = m.get("terms") or [t for ln in lines if (t := ln.get("broll") or ln.get("headline"))] or spec.get("tags", [])
     materials = []
     if source == "local":
-        base = projects_root().resolve()
+        configured = projects_root().absolute()
+        base = configured.resolve()
         for p in m.get("materials") or []:
-            f = (ROOT / p).resolve()
-            if not f.is_relative_to(base):
-                raise Unavailable(f"local material {p} must live under the workspace jobs/ folder (all the container can see)")
-            if not f.is_file():
-                raise Unavailable(f"local material not found: {p}")
-            materials.append(f"{CONTAINER_PROJECTS}/{f.relative_to(base).as_posix()}")
+            try:
+                # Resolve the workspace alias, but never follow a link within jobs/.
+                supplied = ROOT / p
+                relative = supplied.relative_to(configured if supplied.is_relative_to(configured) else base)
+                relative = _relative(relative.as_posix())
+                if check_files:
+                    with _open_input(base, relative):
+                        pass
+            except (OSError, TypeError, ValueError) as exc:
+                raise Unavailable(f"local material must be a regular file under workspace jobs/ without links: {p}") from exc
+            materials.append(f"{CONTAINER_PROJECTS}/{relative.as_posix()}")
         if not materials:
             raise Unavailable("mpt.source=local needs mpt.materials")
     elif not terms:
@@ -88,38 +124,115 @@ def _run(argv, timeout=1500):
 
 
 def compose(ctx):
-    """One voice track + a reviewable request. Nothing leaves the Mac yet (that happens at the render gate)."""
+    """Stage the exact local inputs before writing the reviewable request."""
     d, spec = ctx["dir"], ctx["spec"]
     req = request(spec)
-    key = KEY.get(req["source"])
-    if key:
-        try:
-            have = tomllib.loads((MPT_DIR / "config.toml").read_text()).get("app", {}).get(key)
-        except FileNotFoundError:
-            raise Unavailable("vendor/MoneyPrinterTurbo/config.toml missing: copy config.example.toml")
-        if not have:
-            raise Unavailable(f"{key} is empty in vendor/MoneyPrinterTurbo/config.toml (free key), or set mpt.source: local")
-    wavs = [d / "audio" / f"{i:02d}.wav" for i in range(1, len(spec["script"]) + 1)]
-    if not all(w.exists() for w in wavs):
-        raise Unavailable("voice stage has not produced every line yet")
-    lst, full = d / "audio/list.txt", d / "audio/full.wav"
-    lst.write_text("".join(f"file '{w.name}'\n" for w in wavs))  # relative to list.txt: no path escaping
-    _run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(full)])
+    if req["source"] != "local":
+        raise Unavailable("MPT stock must be obtained before approval: use mpt.source: local with staged source clips")
+    root = projects_root().resolve()
     out = d / "project/mpt-request.json"
-    out.parent.mkdir(exist_ok=True)
-    rel_job = d.resolve().relative_to(projects_root().resolve()).as_posix()
-    out.write_text(json.dumps({**req, "audio": f"{CONTAINER_PROJECTS}/{rel_job}/audio/full.wav"}, indent=2))
-    return [full, out]  # the sentinel is written last
+    stage = out.parent / STAGED
+    for directory in (out.parent, stage):
+        if directory.is_symlink():
+            raise Unavailable("MPT staging directory cannot be a symlink")
+        directory.mkdir(exist_ok=True)
+    wavs = [d / "audio" / f"{i:02d}.wav" for i in range(1, len(spec["script"]) + 1)]
+    if not all(w.is_file() for w in wavs):
+        raise Unavailable("voice stage has not produced every line yet")
+    lst = d / "audio/list.txt"
+    lst.write_text("".join(f"file '{w.name}'\n" for w in wavs))
+    entries = []
+    with tempfile.TemporaryDirectory(prefix=".mpt-", dir=out.parent) as temp:
+        work = Path(temp)
+        for source in req.pop("materials"):
+            origin = source.removeprefix(f"{CONTAINER_PROJECTS}/")
+            relative = _relative(origin)
+            suffix = relative.suffix.lower()
+            if not CLIP_SUFFIX.fullmatch(suffix):
+                raise Unavailable(f"MPT material needs a supported filename extension: {origin}")
+            candidate = work / "clip"
+            try:
+                with _open_input(root, relative) as src, candidate.open("wb") as dst:
+                    shutil.copyfileobj(src, dst)
+                with candidate.open("rb") as src:
+                    sha = hashlib.file_digest(src, "sha256").hexdigest()
+            except (OSError, ValueError) as exc:
+                raise Unavailable(f"could not stage MPT material: {origin}") from exc
+            path = f"{STAGED}/{sha}{suffix}"
+            candidate.replace(out.parent / path)
+            entries.append({"path": path, "sha256": sha, "origin": origin, "license": LICENSE["local"][0]})
+        full = work / "narration.wav"
+        _run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", str(full)])
+        with full.open("rb") as src:
+            audio_sha = hashlib.file_digest(src, "sha256").hexdigest()
+        full.replace(out.parent / NARRATION)
+        manifest = work / out.name
+        manifest.write_text(json.dumps({**req, "dependencies": entries, "audio_sha256": audio_sha}, sort_keys=True, indent=2))
+        manifest.replace(out)  # sentinel is published last
+    return [out.parent / NARRATION, out]
+
+
+def reviewed_request(d, spec):
+    """Resolve only reviewed project-relative inputs, both for approval and for Docker argv."""
+    root = projects_root().resolve()
+    try:
+        d = Path(d).absolute()
+        base = projects_root().absolute()
+        job = d.relative_to(base if d.is_relative_to(base) else root)
+        project = _relative((job / "project").as_posix())
+        with _open_input(root, project / "mpt-request.json") as src:
+            req = json.load(src)
+        entries = req.pop("dependencies")
+        audio_sha = req.pop("audio_sha256")
+        expected = request(spec, check_files=False)
+        origins = expected.pop("materials")
+        if (req != expected or expected["source"] != "local" or not SHA.fullmatch(audio_sha)
+                or not isinstance(entries, list) or len(entries) != len(origins)):
+            raise ValueError("staged request does not match the current local specification")
+        mounted = {}
+
+        def check(path, expected_sha):
+            relative = project / _relative(path)
+            with _open_input(root, relative) as src:
+                sha = hashlib.file_digest(src, "sha256").hexdigest()
+            if sha != expected_sha:
+                raise ValueError("staged material hash mismatch")
+            container_path = f"{CONTAINER_PROJECTS}/{relative.as_posix()}"
+            if "," in container_path:
+                raise ValueError("MPT cannot encode commas in material paths")
+            mounted[container_path] = sha
+            return container_path
+
+        audio = check(NARRATION, audio_sha)
+        materials = []
+        for entry, source in zip(entries, origins, strict=True):
+            path, sha = entry["path"], entry["sha256"]
+            origin = _relative(entry["origin"])
+            suffix = origin.suffix.lower()
+            if (source != f"{CONTAINER_PROJECTS}/{origin.as_posix()}"
+                    or not SHA.fullmatch(sha) or not CLIP_SUFFIX.fullmatch(suffix)
+                    or path != f"{STAGED}/{sha}{suffix}" or entry["license"] != LICENSE["local"][0]):
+                raise ValueError("invalid dependency record")
+            materials.append(check(path, sha))
+        return {**req, "dependencies": entries, "materials": materials, "audio": audio}, mounted
+    except (AttributeError, OSError, KeyError, TypeError, ValueError) as exc:
+        raise Unavailable("MPT inputs are missing or do not match the staged request; re-run compose and review") from exc
 
 
 def render(ctx):
     d = ctx["dir"]
-    req = json.loads((d / "project/mpt-request.json").read_text())
-    try:  # a container started from another checkout still answers HTTP (doctor passes) but sees the wrong workspace
-        _run(["docker", "exec", CONTAINER, "test", "-f", req["audio"]])
-    except RuntimeError:
-        raise Unavailable(f"MPT container cannot see {req['audio']}: it was started from another folder. "
-                          f"docker compose up -d from {ROOT}")
+    req, mounted = reviewed_request(d, ctx["spec"])
+    # The container can see a different workspace at the same path. Check bytes, not existence.
+    verify = ("import hashlib, sys\n"
+              "for path, expected in zip(sys.argv[1::2], sys.argv[2::2]):\n"
+              " with open(path, 'rb') as f:\n"
+              "  h = hashlib.sha256()\n"
+              "  for block in iter(lambda: f.read(1048576), b''): h.update(block)\n"
+              "  if h.hexdigest() != expected: sys.exit('mounted dependency differs')\n")
+    try:
+        _run(["docker", "exec", CONTAINER, "python", "-c", verify, *(x for pair in mounted.items() for x in pair)])
+    except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+        raise Unavailable("MPT container mount does not match the reviewed inputs") from exc
     tid = str(uuid.uuid4())
     res = json.loads(_run(cmd(req, tid)).strip().splitlines()[-1])["result"]
     if not res.get("videos"):
@@ -131,5 +244,5 @@ def render(ctx):
     shutil.copy(src, video)
     name, url = LICENSE[req["source"]]
     rights.write_text(json.dumps({"lane": "mpt", "task_id": tid, "source": req["source"], "license": name, "terms": url,
-                                  "materials": res.get("materials")}, indent=2))
+                                  "dependencies": req["dependencies"]}, indent=2))
     return [video, rights]

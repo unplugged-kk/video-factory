@@ -70,7 +70,7 @@ persist a rejection, start or stop the worker, storage `--apply`, research, comp
 |---|---|---|
 | `hyperframes` (default) | text/data explainers, HTML/GSAP timelines, branded word-highlight captions, fully local | nothing |
 | `remotion` | React + TypeScript spring animations, fluid component motion, active word reveals | local Remotion CLI (`~/.contentos/remotion`) |
-| `mpt` | faceless shorts that need real b-roll: MoneyPrinterTurbo sources free stock clips, cuts them to OUR Kokoro voice, burns subtitles | `docker compose up -d`; a free Pexels/Pixabay/Coverr key in `vendor/MoneyPrinterTurbo/config.toml`, or `mpt.source: local` |
+| `mpt` | faceless shorts: MoneyPrinterTurbo cuts staged B-roll to our narration and burns subtitles | `docker compose up -d`; use `mpt.source: local` with `mpt.materials` pointing to regular files under workspace `jobs/` |
 | OpenMontage | cinematic, animated, long-form, avatars | agent-driven, not an API: not wired. Hand off by hand, then `pipeline run <spec> --only qa` on a `video.mp4` placed in the project dir |
 
 `remotion` details: `compose` builds a standalone React/Remotion project with spring physics and word-level caption timing, adhering strictly to safezone bounds (460px bottom, 190px right). `render` runs `@remotion/cli` headless rendering locally.
@@ -151,7 +151,7 @@ Settings for tests and unusual layouts: `VIDEO_FACTORY_WORKSPACE`, `VIDEO_FACTOR
 | LLM | none local. Script text is supplied in the spec. ContentForge gateway is the planned path |
 | Jev adapter | built (`contentos jev status|triage`), fails open to `watch`. ContentForge at localhost:3000 answers 401: needs `CONTENTFORGE_COOKIE` from a logged-in session. Verified against a stub server only, not the real engine |
 | Learning loops | built, read-only, thin data reports `insufficient_data`: providers, cost, calibration, opportunity ranking, packaging/platform (need ingested metrics), `recommend` (PUBLISH/HOLD/REVISE/ABANDON, publish stays gated) |
-| MPT lane | live for `mpt.source: local` (full pipeline, QA all PASS, resumes, shows on the dashboard). Pexels/Pixabay/Coverr wired but UNTESTED: no key set, so the per-clip rights record is unverified |
+| MPT lane | The revised local staging path has mock Docker coverage; real runtime verification is pending. Recompose legacy jobs before approval. Render-time Pexels/Pixabay/Coverr selection is blocked until stock can be staged and reviewed before rendering. |
 | OpenMontage | running in Dory (Backlot :4750), no contentos adapter; manual handoff only |
 | Captions | word-highlight captions from whisper.cpp timings (warm 2.9 s per 27 s audio, WER 1.4% on synthetic speech) |
 | Multilingual (verified 2026-11-11) | English production-ready; Hindi and Hinglish `experimental` (generation and renders exist, no fluent listener has approved the audio); Odia `blocked`. `python -m contentos.lang doctor --require en,hi,hi-en` |

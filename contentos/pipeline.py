@@ -472,6 +472,11 @@ def production_digest(d, spec):
     comp = d / rel
     if not comp.is_file():
         return None
+    if spec.get("render") == "mpt":
+        try:
+            mpt.reviewed_request(d, spec)
+        except mpt.Unavailable:
+            return None
     tree = _tree_parts(d / Path(rel).parts[0], d)
     if tree is None:
         return None
