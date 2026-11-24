@@ -1,14 +1,12 @@
 # Research status
 
-**Date:** 2026-11-24. **Scope:** Creator Studio redesign, documentation only.
+**Date:** 2026-11-24. **Scope:** documentation-only refresh. **Current phase:** M2 product and journeys.
 
-- Phase: M1 reconciliation published with this commit.
-- Latest contribution SHA: this commit (`git log -1 --format=%H -- docs/ui-discovery/creator-studio-redesign/00-RECONCILIATION.md`).
-- Active branch: `claude/creator-studio-redesign`; `chatgpt/creator-studio-review` not observed at branch setup.
-- Draft PR: creation follows the first push.
-- Completed: 00 and this status.
-- Outstanding: 01–12, decision log and index.
-- Latest contributor: primary design agent, reconciliation at `8709b0b`. Latest ChatGPT review: none. Disagreements: none recorded.
-- Next: primary design agent publishes product and journeys.
+- Previous confirmed contribution: `6069d50ad9497600147d5e4b859df8b9e6e43eed`; latest contribution: the commit adding 01–03.
+- Active branches: `claude/creator-studio-redesign`; no ChatGPT review branch seen at setup.
+- Draft PR: https://github.com/unplugged-kk/video-factory/pull/6
+- Completed: 00–03. Outstanding: 04–12, decision log and index.
+- Latest primary contribution: requirements, navigation and eight journeys. Latest ChatGPT review: none; disagreements: none.
+- Next: primary agent publishes screen and interface designs.
 
-**Evidence / sources / verified findings:** [00](00-RECONCILIATION.md). **Assumption:** no new application changes. **Open question:** reviewer timing.
+**Evidence / sources / verified findings:** [reconciliation](00-RECONCILIATION.md). **Assumption:** no implementation in this phase. **Open question:** review timing and creative export policy.
